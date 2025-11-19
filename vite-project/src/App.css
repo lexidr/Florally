@@ -1,0 +1,14 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Stolzl', 'MusticaPro-SemiBold', 'Nexa-Trial Extra Bold',
+   'Objectivity-Bold', 'Altone Trial Bold', sans-serif;
+}
+
+.App {
+  min-height: 100vh;
+}
