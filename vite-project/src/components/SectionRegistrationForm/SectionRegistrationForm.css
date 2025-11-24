@@ -31,47 +31,88 @@
   background-color: #B9D19F;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   flex: 1;
 }
 
 .registration-card {
-  background-color: #EBEBED;
-  border-radius: 20px;
-  padding: 50px;
-  width: 500px;
+  background-color: white;
+  border-radius: 4vh;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   height: calc(100vh - 72px);
+  width: 70vh;
   margin-right: 50px;
+  text-align: center;
+  font-size: large;
+  padding-top: 25vh;
+  position: relative;
+
 }
 
 .image-section {
-  width: auto;
   background-color: #B9D19F;
-  display: flex;
   align-items: flex-end; 
+  display: flex;
   justify-content: flex-start;
   flex: 1;
   padding-bottom: 36px; 
 }
 
 .background-image {
-  width: 100%;
+  width: 70vh;
   height: auto;
   object-fit: contain;
   object-position: center;
-  max-width: 600px;
 }
 
-/* Это можете раскомментировать, заполнить и добавить к своим селекторам
-ИЛИ удалить и написать свои селекторы и стили
-/*
-.registration-card h2 {
-  
+h1, h2, h3 {
+  font-family: 'Stolzl', sans-serif;
+  font-weight: 500; 
 }
+
+h2{
+  margin: 1vh;
+  font-size: 4.3vh
+}
+
+a{
+  color: #74885d;
+}
+
+
+input{
+  border: 2px solid #a8c28a;
+  border-radius: 20vh;
+  size: large;
+  margin: 1%;
+  padding-top: 1vh;
+  padding-left: 4vh;
+  padding-bottom: 1vh;
+  font-size: 2.2vh;
+  width: 72%;
+}
+
+.registration-buttom{
+  background-color: #a8c28a;
+  border: 2.5px solid #a8c28a;
+  border-radius: 20vh;
+  padding-top: 1.2vh;
+  padding-bottom: 1.2vh;
+  text-align: center;
+  font-size: 2vh;
+  text-decoration: none;
+  color: white;
+  font-weight: 550;
+}
+
 
 .registration-form {
-  
+  size: 20vh
 }
-*/
 
+button:hover{
+  border-color: #74885d;
+  cursor: pointer;
+  background-color:#809568; 
+  border: 2.5px solid #809568 ;
+}

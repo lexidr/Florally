@@ -1,18 +1,48 @@
 import './SectionRegistrationForm.css';
 
-const SectionRegistrationForm = () => {
-  // временная заглушка 
+const RegistrationForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Форма отправлена');
+    
+    if (e.target.checkValidity()) {
+      window.location.href = 'ССЫЛКА НА САЙТ';
+    }
   };
-  
+
+  const handleLoginClick = (e) => {
+    e.preventDefault();
+    window.location.href = '/login';
+  };
+
+  const buttonContainerStyle = {
+    margin: '1.2vh'
+  };
+
+  const linkContainerStyle = {
+    margin: '1vh'
+  };
+
+  const linkTextStyle = {
+    fontSize: '1.7vh'
+  };
+
+  const logoStyle = {
+    position: 'absolute',
+    bottom: '20px',
+    left: '50%',
+    transform: 'translateX(-50%)'
+  };
+
   return (
     <section className="registration-container">
       <div className="form-section">
         <div className="registration-card">
           <h2>Регистрация</h2>
-          <form onSubmit={handleSubmit} className="registration-form">
+          <form 
+            className="registration-form" 
+            onSubmit={handleSubmit}
+          >
             <div>
               <label htmlFor="name" className="visually-hidden">Полное имя</label>
               <input
@@ -22,28 +52,63 @@ const SectionRegistrationForm = () => {
                 required
               />
             </div>
-          {/*
-            1. Доделайте реализацию формы, т.е. 
-            2. Допишите оставшиеся поля подобно полю выше 
-            3. Напишите стили для формы, в том числе для полей и h2
-              ( ориентируйтесь на макет в фигме)
-            4. Не забудьте добавить лого (оно уже сохранено в папке public)
-            5. Стилизуйте объект ниже (<span> <a></a> </span>)
-
-            Учтите, что вы работаете (можете менять) в файлах папки SectionRegistrationForm
-            (.css и .jsx), App.css ( вряд ли придется что-то менять, но вдруг) и App.jsx
-          */}
+            <div>
+              <label htmlFor="mail" className="visually-hidden">Email</label>
+              <input
+                type="email"
+                id="mail"
+                placeholder="Почта"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="visually-hidden">Пароль</label>
+              <input
+                type="password"
+                id="password"
+                placeholder="Пароль"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="confirmPassword" className="visually-hidden">Повторите пароль</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Повторите пароль"
+                required
+              />
+            </div>
+            <div style={buttonContainerStyle}>
+              <button 
+                type="submit" 
+                className="registration-buttom" 
+                style={{width: '76%', margin: '0 auto'}}
+              >
+                Зарегистрироваться
+              </button>
+            </div>
+            <div style={linkContainerStyle}>
+              <span style={linkTextStyle} className="login-link">
+                Есть аккаунт? {' '}
+                <a href="/login" onClick={handleLoginClick}>
+                  Войти
+                </a>
+              </span>
+            </div>
           </form>
-          <span className="login-link">
-            Eсть аккаунт? <a href="/login">Войти</a>
-          </span>
+          <img 
+            style={logoStyle} 
+            src="logo.svg" 
+            alt="logo" 
+          />
         </div>
       </div>
       <div className="image-section">
-        <img src="/back-img.svg" alt="Background" className="background-image" />
+        <img src="back-img.svg" alt="Девушка поливает цветок в горшке" className="background-image" />
       </div>
     </section>
   );
 };
 
-export default SectionRegistrationForm;
+export default RegistrationForm;
