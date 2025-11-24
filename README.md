@@ -9,3 +9,6 @@
 <li>Рыбченко Владислав</li>
 <li>Сухова Кира</li>
 </ul>
+
+## Макет в Figma:
+https://www.figma.com/design/5wMF2gBIn4SDSmie0ZjATy/Florally?node-id=25-2&t=CRFGcfcxSjQVXMLX-1
