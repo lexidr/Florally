@@ -52,11 +52,11 @@
 .image-section {
   background-color: #B9D19F;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-end; 
   justify-content: flex-start;
   flex: 1;
   margin-left: 50px;
-  height: calc(100vh - 36px); 
+  margin-bottom: 36px; 
 }
 
 h1, h2, h3, span {

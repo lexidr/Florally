@@ -46,7 +46,7 @@
   font-size: large;
   padding-top: 25vh;
   position: relative;
-
+  margin-bottom: 36px;
 }
 
 .image-section {
@@ -55,7 +55,6 @@
   display: flex;
   justify-content: flex-start;
   flex: 1;
-  padding-bottom: 36px; 
 }
 
 .background-image {
@@ -78,7 +77,6 @@ h2{
 a{
   color: #74885d;
 }
-
 
 input{
   border: 2px solid #a8c28a;
@@ -104,7 +102,6 @@ input{
   color: white;
   font-weight: 550;
 }
-
 
 .registration-form {
   size: 20vh
