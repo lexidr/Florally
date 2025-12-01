@@ -4,16 +4,7 @@ import { Link } from 'react-router-dom';
 const RegistrationForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Форма отправлена");
-
-    if (e.target.checkValidity()) {
-      window.location.href = "ССЫЛКА НА САЙТ";
-    }
-  };
-
-  const handleLoginClick = (e) => {
-    e.preventDefault();
-    window.location.href = "/login";
+    console.log('Форма отправлена');
   };
 
   const buttonContainerStyle = {
@@ -75,21 +66,19 @@ const RegistrationForm = () => {
             </div>
             <div className="login-link">
               <span>
-                Есть аккаунт?{" "}
-                <a href="/login" onClick={handleLoginClick}>
-                  Войти
-                </a>
+                Есть аккаунт? {' '}
+                <Link to="/auth/signin">Войти</Link>
               </span>
             </div>
             <div className="logoStyle">
-              <img src="logo.svg" alt="logo" />
+              <img src="/logo.svg" alt="logo" />
             </div>
           </form>
         </div>
       </div>
       <div className="image-section">
         <img
-          src="OBJECTS.svg"
+          src="/back-img.svg"
           alt="Девушка поливает цветок в горшке"
           className="background-image"
         />
