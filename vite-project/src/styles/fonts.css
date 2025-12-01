@@ -17,3 +17,13 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* Manrope Medium */
+@font-face {
+  font-family: 'Manrope';
+  src: url('../assets/fonts/Manrope/Manrope-Medium.woff2') format('woff2'),
+       url('../assets/fonts/Manrope/Manrope-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}

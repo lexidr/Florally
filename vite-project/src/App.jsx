@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import SectionRegistrationForm from './components/SectionRegistrationForm/SectionRegistrationForm';
 import SectionEntrance from './components/SectionEntrance/SectionEntrance';
 import './App.css';
+import HomePage from './components/HomePage/HomePage'
 
 export default function App() {
   return (
