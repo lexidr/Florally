@@ -1,15 +1,15 @@
 import './SectionEntrance.css';
+import { Link } from 'react-router-dom';
 
 const SectionEntrance = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Форма отправлена');
-    window.location.href = '/';
   };
 
   return (
-    <div className="entrance-container">
-      <section className="form-section">
+    <section className="entrance-container">
+      <div className="form-section">
         <div className="entrance-card">
           <h2>Вход</h2>
           
@@ -27,7 +27,7 @@ const SectionEntrance = () => {
             <div className="form-links">
               <span>
                 Нет аккаунта?{' '}
-                <a href="#">Зарегистрироваться</a>
+                <Link to="/auth/signup">Зарегистрироваться</Link>
               </span>
             </div>
           </form>
@@ -36,16 +36,16 @@ const SectionEntrance = () => {
             <img src="/logo.svg" alt="Логотип" />
           </div>
         </div>
-        
-        <div className="image-section">
-          <img 
-            src="/back-img.svg" 
-            alt="Дувушка поливает цветок в горшке" 
-            className="background-image" 
-          />
-        </div>
-      </section>
-    </div>
+      </div>
+      
+      <div className="image-section">
+        <img 
+          src="/back-img.svg" 
+          alt="Девушка поливает цветок в горшке" 
+          className="background-image" 
+        />
+      </div>
+    </section>
   );
 };
 

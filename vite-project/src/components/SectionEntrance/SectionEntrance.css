@@ -121,7 +121,7 @@ button:hover {
 
 .logo-container {
   position: absolute;
-  bottom: 4vh;
+  bottom: 20px;
   left: 0;
   right: 0;
   text-align: center;

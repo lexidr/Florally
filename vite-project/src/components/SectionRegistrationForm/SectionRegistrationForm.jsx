@@ -1,18 +1,10 @@
 import './SectionRegistrationForm.css';
+import { Link } from 'react-router-dom';
 
 const RegistrationForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Форма отправлена');
-    
-    if (e.target.checkValidity()) {
-      window.location.href = 'ССЫЛКА НА САЙТ';
-    }
-  };
-
-  const handleLoginClick = (e) => {
-    e.preventDefault();
-    window.location.href = '/login';
   };
 
   const buttonContainerStyle = {
@@ -39,10 +31,7 @@ const RegistrationForm = () => {
       <div className="form-section">
         <div className="registration-card">
           <h2>Регистрация</h2>
-          <form 
-            className="registration-form" 
-            onSubmit={handleSubmit}
-          >
+          <form className="registration-form" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="name" className="visually-hidden">Полное имя</label>
               <input
@@ -91,21 +80,19 @@ const RegistrationForm = () => {
             <div style={linkContainerStyle}>
               <span style={linkTextStyle} className="login-link">
                 Есть аккаунт? {' '}
-                <a href="/login" onClick={handleLoginClick}>
-                  Войти
-                </a>
+                <Link to="/auth/signin">Войти</Link>
               </span>
             </div>
           </form>
           <img 
             style={logoStyle} 
-            src="logo.svg" 
+            src="/logo.svg" 
             alt="logo" 
           />
         </div>
       </div>
       <div className="image-section">
-        <img src="back-img.svg" alt="Девушка поливает цветок в горшке" className="background-image" />
+        <img src="/back-img.svg" alt="Девушка поливает цветок в горшке" className="background-image" />
       </div>
     </section>
   );
