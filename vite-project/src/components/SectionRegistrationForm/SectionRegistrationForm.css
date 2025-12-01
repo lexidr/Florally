@@ -1,3 +1,5 @@
+/*ПК ВЕРСТКА, ОНА ЖЕ ОСНОВНАЯ  ψ(._. )> */
+
 * {
   margin: 0;
   padding: 0;
@@ -19,7 +21,7 @@
 .registration-container {
   height: 100vh;
   width: 100vw;
-  background-color: #B9D19F;
+  background-color: #b9d19f;
   display: flex;
   overflow: hidden;
   justify-content: space-between;
@@ -28,7 +30,7 @@
 
 .form-section {
   width: auto;
-  background-color: #B9D19F;
+  background-color: #b9d19f;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -50,47 +52,69 @@
 }
 
 .image-section {
-  background-color: #B9D19F;
-  align-items: flex-end; 
+  width: auto;
+  background-color: #b9d19f;
   display: flex;
+  align-items: end;
   justify-content: flex-start;
   flex: 1;
+  padding-bottom: 36px;
 }
 
 .background-image {
-  width: 70vh;
-  height: auto;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   object-position: center;
 }
 
-h1, h2, h3 {
-  font-family: 'Stolzl', sans-serif;
-  font-weight: 500; 
+h1,
+h2,
+h3 {
+  font-family: "Stolzl", sans-serif;
+  font-weight: 500;
 }
 
-h2{
+h2 {
   margin: 1vh;
-  font-size: 4.3vh
+  font-size: 4.3vh;
 }
 
-a{
+a {
   color: #74885d;
 }
 
-input{
+.login-link {
+  font-size: 2.5vh;
+}
+
+.logoStyle {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+}
+
+.logoStyle img {
+  width: 25%;
+  height: auto;
+}
+
+input {
   border: 2px solid #a8c28a;
   border-radius: 20vh;
   size: large;
   margin: 1%;
   padding-top: 1vh;
-  padding-left: 4vh;
+  padding-left: 3vh;
+  padding-right: 1vh;
   padding-bottom: 1vh;
   font-size: 2.2vh;
   width: 72%;
 }
 
-.registration-buttom{
+.registration-buttom {
   background-color: #a8c28a;
   border: 2.5px solid #a8c28a;
   border-radius: 20vh;
@@ -104,12 +128,208 @@ input{
 }
 
 .registration-form {
-  size: 20vh
+  size: 20vh;
 }
 
-button:hover{
+button:hover {
   border-color: #74885d;
   cursor: pointer;
-  background-color:#809568; 
-  border: 2.5px solid #809568 ;
+  background-color: #809568;
+  border: 2.5px solid #809568;
+}
+
+/*ЭТИ МЕДИА - ВЕРСТКА ПРИ СУЖЕНИИ НА ПК  :P  */
+
+@media (max-width: 1300px) and (min-width: 1160px) {
+  .image-section {
+    height: 100vh;
+    padding-bottom: 4vh;
+    margin-top: -3vh;
+  }
+
+  .registration-card {
+    margin: 0 !important;
+  }
+
+  .registration-container {
+    padding: 2vh;
+  }
+}
+
+@media (max-width: 1160px) and (min-width: 600px) {
+  .image-section {
+    display: none;
+  }
+
+  .registration-card {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 1300px) and (min-width: 600px) and (min-height: 900px) {
+  .image-section {
+    display: none;
+  }
+
+  .registration-card {
+    margin: 0 auto !important;
+  }
+}
+
+/*МОБИЛЬНАЯ ВЕРСТКА o(^▽^)o */
+
+@media (max-width: 600px) and (min-height: 500px) {
+  .logoStyle {
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+  }
+
+  .login-link {
+    font-size: 80%;
+  }
+
+  .registration-container {
+    padding: 0 !important;
+    height: 100svh;
+    width: 100%;
+    background-color: #b9d19f;
+    overflow: visible;
+    justify-content: center;
+    flex-direction: column;
+    display: flex;
+  }
+
+  .form-section {
+    order: 2;
+    width: 100%;
+    align-items: flex-end;
+    margin: 0 !important;
+  }
+
+  .registration-card {
+    height: 62svh;
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 10% 10% 0 0;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    font-size: large;
+    padding: 10px 0;
+    flex-direction: column;
+  }
+
+  .image-section {
+    order: 1;
+    width: 100%;
+    height: 38svh;
+    justify-content: center;
+    align-items: flex-end;
+    margin-bottom: 0;
+    flex: 0 0 auto;
+    padding-bottom: 0px;
+  }
+
+  .background-image {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 43.5svh;
+  }
+
+  input {
+    width: 90%;
+    margin: 10px auto;
+    display: block;
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
+
+  h2 {
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+
+  .registration-buttom {
+    width: 95% !important;
+    margin: 0 auto;
+    font-size: 90%;
+  }
+
+  .logoStyle img {
+    width: 80px;
+    height: auto;
+  }
+}
+
+/*ЭТОТ МЕДИА ДЛЯ ВВОДА (￣﹃￣) */
+
+@media (max-height: 500px) and (max-width: 600px) {
+  .registration-container {
+    padding: 0 !important;
+    height: 100svh;
+    width: 100%;
+    background-color: #b9d19f;
+    overflow: visible;
+    justify-content: center;
+    flex-direction: column;
+    display: flex;
+  }
+
+  .form-section {
+    order: 1;
+    width: 100%;
+    align-items: flex-end;
+    margin: 0 !important;
+    justify-content: center;
+  }
+
+  .registration-card {
+    background-color: white;
+    height: 90vh;
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 10% 10% 0 0;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-size: large;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .image-section {
+    display: none;
+  }
+
+  input {
+    width: 85%;
+    font-size: 85%;
+    padding-bottom: 1.5vh;
+    padding-top: 1.5vh;
+    margin: 10px auto;
+    display: block;
+  }
+
+  .registration-buttom {
+    width: 90% !important;
+    padding-bottom: 2.5vh;
+    padding-top: 2.5vh;
+    font-size: 85%;
+    margin: 0 auto;
+  }
+  h2 {
+    font-size: 170%;
+  }
+
+  .logoStyle {
+    display: none;
+  }
+
+  .login-link {
+    font-size: 80%;
+  }
 }
