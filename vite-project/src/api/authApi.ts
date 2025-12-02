@@ -1,7 +1,6 @@
 import { Http, API } from "../constants/api";
 import { ISignIn, ISignUp } from "./authApi.types";
 
-// Выводим импортируемые переменные
 console.log("authApi.ts: Импортированные переменные:");
 console.log("  - API:", API);
 console.log("  - Http:", {
