@@ -4,7 +4,7 @@ import SectionRegistrationForm from './components/SectionRegistrationForm/Sectio
 import SectionEntrance from './components/SectionEntrance/SectionEntrance';
 import './App.css';
 import HomePage from './components/HomePage/HomePage'
-
+/*
 export default function App() {
   return (
     <BrowserRouter>
@@ -20,4 +20,11 @@ export default function App() {
       </div>
     </BrowserRouter>
   );
-}
+}*/
+export default function App() {
+  return (
+    <div className="App">
+      <HomePage/>
+    </div>
+   );
+};

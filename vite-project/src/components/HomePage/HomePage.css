@@ -118,7 +118,7 @@ body {
 
 .calendar-container {
   width: 572px;
-  height: 584px;
+  height: 630px;
   background: white;
   border-radius: 32px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
@@ -230,11 +230,59 @@ body {
   background-size: contain;
 }
 
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.calendar-nav-button {
+  background: #A8C686;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.calendar-nav-button:hover {
+  background: #8fb072;
+  transform: scale(1.1);
+}
+
+.calendar-day.selected {
+  background: #468062;
+  color: white;
+  font-weight: 600;
+}
+
+.calendar-day.today {
+  background: #A8C686;
+  color: white;
+  font-weight: 600;
+}
+
+.calendar-day:hover:not(.empty):not(.today):not(.selected) {
+  background: #e8f5e8;
+  color: #2d3436;
+}
+
+.calendar-day.empty {
+  cursor: default;
+}
+
 @media (min-width: 1441px) {
 
   .calendar-container {
     width: 400px;
-    height: 420px;
+    height: 460px;
     
   }
 
