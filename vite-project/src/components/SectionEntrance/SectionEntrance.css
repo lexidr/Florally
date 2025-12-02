@@ -19,7 +19,7 @@
 .entrance-container {
   height: 100vh;
   width: 100vw;
-  background-color: #B9D19F;
+  background-color: #b9d19f;
   display: flex;
   overflow: hidden;
   justify-content: space-between;
@@ -28,7 +28,7 @@
 
 .form-section {
   width: auto;
-  background-color: #B9D19F;
+  background-color: #b9d19f;
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
@@ -40,9 +40,9 @@
   background-color: white;
   border-radius: 4vh;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  height: calc(100vh - 72px); 
+  height: calc(100vh - 72px);
   width: 70vh;
-  margin: 0 50px 36px 0; 
+  margin: 0 50px 36px 0;
   text-align: center;
   font-size: large;
   padding-top: 25vh;
@@ -50,18 +50,21 @@
 }
 
 .image-section {
-  background-color: #B9D19F;
+  background-color: #b9d19f;
   display: flex;
-  align-items: flex-end; 
+  align-items: flex-end;
   justify-content: flex-start;
   flex: 1;
   margin-left: 50px;
-  margin-bottom: 36px; 
+  margin-bottom: 36px;
 }
 
-h1, h2, h3, span {
-  font-family: 'Stolzl', sans-serif;
-  font-weight: 500; 
+h1,
+h2,
+h3,
+span {
+  font-family: "Stolzl", sans-serif;
+  font-weight: 500;
 }
 
 h2 {
@@ -99,7 +102,7 @@ button {
 
 button:hover {
   border-color: #74885d;
-  background-color: #809568; 
+  background-color: #809568;
   border: 2.5px solid #809568;
 }
 
@@ -125,4 +128,16 @@ button:hover {
   left: 0;
   right: 0;
   text-align: center;
+}
+
+.input-error {
+  border-color: #d32f2f !important;
+  background-color: #fff5f5;
+}
+
+.error-text {
+  color: #d32f2f;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  margin-left: 4px;
 }
