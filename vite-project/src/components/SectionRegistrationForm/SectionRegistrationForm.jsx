@@ -1,10 +1,14 @@
 import './SectionRegistrationForm.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const RegistrationForm = () => {
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Форма отправлена');
+    
+    navigate('/'); 
   };
 
   const buttonContainerStyle = {

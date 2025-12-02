@@ -1,10 +1,14 @@
 import './SectionEntrance.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SectionEntrance = () => {
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Форма отправлена');
+    
+    navigate('/'); 
   };
 
   return (

@@ -1,0 +1,79 @@
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.my-plants-content {
+  width: 100%;
+  height: calc(100vh - 72px); 
+  background: #E7E7E7; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.coming-soon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 40px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.plant-image-container {
+  width: 300px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.centered-plant {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+  animation: float 3s ease-in-out infinite;
+}
+
+.coming-soon-text {
+  font-family: 'Stolzl', sans-serif;
+  font-size: 72px;
+  font-weight: 500;
+  color: #2E2E2E;
+  position: relative;
+  animation: fadeInOut 2s ease-in-out infinite;
+  line-height: 90%;
+  letter-spacing: 0%;
+  text-align: center;
+}
+
+.plant-image-container {
+  width: 120px;
+  height: 160px;
+  background-image: url('/public/back-plant2.svg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+  animation: float 3s ease-in-out infinite;
+}
