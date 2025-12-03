@@ -78,3 +78,15 @@
   animation: float 3s ease-in-out infinite;
 }
 
+.auth-button {
+  background: #A8C686;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

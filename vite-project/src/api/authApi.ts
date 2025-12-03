@@ -1,3 +1,4 @@
+
 import { Http, API } from "../constants/api";
 import { ISignIn, ISignUp } from "./authApi.types";
 
@@ -286,7 +287,7 @@ export const refreshToken = async () => {
 console.log("authApi.ts: Настройка interceptors для Http");
 
 Http.interceptors.response.use(
-  (response) => {
+  (response: any) => {
     console.log("Http interceptor: Успешный ответ", {
       url: response.config.url,
       status: response.status,
@@ -294,7 +295,7 @@ Http.interceptors.response.use(
     });
     return response;
   },
-  async (error) => {
+  async (error: any) => {
     console.error("Http interceptor: Ошибка ответа", {
       url: error.config?.url,
       method: error.config?.method,
@@ -345,3 +346,5 @@ export default {
   getCurrentUser,
   refreshToken,
 };
+
+

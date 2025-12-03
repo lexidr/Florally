@@ -9,6 +9,8 @@ interface LoginFormData {
 }
 
 const SectionEntrance = () => {
+  console.log("SectionEntrance: Компонент монтируется");
+
   const navigate = useNavigate();
   const { signIn, isLoading, error, clearError, isAuthenticated } = useAuth();
 
@@ -19,79 +21,102 @@ const SectionEntrance = () => {
 
   const [formErrors, setFormErrors] = useState<Partial<LoginFormData>>({});
 
+  console.log("SectionEntrance: Начальное состояние:", {
+    isLoading,
+    error,
+    isAuthenticated,
+    formData: {
+      email: formData.email,
+      password: "[СКРЫТО]",
+    },
+    formErrors,
+  });
+
   useEffect(() => {
-    console.log("SectionEntrance: Компонент смонтирован");
-    console.log("Текущий статус аутентификации:", isAuthenticated);
+    console.log("SectionEntrance: useEffect запущен");
+    console.log(
+      "SectionEntrance: isAuthenticated изменился на:",
+      isAuthenticated
+    );
 
     if (isAuthenticated) {
-      console.log("Пользователь уже авторизован, перенаправляем на главную");
+      console.log(
+        "SectionEntrance: Пользователь аутентифицирован, перенаправляем на главную"
+      );
       navigate("/");
     }
 
-    const token = localStorage.getItem("token");
-    const userStr = localStorage.getItem("user");
-    console.log("Проверка localStorage:");
-    console.log("  - Токен:", token ? "присутствует" : "отсутствует");
-    console.log("  - Пользователь:", userStr ? "присутствует" : "отсутствует");
-
-    console.log("Переменные окружения:");
-    console.log(
-      "  - VITE_API_URL:",
-      (import.meta as any).env.VITE_API_URL || "не установлена"
-    );
-
-    return () => {
-      console.log("SectionEntrance: Компонент размонтирован");
-    };
+    const token = localStorage.getItem("access_token");
+    const user = localStorage.getItem("user");
+    console.log("SectionEntrance: Проверка localStorage:", {
+      token: token ? "присутствует" : "отсутствует",
+      user: user ? "присутствует" : "отсутствует",
+    });
   }, [isAuthenticated, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { id, value } = e.target;
 
-    console.log(`Изменение поля ${name}: "${value}"`);
+    console.log(
+      `SectionEntrance: Изменение поля ${id}: "${
+        id === "password" ? "[СКРЫТО]" : value
+      }"`
+    );
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [id]: value,
     }));
 
-    if (formErrors[name as keyof LoginFormData]) {
-      console.log(`Очистка ошибки для поля ${name}`);
+    if (formErrors[id as keyof LoginFormData]) {
+      console.log(`SectionEntrance: Очистка ошибки для поля ${id}`);
       setFormErrors((prev) => ({
         ...prev,
-        [name]: undefined,
+        [id]: undefined,
       }));
     }
 
     if (error) {
-      console.log("Очистка ошибки из useAuth");
+      console.log("SectionEntrance: Очистка ошибки из useAuth");
       clearError();
     }
   };
 
   const validateForm = (): boolean => {
-    console.log("Валидация формы...");
+    console.log("SectionEntrance: Начало валидации формы");
+    console.log("SectionEntrance: Данные для валидации:", {
+      email: formData.email,
+      passwordLength: formData.password.length,
+    });
 
     const errors: Partial<LoginFormData> = {};
 
     if (!formData.email.trim()) {
-      console.log("Ошибка валидации: email обязателен");
+      console.log("SectionEntrance: Валидация ошибка - email обязателен");
       errors.email = "Email обязателен";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      console.log(`Ошибка валидации: некорректный email "${formData.email}"`);
+      console.log(
+        `SectionEntrance: Валидация ошибка - некорректный email: ${formData.email}`
+      );
       errors.email = "Введите корректный email";
     }
 
     if (!formData.password) {
-      console.log("Ошибка валидации: пароль обязателен");
+      console.log("SectionEntrance: Валидация ошибка - пароль обязателен");
       errors.password = "Пароль обязателен";
+    } else if (formData.password.length < 6) {
+      console.log(
+        `SectionEntrance: Валидация ошибка - пароль слишком короткий: ${formData.password.length} символов`
+      );
+      errors.password = "Пароль должен содержать минимум 6 символов";
     }
 
-    console.log(
-      "Результат валидации:",
-      Object.keys(errors).length === 0 ? "успешно" : "есть ошибки",
-      errors
-    );
+    console.log("SectionEntrance: Результат валидации:", {
+      isValid: Object.keys(errors).length === 0,
+      errorsCount: Object.keys(errors).length,
+      errors,
+    });
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -99,59 +124,83 @@ const SectionEntrance = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("Отправка формы входа...");
-    console.log("Данные формы:", {
+    console.log("SectionEntrance: Отправка формы");
+    console.log("SectionEntrance: Данные формы:", {
+      email: formData.email,
+      passwordLength: formData.password.length,
+    });
+
+    if (!validateForm()) {
+      console.log("SectionEntrance: Валидация не пройдена, отправка отменена");
+      return;
+    }
+
+    console.log("SectionEntrance: Валидация пройдена, вызываю signIn");
+    console.log("SectionEntrance: Вызов signIn с данными:", {
       email: formData.email,
       password: "[СКРЫТО]",
     });
 
-    if (!validateForm()) {
-      console.log("Валидация не пройдена, отправка отменена");
-      return;
-    }
-
-    console.log("Валидация пройдена, вызываем signIn...");
-
     try {
-      console.log("Вызов signIn с данными:", {
-        email: formData.email,
-        password: "[СКРЫТО]",
-      });
       const result = await signIn({
         email: formData.email,
         password: formData.password,
       });
 
-      console.log("signIn успешно выполнен:", result);
+      console.log("SectionEntrance: signIn успешно выполнен:", result);
       console.log(
-        "Токен сохранен в localStorage:",
-        localStorage.getItem("token") ? "да" : "нет"
-      );
-      console.log(
-        "Данные пользователя сохранены:",
-        localStorage.getItem("user") ? "да" : "нет"
+        "SectionEntrance: Проверка localStorage после входа:",
+        {
+          access_token: localStorage.getItem("access_token")
+            ? "присутствует"
+            : "отсутствует",
+          user: localStorage.getItem("user") ? "присутствует" : "отсутствует",
+        }
       );
     } catch (err: any) {
-      console.error("Ошибка при входе:", err);
-      console.error("Детали ошибки:", {
+      console.error("SectionEntrance: Ошибка при входе:", err);
+      console.error("SectionEntrance: Детали ошибки:", {
         message: err.message,
         response: err.response?.data,
         status: err.response?.status,
-        config: err.config?.url,
+        config: err.config,
       });
     }
   };
 
   const handleForgotPassword = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log("Клик по 'Забыли пароль?' для email:", formData.email);
+    console.log("SectionEntrance: Клик по 'Забыли пароль?' для email:", formData.email);
   };
 
-  console.log("Рендер компонента SectionEntrance:");
-  console.log("  - isLoading:", isLoading);
-  console.log("  - error:", error);
-  console.log("  - formData:", { email: formData.email, password: "[СКРЫТО]" });
-  console.log("  - formErrors:", formErrors);
+  const buttonContainerStyle = {
+    margin: "1.2vh",
+  };
+
+  const linkContainerStyle = {
+    margin: "1vh",
+  };
+
+  const linkTextStyle = {
+    fontSize: "1.7vh",
+  };
+
+  const logoStyle = {
+    position: "absolute" as const,
+    bottom: "20px",
+    left: "50%",
+    transform: "translateX(-50%)",
+  };
+
+  console.log("SectionEntrance: Рендер компонента с состоянием:", {
+    isLoading,
+    error,
+    formErrors,
+    formData: {
+      email: formData.email,
+      password: "[СКРЫТО]",
+    },
+  });
 
   return (
     <section className="entrance-container">
@@ -159,13 +208,28 @@ const SectionEntrance = () => {
         <div className="entrance-card">
           <h2>Вход</h2>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div
+              className="error-message"
+              style={{
+                color: "red",
+                marginBottom: "1rem",
+                textAlign: "center",
+                fontSize: "0.9rem",
+              }}
+            >
+              {error}
+            </div>
+          )}
 
           <form className="entrance-form" onSubmit={handleSubmit}>
-            <div className="form-group">
+            <div>
+              <label htmlFor="email" className="visually-hidden">
+                Email
+              </label>
               <input
                 type="email"
-                name="email"
+                id="email"
                 placeholder="Почта"
                 value={formData.email}
                 onChange={handleChange}
@@ -174,14 +238,19 @@ const SectionEntrance = () => {
                 className={formErrors.email ? "input-error" : ""}
               />
               {formErrors.email && (
-                <div className="error-text">{formErrors.email}</div>
+                <span style={{ color: "red", fontSize: "0.8rem" }}>
+                  {formErrors.email}
+                </span>
               )}
             </div>
 
-            <div className="form-group">
+            <div>
+              <label htmlFor="password" className="visually-hidden">
+                Пароль
+              </label>
               <input
                 type="password"
-                name="password"
+                id="password"
                 placeholder="Пароль"
                 value={formData.password}
                 onChange={handleChange}
@@ -190,7 +259,9 @@ const SectionEntrance = () => {
                 className={formErrors.password ? "input-error" : ""}
               />
               {formErrors.password && (
-                <div className="error-text">{formErrors.password}</div>
+                <span style={{ color: "red", fontSize: "0.8rem" }}>
+                  {formErrors.password}
+                </span>
               )}
             </div>
 
@@ -200,24 +271,25 @@ const SectionEntrance = () => {
               </a>
             </div>
 
-            <button
-              type="submit"
-              className="submit-button"
-              disabled={isLoading}
-            >
-              {isLoading ? "Вход..." : "Войти"}
-            </button>
+            <div style={buttonContainerStyle}>
+              <button
+                type="submit"
+                className="submit-button"
+                style={{ width: "76%", margin: "0 auto" }}
+                disabled={isLoading}
+              >
+                {isLoading ? "Вход..." : "Войти"}
+              </button>
+            </div>
 
-            <div className="form-links">
-              <span>
+            <div style={linkContainerStyle}>
+              <span style={linkTextStyle} className="login-link">
                 Нет аккаунта? <Link to="/auth/signup">Зарегистрироваться</Link>
               </span>
             </div>
           </form>
 
-          <div className="logo-container">
-            <img src="/logo.svg" alt="Логотип" />
-          </div>
+          <img style={logoStyle} src="/logo.svg" alt="logo" />
         </div>
       </div>
 
