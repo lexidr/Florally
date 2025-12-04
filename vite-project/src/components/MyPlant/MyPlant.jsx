@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { checkAuth, SignOut } from '../../api/authApi';
-import './MyPlant.css';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { checkAuth, SignOut } from "../../api/authApi";
+import "./MyPlant.css";
 
 function MyPlant() {
   const location = useLocation();
@@ -9,10 +9,10 @@ function MyPlant() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  
-  const isCalendarActive = location.pathname === '/';
-  const isMyPlantsActive = location.pathname === '/plants/my_plants';
-  const isUserActive = location.pathname === '/user';
+
+  const isCalendarActive = location.pathname === "/";
+  const isMyPlantsActive = location.pathname === "/plants/my_plants";
+  const isUserActive = location.pathname === "/user";
 
   useEffect(() => {
     const authCheck = async () => {
@@ -21,7 +21,7 @@ function MyPlant() {
         setIsLoggedIn(authData.isAuthenticated);
         setUser(authData.user);
       } catch (error) {
-        console.error('Ошибка при проверке аутентификации:', error);
+        console.error("Ошибка при проверке аутентификации:", error);
         setIsLoggedIn(false);
         setUser(null);
       } finally {
@@ -33,24 +33,24 @@ function MyPlant() {
   }, []);
 
   const handleLoginClick = () => {
-    navigate('/auth/signin');
+    navigate("/auth/signin");
   };
 
   const handleLogoutClick = async () => {
     try {
-      const confirmLogout = window.confirm('Вы уверены, что хотите выйти?');
+      const confirmLogout = window.confirm("Вы уверены, что хотите выйти?");
       if (!confirmLogout) return;
-      
+
       await SignOut();
       setIsLoggedIn(false);
       setUser(null);
-      
-      if (location.pathname === '/user') {
-        navigate('/');
+
+      if (location.pathname === "/user") {
+        navigate("/");
       }
     } catch (error) {
-      console.error('Ошибка при выходе:', error);
-      alert('Произошла ошибка при выходе из системы');
+      console.error("Ошибка при выходе:", error);
+      alert("Произошла ошибка при выходе из системы");
     }
   };
 
@@ -59,7 +59,7 @@ function MyPlant() {
       <div className="app">
         <header className="header">
           <div className="header-content">
-            <img src={'/logo.svg'} alt="Florally" className="logo" />
+            <img src={"/logo.svg"} alt="Florally" className="logo" />
             <div className="loading-auth">Загрузка...</div>
           </div>
         </header>
@@ -77,23 +77,27 @@ function MyPlant() {
     <div className="app">
       <header className="header">
         <div className="header-content">
-          <img src={'/logo.svg'} alt="Florally" className="logo" />
+          <img src={"/logo.svg"} alt="Florally" className="logo" />
           <nav className="navigation">
-            <Link 
-              to="/plants/my_plants" 
-              className={`nav-link ${isMyPlantsActive ? 'calendar-active' : ''}`}
+            <Link
+              to="/plants/my_plants"
+              className={`nav-link ${
+                isMyPlantsActive ? "calendar-active" : ""
+              }`}
             >
               Мои растения
             </Link>
-            <Link 
-              to="/" 
-              className={`nav-link ${isCalendarActive ? 'calendar-active' : ''}`}
+            <Link
+              to="/"
+              className={`nav-link ${
+                isCalendarActive ? "calendar-active" : ""
+              }`}
             >
               Календарь
             </Link>
-            <Link 
-              to="/user" 
-              className={`nav-link ${isUserActive ? 'calendar-active' : ''}`}
+            <Link
+              to="/user"
+              className={`nav-link ${isUserActive ? "calendar-active" : ""}`}
             >
               Профиль
             </Link>
@@ -101,12 +105,7 @@ function MyPlant() {
           <div className="auth-section">
             {isLoggedIn ? (
               <div className="user-info">
-                {user && (
-                  <span className="username">
-                    {user.username || user.email?.split('@')[0]}
-                  </span>
-                )}
-                <button 
+                <button
                   className="auth-button logout-button"
                   onClick={handleLogoutClick}
                 >
@@ -114,7 +113,7 @@ function MyPlant() {
                 </button>
               </div>
             ) : (
-              <button 
+              <button
                 className="auth-button login-button"
                 onClick={handleLoginClick}
               >

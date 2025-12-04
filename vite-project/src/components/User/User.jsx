@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { checkAuth, SignOut } from '../../api/authApi';
-import './User.css';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { checkAuth, SignOut } from "../../api/authApi";
+import "./User.css";
 
 function User() {
   const location = useLocation();
@@ -10,15 +10,15 @@ function User() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    newPassword: ''
+    username: "",
+    email: "",
+    password: "",
+    newPassword: "",
   });
-  
-  const isCalendarActive = location.pathname === '/';
-  const isMyPlantsActive = location.pathname === '/plants/my_plants';
-  const isUserActive = location.pathname === '/user';
+
+  const isCalendarActive = location.pathname === "/";
+  const isMyPlantsActive = location.pathname === "/plants/my_plants";
+  const isUserActive = location.pathname === "/user";
 
   useEffect(() => {
     const authCheck = async () => {
@@ -26,17 +26,17 @@ function User() {
         const authData = checkAuth();
         setIsLoggedIn(authData.isAuthenticated);
         setUser(authData.user);
-        
+
         if (authData.user) {
           setFormData({
-            username: '', 
-            email: authData.user.email || '',
-            password: '',
-            newPassword: ''
+            username: authData.user.username || "",
+            email: authData.user.email || "",
+            password: "",
+            newPassword: "",
           });
         }
       } catch (error) {
-        console.error('Ошибка при проверке аутентификации:', error);
+        console.error("Ошибка при проверке аутентификации:", error);
         setIsLoggedIn(false);
         setUser(null);
       } finally {
@@ -48,64 +48,56 @@ function User() {
   }, []);
 
   const handleLoginClick = () => {
-    navigate('/auth/signin');
+    navigate("/auth/signin");
   };
 
   const handleLogoutClick = async () => {
     try {
-      const confirmLogout = window.confirm('Вы уверены, что хотите выйти?');
+      const confirmLogout = window.confirm("Вы уверены, что хотите выйти?");
       if (!confirmLogout) return;
-      
+
       await SignOut();
       setIsLoggedIn(false);
       setUser(null);
-      
-      if (location.pathname === '/user') {
-        navigate('/');
+
+      if (location.pathname === "/user") {
+        navigate("/");
       }
     } catch (error) {
-      console.error('Ошибка при выходе:', error);
-      alert('Произошла ошибка при выходе из системы');
+      console.error("Ошибка при выходе:", error);
+      alert("Произошла ошибка при выходе из системы");
     }
   };
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSaveChanges = () => {
-    // Здесь будет логика сохранения изменений
-    console.log('Сохранение изменений:', formData);
-    alert('Изменения сохранены');
-  };
-
-  const handleDeleteAccount = () => {
-    if (window.confirm('Вы уверены, что хотите удалить аккаунт? Это действие нельзя отменить.')) {
-      console.log('Удаление аккаунта');
-      // Здесь будет логика удаления аккаунта
-    }
+    console.log("Сохранение изменений:", formData);
+    alert("Изменения сохранены");
   };
 
   const formatRegistrationDate = () => {
     if (!user || !user.createdAt) {
-      return new Date().toLocaleDateString('ru-RU');
+      return new Date().toLocaleDateString("ru-RU");
     }
-    
+
     try {
       const date = new Date(user.createdAt);
-      return date.toLocaleDateString('ru-RU');
+      return date.toLocaleDateString("ru-RU");
     } catch (e) {
-      return new Date().toLocaleDateString('ru-RU');
+      return new Date().toLocaleDateString("ru-RU");
     }
   };
 
   const getUserName = () => {
-    if (!user) return '';
-    return user.username || user.email?.split('@')[0] || 'Пользователь';
+    if (!user) return "";
+    return user.username || user.email?.split("@")[0] || "Пользователь";
   };
 
   if (loading) {
@@ -113,7 +105,7 @@ function User() {
       <div className="app">
         <header className="header">
           <div className="header-content">
-            <img src={'/logo.svg'} alt="Florally" className="logo" />
+            <img src={"/logo.svg"} alt="Florally" className="logo" />
             <div className="loading-auth">Загрузка...</div>
           </div>
         </header>
@@ -131,23 +123,27 @@ function User() {
     <div className="app">
       <header className="header">
         <div className="header-content">
-          <img src={'/logo.svg'} alt="Florally" className="logo" />
+          <img src={"/logo.svg"} alt="Florally" className="logo" />
           <nav className="navigation">
             <Link
               to="/plants/my_plants"
-              className={`nav-link ${isMyPlantsActive ? 'calendar-active' : ''}`}
+              className={`nav-link ${
+                isMyPlantsActive ? "calendar-active" : ""
+              }`}
             >
               Мои растения
             </Link>
             <Link
               to="/"
-              className={`nav-link ${isCalendarActive ? 'calendar-active' : ''}`}
+              className={`nav-link ${
+                isCalendarActive ? "calendar-active" : ""
+              }`}
             >
               Календарь
             </Link>
-            <Link 
-              to="/user" 
-              className={`nav-link ${isUserActive ? 'calendar-active' : ''}`}
+            <Link
+              to="/user"
+              className={`nav-link ${isUserActive ? "calendar-active" : ""}`}
             >
               Профиль
             </Link>
@@ -155,12 +151,7 @@ function User() {
           <div className="auth-section">
             {isLoggedIn ? (
               <div className="user-info">
-                {user && (
-                  <span className="username">
-                    {getUserName()}
-                  </span>
-                )}
-                <button 
+                <button
                   className="auth-button logout-button"
                   onClick={handleLogoutClick}
                 >
@@ -168,7 +159,7 @@ function User() {
                 </button>
               </div>
             ) : (
-              <button 
+              <button
                 className="auth-button login-button"
                 onClick={handleLoginClick}
               >
@@ -185,9 +176,11 @@ function User() {
               <div className="user-profile">
                 <div className="user-header">
                   <h1 className="user-name">{getUserName()}</h1>
-                  <p className="registration-date">Зарегистрирован {formatRegistrationDate()}</p>
+                  <p className="registration-date">
+                    Зарегистрирован {formatRegistrationDate()}
+                  </p>
                 </div>
-                
+
                 <div className="user-form">
                   <h2>Редактировать профиль</h2>
                   <div className="form-grid">
@@ -199,10 +192,10 @@ function User() {
                         name="username"
                         value={formData.username}
                         onChange={handleFormChange}
-                        placeholder="Введите новое имя"
+                        placeholder="Имя"
                       />
                     </div>
-                    
+
                     <div className="form-group">
                       <label htmlFor="email">Почта</label>
                       <input
@@ -211,11 +204,10 @@ function User() {
                         name="email"
                         value={formData.email}
                         onChange={handleFormChange}
-                        placeholder="Введите email"
-                        readOnly 
+                        placeholder="Почта"
                       />
                     </div>
-                    
+
                     <div className="form-group">
                       <label htmlFor="password">Текущий пароль</label>
                       <input
@@ -224,10 +216,10 @@ function User() {
                         name="password"
                         value={formData.password}
                         onChange={handleFormChange}
-                        placeholder="Введите текущий пароль"
+                        placeholder="Текущий пароль"
                       />
                     </div>
-                    
+
                     <div className="form-group">
                       <label htmlFor="newPassword">Новый пароль</label>
                       <input
@@ -236,19 +228,19 @@ function User() {
                         name="newPassword"
                         value={formData.newPassword}
                         onChange={handleFormChange}
-                        placeholder="Введите новый пароль"
+                        placeholder="Новый пароль"
                       />
                     </div>
                   </div>
-                  
-                  <button 
+
+                  <button
                     className="save-changes-btn"
                     onClick={handleSaveChanges}
                   >
                     Сохранить изменения
                   </button>
                 </div>
-                
+
                 <div className="user-plants">
                   <h2>Мои растения</h2>
                   <div className="plants-grid">
@@ -258,15 +250,9 @@ function User() {
                   </div>
                   <button className="view-more-btn">Посмотреть еще</button>
                 </div>
-                
+
                 <div className="user-actions">
-                  <button 
-                    className="delete-account-btn"
-                    onClick={handleDeleteAccount}
-                  >
-                    Удалить аккаунт
-                  </button>
-                  <button 
+                  <button
                     className="logout-bottom-btn"
                     onClick={handleLogoutClick}
                   >
@@ -278,16 +264,13 @@ function User() {
               <div className="not-logged-in">
                 <h2>Профиль</h2>
                 <p>Войдите, чтобы увидеть свой профиль</p>
-                <button 
-                  className="login-btn"
-                  onClick={handleLoginClick}
-                >
+                <button className="login-btn" onClick={handleLoginClick}>
                   Войти
                 </button>
               </div>
             )}
           </div>
-           
+
           <div className="user-image-section">
             <img
               src="/back-img.svg"

@@ -4,15 +4,16 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   overflow: hidden;
 }
 
 body {
-  font-family: 'Manrope', sans-serif;
-  background: #E7E7E7;
+  font-family: "Manrope", sans-serif;
+  background: #e7e7e7;
   color: #2d3436;
 }
 
@@ -45,7 +46,7 @@ body {
 .logo {
   width: 116px;
   height: 32px;
-  margin-left: 20px; 
+  margin-left: 20px;
 }
 
 .navigation {
@@ -74,17 +75,17 @@ body {
   border-radius: 8px;
   padding: 8px 24px;
   color: black;
-  height: 36px; 
+  height: 36px;
 }
 
 .nav-link.calendar-active {
-  background: #A8C686;
+  background: #a8c686;
   color: white;
   border-radius: 8px;
   padding: 8px 24px;
   display: flex;
   align-items: center;
-  height: 36px; 
+  height: 36px;
 }
 
 .main-content {
@@ -114,9 +115,9 @@ body {
   font-size: 28px;
   color: #2d3436;
   padding-bottom: 28px;
-  border-bottom: #F2F1FF 1.7px solid;
-  font-family: 'Stolzl', sans-serif;
-  font-weight: 400; 
+  border-bottom: #f2f1ff 1.7px solid;
+  font-family: "Stolzl", sans-serif;
+  font-weight: 400;
   line-height: 34.76px;
 }
 
@@ -175,7 +176,7 @@ body {
 }
 
 .calendar-day.today {
-  background: #A8C686;
+  background: #a8c686;
   color: white;
   font-weight: 600;
 }
@@ -185,8 +186,8 @@ body {
   bottom: 62.6px;
   right: 52.46px;
   display: flex;
-  align-items: flex-end; 
-  gap: 0; 
+  align-items: flex-end;
+  gap: 0;
   z-index: 3;
 }
 
@@ -195,7 +196,7 @@ body {
   height: 212.67px;
   overflow: hidden;
   border-radius: 24px;
-  background-image: url('/public/back-plant2.svg'); 
+  background-image: url("/public/back-plant2.svg");
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
@@ -206,7 +207,7 @@ body {
   height: 289.4px;
   overflow: hidden;
   border-radius: 24px;
-  background-image: url('/public/back-plant1.svg'); 
+  background-image: url("/public/back-plant1.svg");
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
@@ -220,7 +221,7 @@ body {
 }
 
 .calendar-nav-button {
-  background: #A8C686;
+  background: #a8c686;
   color: white;
   border: none;
   border-radius: 50%;
@@ -246,7 +247,7 @@ body {
 }
 
 .calendar-day.today {
-  background: #A8C686;
+  background: #a8c686;
   color: white;
   font-weight: 600;
 }
@@ -298,8 +299,8 @@ body {
   font-size: 28px;
   color: #2d3436;
   margin-bottom: 40px;
-  font-family: 'Stolzl', sans-serif;
-  font-weight: 500; 
+  font-family: "Stolzl", sans-serif;
+  font-weight: 500;
   line-height: 34.76px;
 }
 
@@ -317,8 +318,8 @@ body {
   color: #666;
   font-size: 28px;
   text-align: center;
-  font-family: 'Stolzl', sans-serif;
-  font-weight: 500; 
+  font-family: "Stolzl", sans-serif;
+  font-weight: 500;
   line-height: 34.76px;
 }
 
@@ -341,6 +342,39 @@ body {
   border-color: #74885d;
   background-color: #809568;
   border: 2.5px solid #809568;
+}
+
+.registration-form-section {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.registration-button {
+  background-color: #a8c28a;
+  border: 2.5px solid #a8c28a;
+  border-radius: 20vh;
+  padding-top: 1.2vh;
+  padding-bottom: 1.2vh;
+  text-align: center;
+  font-size: 2vh;
+  text-decoration: none;
+  color: white;
+  font-weight: 550;
+}
+
+.registration-button:hover {
+  background-color: #74885d;
+}
+
+.registration-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.login-link {
+  font-size: 14px;
+  color: #666;
 }
 
 .auth-section {
@@ -388,11 +422,9 @@ body {
 }
 
 @media (min-width: 1441px) {
-
   .calendar-container {
     width: 400px;
     height: 460px;
-    
   }
 
   .info-card {
@@ -413,8 +445,8 @@ body {
     bottom: 60px;
     right: 52.46px;
     display: flex;
-    align-items: flex-end; 
-    gap: 0; 
+    align-items: flex-end;
+    gap: 0;
     z-index: 3;
   }
 
@@ -423,7 +455,7 @@ body {
     color: #2d3436;
     font-weight: 600;
     padding-bottom: 16px;
-    border-bottom: #F2F1FF 1.7px solid;
+    border-bottom: #f2f1ff 1.7px solid;
   }
 
   .calendar {
@@ -434,14 +466,12 @@ body {
 }
 
 @media (max-width: 976px) and (max-height: 853px) {
-    .plants-container {
-        display: none;
-    }
-    
-    .plant-image-right,
-    .plant-image-left {
-        display: none;
-    }
+  .plants-container {
+    display: none;
+  }
+
+  .plant-image-right,
+  .plant-image-left {
+    display: none;
+  }
 }
-
-

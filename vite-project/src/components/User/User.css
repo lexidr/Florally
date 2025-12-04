@@ -29,12 +29,21 @@
 .user-container {
   height: 100%;
   width: 100%;
-  background-color: #E7E7E7;
+  background-color: #e7e7e7;
   display: flex;
   overflow: hidden;
   justify-content: space-between;
   padding: 36px 50px;
   box-sizing: border-box;
+}
+
+.form-section {
+  width: auto;
+  background-color: #e7e7e7;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
 }
 
 .user-card {
@@ -49,8 +58,17 @@
   box-sizing: border-box;
 }
 
+.user-card::-webkit-scrollbar {
+  display: none;
+}
+
+.user-card {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 .user-image-section {
-  background-color: #E7E7E7;
+  background-color: #e7e7e7;
   align-items: flex-end;
   display: flex;
   justify-content: flex-start;
@@ -127,6 +145,7 @@
   width: 100%;
   box-sizing: border-box;
   transition: border-color 0.3s ease;
+  height: 48px;
 }
 
 .form-group input:focus {
@@ -134,19 +153,30 @@
   border-color: #74885d;
 }
 
-.save-changes-btn {
-  background-color: #A8C686;
-  color: white;
+.save-changes-btn,
+.view-more-btn,
+.logout-bottom-btn {
+  height: 48px;
+  width: 100%;
   border: none;
   border-radius: 20vh;
-  padding: 12px 30px;
+  padding: 12px 20px;
   font-size: 16px;
   font-weight: 550;
   font-family: "Manrope", sans-serif;
   cursor: pointer;
-  width: 100%;
-  transition: background-color 0.3s ease;
-  margin-bottom: 30px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.save-changes-btn {
+  background-color: #a8c686;
+  color: white;
+  margin-bottom: 25px;
 }
 
 .save-changes-btn:hover {
@@ -167,22 +197,13 @@
 .plant-square {
   width: 164px;
   height: 164px;
-  background-color: #D9D9D9;
+  background-color: #d9d9d9;
   border-radius: 12px;
 }
 
 .view-more-btn {
-  background-color: #A8C686;
+  background-color: #a8c686;
   color: white;
-  border: none;
-  border-radius: 20vh;
-  padding: 12px 30px;
-  font-size: 16px;
-  font-weight: 550;
-  font-family: "Manrope", sans-serif;
-  cursor: pointer;
-  width: 100%;
-  transition: background-color 0.3s ease;
   margin-bottom: 30px;
 }
 
@@ -197,38 +218,9 @@
   margin-top: 20px;
 }
 
-.delete-account-btn {
-  background-color: #f5f5f5;
-  color: #666;
-  border: 1px solid #ddd;
-  border-radius: 20vh;
-  padding: 12px 30px;
-  font-size: 16px;
-  font-weight: 550;
-  font-family: "Manrope", sans-serif;
-  cursor: pointer;
-  width: 100%;
-  transition: all 0.3s ease;
-}
-
-.delete-account-btn:hover {
-  background-color: #ffebee;
-  color: #d32f2f;
-  border-color: #ffcdd2;
-}
-
 .logout-bottom-btn {
-  background-color: #DF7171;
+  background-color: #df7171;
   color: white;
-  border: none;
-  border-radius: 20vh;
-  padding: 12px 30px;
-  font-size: 16px;
-  font-weight: 550;
-  font-family: "Manrope", sans-serif;
-  cursor: pointer;
-  width: 100%;
-  transition: background-color 0.3s ease;
 }
 
 .logout-bottom-btn:hover {
@@ -261,7 +253,7 @@
 }
 
 .login-btn {
-  background-color: #A8C686;
+  background-color: #a8c686;
   color: white;
   border: none;
   border-radius: 20vh;
@@ -271,6 +263,7 @@
   font-family: "Manrope", sans-serif;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  height: 48px;
 }
 
 .login-btn:hover {

@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { checkAuth, SignOut } from "../../api/authApi";
-import './HomePage.css';
+import "./HomePage.css";
 
 function HomePage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [calendarDays, setCalendarDays] = useState([]);
-  const [currentMonth, setCurrentMonth] = useState('');
-  const [currentYear, setCurrentYear] = useState('');
+  const [currentMonth, setCurrentMonth] = useState("");
+  const [currentYear, setCurrentYear] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,20 +19,20 @@ function HomePage() {
   useEffect(() => {
     const authCheck = async () => {
       try {
-        console.log('HomePage: Проверка аутентификации...');
+        console.log("HomePage: Проверка аутентификации...");
         const authData = checkAuth();
-        console.log('HomePage: Результат проверки:', authData);
-        
+        console.log("HomePage: Результат проверки:", authData);
+
         setIsLoggedIn(authData.isAuthenticated);
         setUser(authData.user);
-        
+
         if (authData.isAuthenticated) {
-          console.log('HomePage: Пользователь авторизован:', authData.user);
+          console.log("HomePage: Пользователь авторизован:", authData.user);
         } else {
-          console.log('HomePage: Пользователь не авторизован');
+          console.log("HomePage: Пользователь не авторизован");
         }
       } catch (error) {
-        console.error('HomePage: Ошибка при проверке аутентификации:', error);
+        console.error("HomePage: Ошибка при проверке аутентификации:", error);
         setIsLoggedIn(false);
         setUser(null);
       } finally {
@@ -57,7 +57,7 @@ function HomePage() {
     let currentWeek = [];
 
     for (let i = 0; i < startDayOfWeek; i++) {
-      currentWeek.push('');
+      currentWeek.push("");
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -71,7 +71,7 @@ function HomePage() {
 
     if (currentWeek.length > 0) {
       while (currentWeek.length < 7) {
-        currentWeek.push('');
+        currentWeek.push("");
       }
       days.push(currentWeek);
     }
@@ -81,24 +81,38 @@ function HomePage() {
 
   const getMonthName = (date) => {
     const months = [
-      'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-      'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+      "Январь",
+      "Февраль",
+      "Март",
+      "Апрель",
+      "Май",
+      "Июнь",
+      "Июль",
+      "Август",
+      "Сентябрь",
+      "Октябрь",
+      "Ноябрь",
+      "Декабрь",
     ];
     return months[date.getMonth()];
   };
 
   const prevMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+    );
   };
 
   const nextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+    );
   };
 
   const isToday = (day) => {
     const today = new Date();
     return (
-      day !== '' &&
+      day !== "" &&
       day === today.getDate() &&
       currentDate.getMonth() === today.getMonth() &&
       currentDate.getFullYear() === today.getFullYear()
@@ -107,7 +121,7 @@ function HomePage() {
 
   const isSelected = (day) => {
     return (
-      day !== '' &&
+      day !== "" &&
       day === selectedDate.getDate() &&
       currentDate.getMonth() === selectedDate.getMonth() &&
       currentDate.getFullYear() === selectedDate.getFullYear()
@@ -115,39 +129,41 @@ function HomePage() {
   };
 
   const handleDayClick = (day) => {
-    if (day !== '') {
-      setSelectedDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), day));
+    if (day !== "") {
+      setSelectedDate(
+        new Date(currentDate.getFullYear(), currentDate.getMonth(), day)
+      );
     }
   };
 
   const handleLoginClick = () => {
-    console.log('HomePage: Перенаправление на страницу входа');
-    navigate('/auth/signin');
+    console.log("HomePage: Перенаправление на страницу входа");
+    navigate("/auth/signin");
   };
 
   const handleLogoutClick = async () => {
-    console.log('HomePage: Начало выхода из системы');
-    
+    console.log("HomePage: Начало выхода из системы");
+
     try {
-      const confirmLogout = window.confirm('Вы уверены, что хотите выйти?');
+      const confirmLogout = window.confirm("Вы уверены, что хотите выйти?");
       if (!confirmLogout) return;
-      
-      console.log('HomePage: Вызываю SignOut API');
+
+      console.log("HomePage: Вызываю SignOut API");
       await SignOut();
-      
+
       setIsLoggedIn(false);
       setUser(null);
-      
-      console.log('HomePage: Выход успешно выполнен');
-    
-      alert('Вы успешно вышли из системы');
-      
-      if (location.pathname === '/user') {
-        navigate('/');
+
+      console.log("HomePage: Выход успешно выполнен");
+
+      alert("Вы успешно вышли из системы");
+
+      if (location.pathname === "/user") {
+        navigate("/");
       }
     } catch (error) {
-      console.error('HomePage: Ошибка при выходе:', error);
-      alert('Произошла ошибка при выходе из системы');
+      console.error("HomePage: Ошибка при выходе:", error);
+      alert("Произошла ошибка при выходе из системы");
     }
   };
 
@@ -166,17 +182,16 @@ function HomePage() {
     setSelectedDate(new Date());
   }, []);
 
-
-  const isCalendarActive = location.pathname === '/';
-  const isMyPlantsActive = location.pathname === '/plants/my_plants';
-  const isUserActive = location.pathname === '/user';
+  const isCalendarActive = location.pathname === "/";
+  const isMyPlantsActive = location.pathname === "/plants/my_plants";
+  const isUserActive = location.pathname === "/user";
 
   if (loading) {
     return (
       <div className="app">
         <header className="header">
           <div className="header-content">
-            <img src={'/logo.svg'} alt="Florally" className="logo" />
+            <img src={"/logo.svg"} alt="Florally" className="logo" />
             <div className="loading-auth">Загрузка...</div>
           </div>
         </header>
@@ -194,37 +209,41 @@ function HomePage() {
     <div className="app">
       <header className="header">
         <div className="header-content">
-          <img src={'/logo.svg'} alt="Florally" className="logo" />
+          <img src={"/logo.svg"} alt="Florally" className="logo" />
           <nav className="navigation">
             <Link
               to="/plants/my_plants"
-              className={`nav-link ${isMyPlantsActive ? 'calendar-active' : ''}`}
+              className={`nav-link ${
+                isMyPlantsActive ? "calendar-active" : ""
+              }`}
             >
               Мои растения
             </Link>
             <Link
               to="/"
-              className={`nav-link ${isCalendarActive ? 'calendar-active' : ''}`}
+              className={`nav-link ${
+                isCalendarActive ? "calendar-active" : ""
+              }`}
             >
               Календарь
             </Link>
-            <Link 
-              to="/user" 
-              className={`nav-link ${isUserActive ? 'calendar-active' : ''}`}
+            <Link
+              to="/user"
+              className={`nav-link ${isUserActive ? "calendar-active" : ""}`}
             >
               Профиль
             </Link>
           </nav>
           <div className="auth-section">
             {isLoggedIn ? (
-              <button 
+              <button
                 className="auth-button logout-button"
                 onClick={handleLogoutClick}
               >
                 Выйти
               </button>
             ) : (
-              <button 
+              <button
                 className="auth-button login-button"
                 onClick={handleLoginClick}
               >
@@ -240,14 +259,34 @@ function HomePage() {
           {!isLoggedIn && (
             <div className="not-authorized-container">
               <div className="not-authorized-message">
-                Вы не авторизованы
+                <p>
+                  Зарегистрируйся,<br></br>
+                  чтобы знать больше<br></br>о своих растениях!
+                </p>
               </div>
-              <button 
-                className="info-card-login-button"
-                onClick={handleLoginClick}
-              >
-                Войти
-              </button>
+              <div className="registration-form-section">
+                <div style={{ margin: "1.2vh 0" }}>
+                  <button
+                    className="registration-button"
+                    style={{ width: "100%", margin: "0 auto" }}
+                    onClick={() => navigate("/auth/signup")}
+                  >
+                    Зарегистрироваться
+                  </button>
+                </div>
+
+                <div style={{ margin: "1vh 0", textAlign: "center" }}>
+                  <span style={{ fontSize: "1.7vh" }} className="login-link">
+                    Есть аккаунт?{" "}
+                    <Link
+                      to="/auth/signin"
+                      style={{ color: "#74885d", textDecoration: "none" }}
+                    >
+                      Войти
+                    </Link>
+                  </span>
+                </div>
+              </div>
             </div>
           )}
         </section>
@@ -285,7 +324,9 @@ function HomePage() {
                     return (
                       <div
                         key={`${weekIndex}-${dayIndex}`}
-                        className={`calendar-day ${day === '' ? 'empty' : ''} ${today ? 'today' : ''} ${selected ? 'selected' : ''}`}
+                        className={`calendar-day ${day === "" ? "empty" : ""} ${
+                          today ? "today" : ""
+                        } ${selected ? "selected" : ""}`}
                         onClick={() => handleDayClick(day)}
                       >
                         {day}
