@@ -1,79 +1,293 @@
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@keyframes fadeInOut {
-  0%, 100% {
-    opacity: 0.7;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.my-plants-content {
-  width: 100%;
-  height: calc(100vh - 72px); 
-  background: #E7E7E7; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.coming-soon-container {
+.user-content {
+  height: calc(100vh - 72px);
+  width: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-sizing: border-box;
+}
+
+.user-container {
+  height: 100%;
+  width: 100%;
+  background-color: #E7E7E7;
+  display: flex;
+  overflow: hidden;
+  justify-content: space-between;
+  padding: 36px 50px;
+  box-sizing: border-box;
+}
+
+.user-card {
+  background-color: white;
+  border-radius: 4vh;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-right: 50px;
+  width: 655px;
+  height: 100%;
+  padding: 40px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.user-image-section {
+  background-color: #E7E7E7;
+  align-items: flex-end;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
+.user-background-image {
+  width: 70vh;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+}
+
+.user-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.user-header {
+  margin-bottom: 20px;
+}
+
+.user-name {
+  font-family: "Stolzl", sans-serif;
+  font-weight: 500;
+  font-size: 32px;
+  color: #2d3436;
+  margin-bottom: 8px;
+}
+
+.registration-date {
+  font-family: "Manrope", sans-serif;
+  font-size: 16px;
+  color: #636e72;
+}
+
+.user-form h2,
+.user-plants h2 {
+  font-family: "Stolzl", sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  color: #2d3436;
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-family: "Manrope", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2d3436;
+  margin-left: 5px;
+}
+
+.form-group input {
+  border: 2px solid #a8c28a;
+  border-radius: 20vh;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-family: "Manrope", sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #74885d;
+}
+
+.save-changes-btn {
+  background-color: #A8C686;
+  color: white;
+  border: none;
+  border-radius: 20vh;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: 550;
+  font-family: "Manrope", sans-serif;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+  margin-bottom: 30px;
+}
+
+.save-changes-btn:hover {
+  background-color: #8fb072;
+}
+
+.user-plants {
+  margin-top: 20px;
+}
+
+.plants-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 164px);
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.plant-square {
+  width: 164px;
+  height: 164px;
+  background-color: #D9D9D9;
+  border-radius: 12px;
+}
+
+.view-more-btn {
+  background-color: #A8C686;
+  color: white;
+  border: none;
+  border-radius: 20vh;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: 550;
+  font-family: "Manrope", sans-serif;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+  margin-bottom: 30px;
+}
+
+.view-more-btn:hover {
+  background-color: #8fb072;
+}
+
+.user-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.delete-account-btn {
+  background-color: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 20vh;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: 550;
+  font-family: "Manrope", sans-serif;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.delete-account-btn:hover {
+  background-color: #ffebee;
+  color: #d32f2f;
+  border-color: #ffcdd2;
+}
+
+.logout-bottom-btn {
+  background-color: #DF7171;
+  color: white;
+  border: none;
+  border-radius: 20vh;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: 550;
+  font-family: "Manrope", sans-serif;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.logout-bottom-btn:hover {
+  background-color: #d65c5c;
+}
+
+.not-logged-in {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  gap: 40px;
-  max-width: 600px;
-  width: 100%;
-}
-
-.plant-image-container {
-  width: 300px;
-  height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.centered-plant {
-  width: 100%;
   height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
-  animation: float 3s ease-in-out infinite;
-}
-
-.coming-soon-text {
-  font-family: 'Stolzl', sans-serif;
-  font-size: 72px;
-  font-weight: 500;
-  color: #2E2E2E;
-  position: relative;
-  animation: fadeInOut 2s ease-in-out infinite;
-  line-height: 90%;
-  letter-spacing: 0%;
   text-align: center;
+  padding: 40px;
 }
 
-.plant-image-container {
-  width: 120px;
-  height: 160px;
-  background-image: url('/public/back-plant2.svg');
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: contain;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
-  animation: float 3s ease-in-out infinite;
+.not-logged-in h2 {
+  font-family: "Stolzl", sans-serif;
+  font-weight: 500;
+  font-size: 32px;
+  color: #2d3436;
+  margin-bottom: 20px;
+}
+
+.not-logged-in p {
+  font-family: "Manrope", sans-serif;
+  font-size: 18px;
+  color: #636e72;
+  margin-bottom: 30px;
+}
+
+.login-btn {
+  background-color: #A8C686;
+  color: white;
+  border: none;
+  border-radius: 20vh;
+  padding: 12px 40px;
+  font-size: 18px;
+  font-weight: 550;
+  font-family: "Manrope", sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #8fb072;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Stolzl", sans-serif;
+  font-weight: 500;
+}
+
+a {
+  color: #74885d;
+}
+
+button:hover {
+  cursor: pointer;
 }

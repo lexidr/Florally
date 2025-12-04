@@ -9,6 +9,12 @@ function User() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    newPassword: ''
+  });
   
   const isCalendarActive = location.pathname === '/';
   const isMyPlantsActive = location.pathname === '/plants/my_plants';
@@ -20,6 +26,15 @@ function User() {
         const authData = checkAuth();
         setIsLoggedIn(authData.isAuthenticated);
         setUser(authData.user);
+        
+        if (authData.user) {
+          setFormData({
+            username: '', 
+            email: authData.user.email || '',
+            password: '',
+            newPassword: ''
+          });
+        }
       } catch (error) {
         console.error('Ошибка при проверке аутентификации:', error);
         setIsLoggedIn(false);
@@ -54,6 +69,45 @@ function User() {
     }
   };
 
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSaveChanges = () => {
+    // Здесь будет логика сохранения изменений
+    console.log('Сохранение изменений:', formData);
+    alert('Изменения сохранены');
+  };
+
+  const handleDeleteAccount = () => {
+    if (window.confirm('Вы уверены, что хотите удалить аккаунт? Это действие нельзя отменить.')) {
+      console.log('Удаление аккаунта');
+      // Здесь будет логика удаления аккаунта
+    }
+  };
+
+  const formatRegistrationDate = () => {
+    if (!user || !user.createdAt) {
+      return new Date().toLocaleDateString('ru-RU');
+    }
+    
+    try {
+      const date = new Date(user.createdAt);
+      return date.toLocaleDateString('ru-RU');
+    } catch (e) {
+      return new Date().toLocaleDateString('ru-RU');
+    }
+  };
+
+  const getUserName = () => {
+    if (!user) return '';
+    return user.username || user.email?.split('@')[0] || 'Пользователь';
+  };
+
   if (loading) {
     return (
       <div className="app">
@@ -63,7 +117,7 @@ function User() {
             <div className="loading-auth">Загрузка...</div>
           </div>
         </header>
-        <main className="my-plants-content">
+        <main className="user-content">
           <div className="loading-container">
             <div className="loading-spinner"></div>
             <p>Проверка аутентификации...</p>
@@ -103,7 +157,7 @@ function User() {
               <div className="user-info">
                 {user && (
                   <span className="username">
-                    {user.username || user.email?.split('@')[0]}
+                    {getUserName()}
                   </span>
                 )}
                 <button 
@@ -124,12 +178,122 @@ function User() {
           </div>
         </div>
       </header>
-      <main className="my-plants-content">
-        <section className="coming-soon-container">
-          <div className="plant-image-container"></div>
-          <div className="coming-soon-text">
-            <p>Coming</p>
-            <p>soon</p>
+      <main className="user-content">
+        <section className="user-container">
+          <div className="user-card">
+            {isLoggedIn && user ? (
+              <div className="user-profile">
+                <div className="user-header">
+                  <h1 className="user-name">{getUserName()}</h1>
+                  <p className="registration-date">Зарегистрирован {formatRegistrationDate()}</p>
+                </div>
+                
+                <div className="user-form">
+                  <h2>Редактировать профиль</h2>
+                  <div className="form-grid">
+                    <div className="form-group">
+                      <label htmlFor="username">Имя</label>
+                      <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleFormChange}
+                        placeholder="Введите новое имя"
+                      />
+                    </div>
+                    
+                    <div className="form-group">
+                      <label htmlFor="email">Почта</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleFormChange}
+                        placeholder="Введите email"
+                        readOnly 
+                      />
+                    </div>
+                    
+                    <div className="form-group">
+                      <label htmlFor="password">Текущий пароль</label>
+                      <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleFormChange}
+                        placeholder="Введите текущий пароль"
+                      />
+                    </div>
+                    
+                    <div className="form-group">
+                      <label htmlFor="newPassword">Новый пароль</label>
+                      <input
+                        type="password"
+                        id="newPassword"
+                        name="newPassword"
+                        value={formData.newPassword}
+                        onChange={handleFormChange}
+                        placeholder="Введите новый пароль"
+                      />
+                    </div>
+                  </div>
+                  
+                  <button 
+                    className="save-changes-btn"
+                    onClick={handleSaveChanges}
+                  >
+                    Сохранить изменения
+                  </button>
+                </div>
+                
+                <div className="user-plants">
+                  <h2>Мои растения</h2>
+                  <div className="plants-grid">
+                    <div className="plant-square"></div>
+                    <div className="plant-square"></div>
+                    <div className="plant-square"></div>
+                  </div>
+                  <button className="view-more-btn">Посмотреть еще</button>
+                </div>
+                
+                <div className="user-actions">
+                  <button 
+                    className="delete-account-btn"
+                    onClick={handleDeleteAccount}
+                  >
+                    Удалить аккаунт
+                  </button>
+                  <button 
+                    className="logout-bottom-btn"
+                    onClick={handleLogoutClick}
+                  >
+                    Выйти из аккаунта
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="not-logged-in">
+                <h2>Профиль</h2>
+                <p>Войдите, чтобы увидеть свой профиль</p>
+                <button 
+                  className="login-btn"
+                  onClick={handleLoginClick}
+                >
+                  Войти
+                </button>
+              </div>
+            )}
+          </div>
+           
+          <div className="user-image-section">
+            <img
+              src="/back-img.svg"
+              alt="Девушка поливает цветок в горшке"
+              className="user-background-image"
+            />
           </div>
         </section>
       </main>
