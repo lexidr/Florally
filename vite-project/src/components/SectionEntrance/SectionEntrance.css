@@ -131,7 +131,7 @@ button:hover {
 }
 
 .input-error {
-  border-color: #d32f2f !important;
+  border-color: #d32f2f;
   background-color: #fff5f5;
 }
 

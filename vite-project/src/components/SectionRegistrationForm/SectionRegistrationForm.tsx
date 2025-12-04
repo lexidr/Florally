@@ -253,7 +253,7 @@ const RegistrationForm = () => {
           )}
 
           <form className="registration-form" onSubmit={handleSubmit}>
-            <div>
+            <div className="form-field">
               <label htmlFor="username" className="visually-hidden">
                 Полное имя
               </label>
@@ -268,13 +268,11 @@ const RegistrationForm = () => {
                 className={formErrors.username ? "input-error" : ""}
               />
               {formErrors.username && (
-                <span style={{ color: "red", fontSize: "0.8rem" }}>
-                  {formErrors.username}
-                </span>
+                <div className="error-text">{formErrors.username}</div>
               )}
             </div>
 
-            <div>
+            <div className="form-field">
               <label htmlFor="email" className="visually-hidden">
                 Email
               </label>
@@ -289,13 +287,11 @@ const RegistrationForm = () => {
                 className={formErrors.email ? "input-error" : ""}
               />
               {formErrors.email && (
-                <span style={{ color: "red", fontSize: "0.8rem" }}>
-                  {formErrors.email}
-                </span>
+                <div className="error-text">{formErrors.email}</div>
               )}
             </div>
 
-            <div>
+            <div className="form-field">
               <label htmlFor="password" className="visually-hidden">
                 Пароль
               </label>
@@ -310,13 +306,11 @@ const RegistrationForm = () => {
                 className={formErrors.password ? "input-error" : ""}
               />
               {formErrors.password && (
-                <span style={{ color: "red", fontSize: "0.8rem" }}>
-                  {formErrors.password}
-                </span>
+                <div className="error-text">{formErrors.password}</div>
               )}
             </div>
 
-            <div>
+            <div className="form-field">
               <label htmlFor="confirmPassword" className="visually-hidden">
                 Повторите пароль
               </label>
@@ -331,9 +325,7 @@ const RegistrationForm = () => {
                 className={formErrors.confirmPassword ? "input-error" : ""}
               />
               {formErrors.confirmPassword && (
-                <span style={{ color: "red", fontSize: "0.8rem" }}>
-                  {formErrors.confirmPassword}
-                </span>
+                <div className="error-text">{formErrors.confirmPassword}</div>
               )}
             </div>
 

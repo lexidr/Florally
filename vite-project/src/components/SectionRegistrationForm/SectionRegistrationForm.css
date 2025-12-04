@@ -117,7 +117,7 @@ button:hover {
 }
 
 .input-error {
-  border-color: red !important;
+  border-color: red;
 }
 
 .error-message {

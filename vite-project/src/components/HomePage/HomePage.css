@@ -343,6 +343,50 @@ body {
   border: 2.5px solid #809568;
 }
 
+.auth-section {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.auth-button {
+  background: #577148;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 24px;
+  height: 36px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.auth-button.login-button {
+  background: #577148;
+  border: 2px solid #577148;
+}
+
+.auth-button.logout-button {
+  background: #577148;
+  border: 2px solid #577148;
+}
+
+.auth-button.login-button:hover {
+  border-color: #74885d;
+  background-color: #809568;
+  border: 2px solid #809568;
+}
+
+.auth-button.logout-button:hover {
+  border-color: #74885d;
+  background-color: #809568;
+  border: 2px solid #809568;
+}
+
 @media (min-width: 1441px) {
 
   .calendar-container {

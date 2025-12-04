@@ -217,19 +217,12 @@ function HomePage() {
           </nav>
           <div className="auth-section">
             {isLoggedIn ? (
-              <div className="user-info">
-                {user && (
-                  <span className="username">
-                    {user.username || user.email?.split('@')[0]}
-                  </span>
-                )}
-                <button 
-                  className="auth-button logout-button"
-                  onClick={handleLogoutClick}
-                >
-                  Выйти
-                </button>
-              </div>
+              <button 
+                className="auth-button logout-button"
+                onClick={handleLogoutClick}
+              >
+                Выйти
+              </button>
             ) : (
               <button 
                 className="auth-button login-button"

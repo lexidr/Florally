@@ -223,7 +223,7 @@ const SectionEntrance = () => {
           )}
 
           <form className="entrance-form" onSubmit={handleSubmit}>
-            <div>
+            <div className="form-field">
               <label htmlFor="email" className="visually-hidden">
                 Email
               </label>
@@ -238,13 +238,11 @@ const SectionEntrance = () => {
                 className={formErrors.email ? "input-error" : ""}
               />
               {formErrors.email && (
-                <span style={{ color: "red", fontSize: "0.8rem" }}>
-                  {formErrors.email}
-                </span>
+                <div className="error-text">{formErrors.email}</div>
               )}
             </div>
 
-            <div>
+            <div className="form-field">
               <label htmlFor="password" className="visually-hidden">
                 Пароль
               </label>
@@ -259,9 +257,7 @@ const SectionEntrance = () => {
                 className={formErrors.password ? "input-error" : ""}
               />
               {formErrors.password && (
-                <span style={{ color: "red", fontSize: "0.8rem" }}>
-                  {formErrors.password}
-                </span>
+                <div className="error-text">{formErrors.password}</div>
               )}
             </div>
 

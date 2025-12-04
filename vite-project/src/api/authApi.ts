@@ -1,4 +1,3 @@
-
 import { Http, API } from "../constants/api";
 import { ISignIn, ISignUp } from "./authApi.types";
 
@@ -72,6 +71,20 @@ export const SignUp = async (userData: ISignUp) => {
         data: error.config?.data ? JSON.parse(error.config.data) : null,
       },
     });
+    
+    if (error.response?.status === 400 || error.response?.status === 409) {
+      const serverError = error.response?.data;
+      if (serverError?.message) {
+        if (serverError.message.toLowerCase().includes('email') || 
+            serverError.message.toLowerCase().includes('почта')) {
+          error.message = "Пользователь с таким email уже существует";
+        } else if (serverError.message.toLowerCase().includes('username') || 
+                   serverError.message.toLowerCase().includes('имя')) {
+          error.message = "Пользователь с таким именем уже существует";
+        }
+      }
+    }
+    
     throw error;
   }
 };
@@ -138,6 +151,15 @@ export const SignIn = async (userData: ISignIn) => {
         data: error.config?.data ? JSON.parse(error.config.data) : null,
       },
     });
+    
+    if (error.response?.status === 401) {
+      error.message = "Неверный email или пароль";
+    } else if (error.response?.status === 404) {
+      error.message = "Пользователь не найден";
+    } else if (error.response?.status === 400) {
+      error.message = "Неверные данные для входа";
+    }
+    
     throw error;
   }
 };
@@ -228,6 +250,11 @@ export const getCurrentUser = async () => {
     console.error(
       "getCurrentUser: Пользователь не найден ни в ответе, ни в localStorage"
     );
+    
+    if (error.response?.status === 401) {
+      error.message = "Необходима повторная авторизация";
+    }
+    
     throw error;
   }
 };
@@ -346,5 +373,3 @@ export default {
   getCurrentUser,
   refreshToken,
 };
-
-
