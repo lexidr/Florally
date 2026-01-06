@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const API: string =
-  (import.meta as any).env.VITE_API_URL || "http://localhost:3000";
+  (import.meta as any).env.VITE_API_URL || "http://188.225.11.37:3000";
 
 export const Http = axios.create({
   baseURL: API,
