@@ -290,58 +290,60 @@ function HomePage() {
             </div>
           )}
         </section>
-        <section className="calendar-container">
-          <div className="calendar-header">
-            <nav className="calendar-nav">
-              <button className="calendar-nav-button" onClick={prevMonth}>
-                &lt;
-              </button>
-              <h2 className="calendar-title">
-                {currentMonth} {currentYear}
-              </h2>
-              <button className="calendar-nav-button" onClick={nextMonth}>
-                &gt;
-              </button>
-            </nav>
-          </div>
-          <div className="calendar">
-            <ul className="weekdays">
-              <li className="weekday">Пн</li>
-              <li className="weekday">Вт</li>
-              <li className="weekday">Ср</li>
-              <li className="weekday">Чт</li>
-              <li className="weekday">Пт</li>
-              <li className="weekday">Сб</li>
-              <li className="weekday">Вс</li>
-            </ul>
-            <div className="calendar-days">
-              {calendarDays.map((week, weekIndex) => (
-                <div key={weekIndex} className="week">
-                  {week.map((day, dayIndex) => {
-                    const today = isToday(day);
-                    const selected = isSelected(day);
-
-                    return (
-                      <div
-                        key={`${weekIndex}-${dayIndex}`}
-                        className={`calendar-day ${day === "" ? "empty" : ""} ${
-                          today ? "today" : ""
-                        } ${selected ? "selected" : ""}`}
-                        onClick={() => handleDayClick(day)}
-                      >
-                        {day}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
+        <div className="calendar-with-plants">
+          <section className="calendar-container">
+            <div className="calendar-header">
+              <nav className="calendar-nav">
+                <button className="calendar-nav-button" onClick={prevMonth}>
+                  &lt;
+                </button>
+                <h2 className="calendar-title">
+                  {currentMonth} {currentYear}
+                </h2>
+                <button className="calendar-nav-button" onClick={nextMonth}>
+                  &gt;
+                </button>
+              </nav>
             </div>
-          </div>
-        </section>
-        <section className="plants-container">
-          <div className="plant-image-left"></div>
-          <div className="plant-image-right"></div>
-        </section>
+            <div className="calendar">
+              <ul className="weekdays">
+                <li className="weekday">Пн</li>
+                <li className="weekday">Вт</li>
+                <li className="weekday">Ср</li>
+                <li className="weekday">Чт</li>
+                <li className="weekday">Пт</li>
+                <li className="weekday">Сб</li>
+                <li className="weekday">Вс</li>
+              </ul>
+              <div className="calendar-days">
+                {calendarDays.map((week, weekIndex) => (
+                  <div key={weekIndex} className="week">
+                    {week.map((day, dayIndex) => {
+                      const today = isToday(day);
+                      const selected = isSelected(day);
+
+                      return (
+                        <div
+                          key={`${weekIndex}-${dayIndex}`}
+                          className={`calendar-day ${day === "" ? "empty" : ""} ${
+                            today ? "today" : ""
+                          } ${selected ? "selected" : ""}`}
+                          onClick={() => handleDayClick(day)}
+                        >
+                          {day}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+          <section className="plants-container-wrapper">
+            <div className="plant-image-left"></div>
+            <div className="plant-image-right"></div>
+          </section>
+        </div>
       </main>
     </div>
   );

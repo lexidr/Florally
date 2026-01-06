@@ -421,6 +421,22 @@ body {
   border: 2px solid #809568;
 }
 
+.calendar-with-plants {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.plants-container-wrapper {
+  display: flex;
+  justify-content: end;
+  align-content: end;
+}
+
+.plant-image-right {
+  margin-top: -50px;
+}
+
 @media (min-width: 1441px) {
   .calendar-container {
     width: 400px;
@@ -465,10 +481,9 @@ body {
   }
 }
 
-@media (max-width: 976px) and (max-height: 853px) {
-  .plants-container {
-    display: none;
-  }
+@media ((max-width: 976px) and (max-height: 853px))
+ or ((width <= 1375px) and (height <= 963px))
+ or (max-height: 771px) {
 
   .plant-image-right,
   .plant-image-left {
