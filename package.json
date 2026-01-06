@@ -10,9 +10,10 @@
     "preview": "vite preview --port=5173"
   },
   "dependencies": {
+    "@vitejs/plugin-rsc": "^0.5.11",
     "axios": "^1.13.2",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "react-router-dom": "^7.9.6"
   },
   "devDependencies": {
