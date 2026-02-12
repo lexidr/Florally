@@ -51,7 +51,6 @@
 
 .image-section {
   background-color: #b9d19f;
-  align-items: flex-end;
   display: flex;
   justify-content: flex-start;
   flex: 1;
@@ -59,6 +58,7 @@
 
 .background-image {
   width: 70vh;
+  max-width: 100%;
   height: auto;
   object-fit: contain;
   object-position: center;
@@ -126,4 +126,184 @@ button:hover {
   border-radius: 4px;
   padding: 0.5rem;
   margin-bottom: 1rem;
+}
+
+.LogotypeStyle {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 9vw;
+  height: auto;
+}
+
+/*ЭТИ МЕДИА - ВЕРСТКА ПРИ СУЖЕНИИ НА ПК  :P  */
+
+@media (max-width: 1300px) and (min-width: 1160px) {
+  .image-section {
+    height: 100vh;
+    padding-bottom: 4vh;
+    margin-top: -3vh;
+  }
+
+  .registration-card {
+    margin: 0 !important;
+  }
+
+  .registration-container {
+   padding-left: 2vh;
+  }
+}
+
+@media (max-width: 1160px) and (min-width: 701px) {
+  .image-section {
+    display: none !important;
+  }
+
+  .registration-card {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 1300px) and (min-width: 701px) {
+  .image-section {
+    display: none;
+  }
+
+  .registration-card {
+    margin: 0 auto;
+  }
+}
+
+/*МОБИЛЬНАЯ ВЕРСТКА o(^▽^)o */
+
+@media (max-width: 700px) {
+
+  .LogotypeStyle {
+    width: 19vw;
+    height: auto;
+  }
+
+  .login-link {
+    font-size: 90%
+  }
+
+  .registration-container {
+    height: 100vh;
+    width: 100%;
+    padding: 0 0;
+    background-color: #b9d19f;
+    overflow: hidden;
+    justify-content: center;
+    flex-direction: column;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .form-section {
+    order: 2;
+    width: 100%;
+    margin: 0;
+  }
+
+  .registration-card {
+    height: 60vh;
+    width: 100% ;
+    margin: 0;
+    border-radius: 10% 10% 0 0;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    font-size: large;
+    padding: 10px 0;
+  }
+
+  .image-section {
+    order: 1;
+    height: 40vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  .background-image {
+    display: block;  
+    width: 100vw;
+    height: 47vh;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  input {
+    width: 90%;
+    margin: 10px auto;
+    padding: 12px 20px;
+    box-sizing: border-box;
+  }
+
+  h2 {
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+
+  .registration-buttom {
+    width: 95% ;
+    margin: 0 auto;
+    font-size: 90%;
+  }
+
+}
+
+/*ЭТОТ МЕДИА ДЛЯ ВВОДА (￣﹃￣) */
+
+@media (max-height: 500px) and (max-width: 700px) {
+
+  .LogotypeStyle { 
+    width: 0;
+  }
+
+  h2 {
+    font-size: 170% !important;
+    padding-top: 5svh;
+  }
+
+  .login-link {
+    font-size: 80% !important;
+  }
+
+  .registration-container {
+    height: 100svh;
+    background-color: #b9d19f;
+    overflow: visible;
+    justify-content: center;
+    flex-direction: column;
+    display: flex;
+  }
+
+  .form-section {
+    order: 1;
+    width: 100%;
+    align-items: flex-end;
+    margin: 0;
+    justify-content: center;
+  }
+
+  .registration-card {
+    background-color: white;
+    height: 100vh;
+    border-radius: 10% 10% 0 0;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .registration-buttom {
+    width: 90% ;
+    padding-bottom: 2.5vh;
+    padding-top: 2.5vh;
+    font-size: 85%;
+    margin: 0 auto;
+  }
 }

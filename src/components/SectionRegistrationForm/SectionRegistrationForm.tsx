@@ -214,12 +214,6 @@ const RegistrationForm = () => {
     fontSize: "1.7vh",
   };
 
-  const logoStyle = {
-    position: "absolute" as const,
-    bottom: "20px",
-    left: "50%",
-    transform: "translateX(-50%)",
-  };
 
   console.log("RegistrationForm: Рендер компонента с состоянием:", {
     isLoading,
@@ -347,7 +341,7 @@ const RegistrationForm = () => {
             </div>
           </form>
 
-          <img style={logoStyle} src="/logo.svg" alt="logo" />
+          <img className="LogotypeStyle" src="/logo.svg" alt="logo" />
         </div>
       </div>
 
