@@ -46,7 +46,7 @@
   font-size: large;
   padding-top: 25vh;
   position: relative;
-  margin-bottom: 36px;
+  
 }
 
 .image-section {
@@ -91,10 +91,10 @@ input {
   padding-left: 4vh;
   padding-bottom: 1vh;
   font-size: 2.2vh;
-  width: 72%;
+  width: 76%;
 }
 
-.entrance-buttom {
+button {
   background-color: #a8c28a;
   border: 2.5px solid #a8c28a;
   border-radius: 20vh;
@@ -102,6 +102,7 @@ input {
   padding-bottom: 1.2vh;
   text-align: center;
   font-size: 2vh;
+  width: 76%;
   text-decoration: none;
   color: white;
   font-weight: 550;
@@ -122,7 +123,9 @@ button:hover {
 
   font-size: 2.4vh;
   text-align: end;
-  margin-right: 3rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 76%;
 }
 
 .input-error {
@@ -136,6 +139,18 @@ button:hover {
   padding: 0.5rem;
   margin-bottom: 1rem;
 }
+
+.login-link>a , .forgot-password>a{
+  text-decoration: underline;
+  text-decoration-thickness: 1.3px;
+  text-underline-offset: 1px;
+  font-weight: 400;
+}
+
+.login-link{
+  font-size: 2.4vh;
+}
+
 
 
 
@@ -155,12 +170,26 @@ button:hover {
    display: flex;
    justify-content: center;
   }
+
+  .login-link>a , .forgot-password>a{
+  text-decoration: underline;
+  text-decoration-thickness: 1.3px;
+  text-underline-offset: 1px;
+  font-weight: 400;
+  }
 }
 
 @media (max-width: 1160px) and (min-width: 701px) {
   .image-section {
     display: none !important;
   }
+
+  .login-link>a , .forgot-password>a{
+  text-decoration: underline;
+  text-decoration-thickness: 1.3px;
+  text-underline-offset: 1px;
+  font-weight: 400;
+}
 
 }
 
@@ -172,10 +201,17 @@ button:hover {
   .entrance-card {
     margin: 0 auto;
   }
+
+  .login-link>a , .forgot-password>a{
+  text-decoration: underline;
+  text-decoration-thickness: 1.3px;
+  text-underline-offset: 1px;
+  font-weight: 400;
+  }
 }
 
 
-@media (max-width: 700px) {
+@media (max-width: 700px) and (min-height:700px) {
 
   .LogotypeStyle {
     width: 19vw;
@@ -233,10 +269,19 @@ button:hover {
   }
 
   input {
-    width: 90%;
+    width: 76%;
     margin: 10px auto;
     padding: 12px 20px;
     box-sizing: border-box;
+  }
+  
+  .forgot-password{
+
+  font-size: 2.4vh;
+  text-align: end;
+  margin-left: auto;
+  margin-right: auto;
+  width: 76%;
   }
 
   h2 {
@@ -244,12 +289,17 @@ button:hover {
     margin-bottom: 15px;
   }
 
-  .entrance-buttom {
-    width: 95% ;
-    margin: 0 auto;
-    font-size: 90%;
+  button {
+    width: 90%;
   }
 
+  .login-link>a , .forgot-password>a{
+  text-decoration: underline;
+  text-decoration-thickness: 1.3px;
+  text-underline-offset: 1px;
+  font-weight: 400;
+  }
+  
 }
 
 
@@ -297,11 +347,19 @@ button:hover {
     overflow: hidden;
   }
 
-  .entrance-buttom {
+  button {
     width: 90% ;
     padding-bottom: 2.5vh;
     padding-top: 2.5vh;
     font-size: 85%;
     margin: 0 auto;
   }
+  
+  .login-link>a , .forgot-password>a{
+  text-decoration: underline;
+  text-decoration-thickness: 1.3px;
+  text-underline-offset: 1px;
+  font-weight: 400;
+  }
+  
 }
