@@ -96,7 +96,7 @@ input {
 .registration-buttom {
   background-color: #a8c28a;
   border: 2.5px solid #a8c28a;
-  width: 74% !important;
+  width: 76% !important;
   border-radius: 20vh;
   padding-top: 1.2vh;
   padding-bottom: 1.2vh;
@@ -254,7 +254,7 @@ button:hover {
   }
 
   .registration-buttom {
-    width: 95% ;
+    width: 97% ;
     margin: 0 auto;
     font-size: 90%;
   }
