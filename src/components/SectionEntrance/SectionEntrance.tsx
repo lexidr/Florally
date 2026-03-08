@@ -271,7 +271,7 @@ const SectionEntrance = () => {
               <button
                 type="submit"
                 className="submit-button"
-                style={{ width: "76%", margin: "0 auto" }}
+                style={{ width: "80%", margin: "0 auto" }}
                 disabled={isLoading}
               >
                 {isLoading ? "Вход..." : "Войти"}
