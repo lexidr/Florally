@@ -202,10 +202,6 @@ const RegistrationForm = () => {
     }
   };
 
-  const buttonContainerStyle = {
-    margin: "1.2vh",
-  };
-
   const linkContainerStyle = {
     margin: "1vh",
   };
@@ -214,12 +210,6 @@ const RegistrationForm = () => {
     fontSize: "1.7vh",
   };
 
-  const logoStyle = {
-    position: "absolute" as const,
-    bottom: "20px",
-    left: "50%",
-    transform: "translateX(-50%)",
-  };
 
   console.log("RegistrationForm: Рендер компонента с состоянием:", {
     isLoading,
@@ -329,11 +319,11 @@ const RegistrationForm = () => {
               )}
             </div>
 
-            <div style={buttonContainerStyle}>
+            <div className="buttonContainerStyle">
               <button
                 type="submit"
                 className="registration-buttom"
-                style={{ width: "76%", margin: "0 auto" }}
+                style={{ margin: "0 auto" }}
                 disabled={isLoading}
               >
                 {isLoading ? "Регистрация..." : "Зарегистрироваться"}
@@ -342,12 +332,12 @@ const RegistrationForm = () => {
 
             <div style={linkContainerStyle}>
               <span style={linkTextStyle} className="login-link">
-                Есть аккаунт? <Link to="/auth/signin">Войти</Link>
+                Есть аккаунт? <Link to="/auth/signin" className="LinkSelect">Войти</Link>
               </span>
             </div>
-          </form>
 
-          <img style={logoStyle} src="/logo.svg" alt="logo" />
+            <img className="LogotypeStyle" src="/logo.svg" alt="logo" />
+          </form>
         </div>
       </div>
 
