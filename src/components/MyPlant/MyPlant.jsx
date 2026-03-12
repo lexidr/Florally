@@ -124,13 +124,28 @@ function MyPlant() {
         </div>
       </header>
       <main className="my-plants-content">
-        <section className="coming-soon-container">
-          <div className="plant-image-container"></div>
-          <div className="coming-soon-text">
-            <p>Coming</p>
-            <p>soon</p>
+        <section className="left_side_plants">
+          <p>Мои растения</p>
+          <div className="element">
+            <img src="/zamiokulcas_plant.svg" alt="" />
+            <p className="plant_name">Замиокулькас</p>
+            <p className="place_of_plant">Комната: Спальня</p>
           </div>
+          
+          <div className="element">
+            <img src="/zamiokulcas_plant.svg" alt="" />
+            <p className="plant_name">Замиокулькас</p>
+            <p className="place_of_plant">Комната: Спальня</p>
+          </div>
+        
         </section>
+        <div className="vertical_line"></div>
+
+        <section className="right_side_rooms">
+          <p>Мои комнаты</p>
+          
+        </section>
+
       </main>
     </div>
   );
