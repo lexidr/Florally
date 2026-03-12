@@ -1,3 +1,9 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 @keyframes float {
   0%, 100% {
     transform: translateY(0);
@@ -21,13 +27,13 @@
   height: calc(100vh - 72px); 
   background: #E7E7E7; 
   display: flex;
-  align-items: center;
-  justify-content: center;
+  
+  
   position: relative;
   overflow: hidden;
 }
 
-.coming-soon-container {
+/* .coming-soon-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -36,16 +42,16 @@
   gap: 40px;
   max-width: 600px;
   width: 100%;
-}
+} */
 
-.plant-image-container {
+/* .plant-image-container {
   width: 300px;
   height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-}
+} */
 
 .centered-plant {
   width: 100%;
@@ -55,28 +61,90 @@
   animation: float 3s ease-in-out infinite;
 }
 
-.coming-soon-text {
-  font-family: 'Stolzl', sans-serif;
-  font-size: 72px;
+.left_side_plants{
+
+  width: calc(58% - 160px);
+  margin: 37px 80px;
+  height: calc(100% - 74px);
+  text-align: center;
+  flex-wrap: wrap;         
+  gap: 21px;
+}
+
+.left_side_plants>p{
+  font-family: "Stolzl";
   font-weight: 500;
-  color: #2E2E2E;
-  position: relative;
-  animation: fadeInOut 2s ease-in-out infinite;
-  line-height: 90%;
-  letter-spacing: 0%;
+  font-size: 4.3vh;
+}
+
+.right_side_rooms{
+  
+  width: calc(42% - 160px);
+  margin: 37px 80px;
+  height: calc(100% - 74px);
+  
   text-align: center;
 }
 
-.plant-image-container {
-  width: 120px;
-  height: 160px;
-  background-image: url('/public/back-plant2.svg');
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: contain;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
-  animation: float 3s ease-in-out infinite;
+.right_side_rooms>p{
+  font-family: "Stolzl";
+  font-weight: 500;
+  font-size: 4.3vh;
 }
+
+.vertical_line{
+
+  border-right: 3px solid #A8C686;
+  height: calc(100% - 74px);
+  margin: 37px 0;
+  display: flex;
+  align-items: center;
+  
+}
+
+.element{
+  width: 31%;
+  background-color: #ffff;
+  margin-bottom: 12px;
+  border-radius: 15px;
+  
+
+
+}
+
+.plant_name{
+  font-family: "Stolzl";
+  font-weight: 500;
+  font-size: 2.5vh;
+   margin-top: -6px; /*поменять маргины на паддинг все котоорые нужно */
+  
+}
+
+.place_of_plant{
+  font-family: "Stolzl";
+  font-size: 1.5vh;
+  margin-bottom: 16px;
+  
+
+}
+
+.element>img{
+  width: calc(100% - 16px);
+  height: calc(69% - 64px);
+  margin-top: 8px;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.element{
+  font-size: 2.3vh;
+
+}
+
+
+
+
+
 
 .auth-button {
   background: #A8C686;
