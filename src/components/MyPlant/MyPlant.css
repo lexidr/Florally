@@ -61,15 +61,28 @@
   animation: float 3s ease-in-out infinite;
 }
 
+.p_center{
+  margin-bottom: 20px;
+}
+
 .left_side_plants{
 
   width: calc(58% - 160px);
   margin: 37px 80px;
   height: calc(100% - 74px);
   text-align: center;
-  flex-wrap: wrap;         
-  gap: 21px;
 }
+
+.left_side_elements{
+  gap: 21px;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 20px;
+  justify-content: flex-start;
+
+}
+
 
 .left_side_plants>p{
   font-family: "Stolzl";
@@ -103,29 +116,23 @@
 }
 
 .element{
-  width: 31%;
+  width: 25%;
+  height: 30%;
   background-color: #ffff;
-  margin-bottom: 12px;
   border-radius: 15px;
-  
-
-
+  font-size: 2.3vh;
 }
 
 .plant_name{
   font-family: "Stolzl";
   font-weight: 500;
   font-size: 2.5vh;
-   margin-top: -6px; /*поменять маргины на паддинг все котоорые нужно */
-  
 }
 
 .place_of_plant{
   font-family: "Stolzl";
   font-size: 1.5vh;
-  margin-bottom: 16px;
-  
-
+  padding-bottom: 16px;
 }
 
 .element>img{
@@ -136,25 +143,16 @@
   margin-right: 8px;
 }
 
-.element{
-  font-size: 2.3vh;
-
-}
-
-
-
-
-
-
 .auth-button {
   background: #A8C686;
   color: white;
   border-radius: 8px;
   padding: 8px 24px;
-  display: flex;
   align-items: center;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: calc(100% - 16px);
+  height: calc(69% - 64px);
 }
