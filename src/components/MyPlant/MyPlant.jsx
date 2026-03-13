@@ -125,24 +125,42 @@ function MyPlant() {
       </header>
       <main className="my-plants-content">
         <section className="left_side_plants">
-          <p>Мои растения</p>
-          <div className="element">
-            <img src="/zamiokulcas_plant.svg" alt="" />
-            <p className="plant_name">Замиокулькас</p>
-            <p className="place_of_plant">Комната: Спальня</p>
+          <p сlassName="p_center">Мои растения</p>
+          <div className="left_side_elements">
+            <div className="element">
+              <img src="/zamiokulcas_plant.svg" alt="" />
+              <p className="plant_name">Замиокулькас</p>
+              <p className="place_of_plant">Комната: Спальня</p>
+            </div>
+          
+            <div className="element">
+              <img src="/zamiokulcas_plant.svg" alt="" />
+              <p className="plant_name">Замиокулькас</p>
+              <p className="place_of_plant">Комната: Спальня</p>
+            </div>
+            <div className="element">
+              <img src="/zamiokulcas_plant.svg" alt="" />
+              <p className="plant_name">Замиокулькас</p>
+              <p className="place_of_plant">Комната: Спальня</p>
+            </div>
+             <div className="element">
+              <img src="/zamiokulcas_plant.svg" alt="" />
+              <p className="plant_name">Замиокулькас</p>
+              <p className="place_of_plant">Комната: Спальня</p>
+            </div>
+            <div className="element">
+              <button className="auth-button">+</button>
+              <p className="plant_name">Добавить новое растение</p>
+            </div>
+
           </div>
           
-          <div className="element">
-            <img src="/zamiokulcas_plant.svg" alt="" />
-            <p className="plant_name">Замиокулькас</p>
-            <p className="place_of_plant">Комната: Спальня</p>
-          </div>
         
         </section>
         <div className="vertical_line"></div>
 
         <section className="right_side_rooms">
-          <p>Мои комнаты</p>
+          <p сlassName="p_center">Мои комнаты</p>
           
         </section>
 
