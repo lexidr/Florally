@@ -3,16 +3,34 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { checkAuth, SignOut } from "../../api/authApi";
 import "./MyPlant.css";
 
+// Хук для определения мобильного устройства
+function useMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isMobile;
+}
+
 function MyPlant() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // для бургер-меню
 
   const isCalendarActive = location.pathname === "/";
   const isMyPlantsActive = location.pathname === "/plants/my_plants";
   const isUserActive = location.pathname === "/user";
+
+  const isMobile = useMobile();
 
   useEffect(() => {
     const authCheck = async () => {
@@ -73,6 +91,17 @@ function MyPlant() {
     );
   }
 
+  //МОБИЛЬНАЯ ВЕРСИЯ
+  if (isMobile) {
+    return (
+      <div className="mobile-app">
+        
+        
+      </div>
+    );
+  }
+
+  //ДЕСКТОПНАЯ ВЕРСИЯ
   return (
     <div className="app">
       <header className="header">
@@ -125,32 +154,32 @@ function MyPlant() {
       </header>
       <main className="my-plants-content">
         <section className="left_side_plants">
-          <p сlassName="p_center">Мои растения</p>
-          <div className="left_side_elements">
+          <p className="p_center">Мои растения</p>
+          <div className="side_elements">
             <div className="element">
-              <img src="/zamiokulcas_plant.svg" alt="" />
+              <img className="zamiokulcas_left_side" src="/zamiokulcas_plant.svg" alt="" />
               <p className="plant_name">Замиокулькас</p>
               <p className="place_of_plant">Комната: Спальня</p>
             </div>
           
             <div className="element">
-              <img src="/zamiokulcas_plant.svg" alt="" />
+              <img className="zamiokulcas_left_side" src="/zamiokulcas_plant.svg" alt="" />
               <p className="plant_name">Замиокулькас</p>
               <p className="place_of_plant">Комната: Спальня</p>
             </div>
             <div className="element">
-              <img src="/zamiokulcas_plant.svg" alt="" />
-              <p className="plant_name">Замиокулькас</p>
-              <p className="place_of_plant">Комната: Спальня</p>
-            </div>
-             <div className="element">
-              <img src="/zamiokulcas_plant.svg" alt="" />
+              <img className="zamiokulcas_left_side" src="/zamiokulcas_plant.svg" alt="" />
               <p className="plant_name">Замиокулькас</p>
               <p className="place_of_plant">Комната: Спальня</p>
             </div>
             <div className="element">
-              <button className="auth-button">+</button>
-              <p className="plant_name">Добавить новое растение</p>
+              
+                <div style={{display:'flex' , justifyContent:'center' , alignItems:'flex-end' , height:'131px' , width:'212px'}}>
+                  <button className="button_add">+</button>
+                </div>
+                <p className="add_new_plant_new_place">Добавить <br /> новое растение</p>
+
+              
             </div>
 
           </div>
@@ -160,10 +189,28 @@ function MyPlant() {
         <div className="vertical_line"></div>
 
         <section className="right_side_rooms">
-          <p сlassName="p_center">Мои комнаты</p>
-          
-        </section>
+          <p className="p_center">Мои комнаты</p>
+          <div className="side_elements">
 
+                <div>   
+                <div className="element" style={{display:'flex' , flexWrap:'wrap'}}>
+                  <img style={{width:'92px' , height:'92px' ,borderRadius: '20px'   , margin:'8px 12px 12px 8px '}} src="/zamiokulcas_plant.svg" alt="" />
+                  <img  style={{width:'92px' , height:'92px' ,borderRadius: '20px' , margin:'8px 8px 0 0' }} src="/zamiokulcas_plant.svg" alt="" />
+                  <img  style={{width:'92px' , height:'92px' ,borderRadius: '20px' , margin:'0 12px 8px 8px'}} src="/zamiokulcas_plant.svg" alt="" />
+                  <div style={{width:'92px' , height:'92px' ,borderRadius: '20px' , margin:"0 8px 8px 0" }}><button className="button_room">+</button></div>
+                </div>
+                <p style={{fontWeight:'500' , fontSize:'16px' ,marginTop:'12px'}}>Спальня</p>
+                </div> 
+
+                <div className="element">
+              
+                <div style={{display:'flex' , justifyContent:'center' , alignItems:'flex-end' , height:'131px' , width:'212px'}}>
+                  <button className="button_add">+</button>
+                </div>
+                <p className="add_new_plant_new_place">Добавить<br />новую комнату</p>
+                </div>                
+          </div>          
+        </section>
       </main>
     </div>
   );
