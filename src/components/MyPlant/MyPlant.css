@@ -67,13 +67,13 @@
 
 .left_side_plants{
 
-  width: calc(58% - 160px);
+  max-width: 699px;
   margin: 37px 80px;
-  height: calc(100% - 74px);
+  max-height: calc(100vh - 74px);
   text-align: center;
 }
 
-.left_side_elements{
+.side_elements{
   gap: 21px;
   display: flex;
   flex-wrap: wrap;
@@ -81,20 +81,21 @@
   margin-top: 20px;
   justify-content: flex-start;
 
+
 }
 
 
 .left_side_plants>p{
   font-family: "Stolzl";
   font-weight: 500;
-  font-size: 4.3vh;
+  font-size: 36px;
 }
 
 .right_side_rooms{
   
-  width: calc(42% - 160px);
+  max-width: 445px;
   margin: 37px 80px;
-  height: calc(100% - 74px);
+  height: calc(100vh - 74px);
   
   text-align: center;
 }
@@ -102,7 +103,7 @@
 .right_side_rooms>p{
   font-family: "Stolzl";
   font-weight: 500;
-  font-size: 4.3vh;
+  font-size: 36px;
 }
 
 .vertical_line{
@@ -116,31 +117,47 @@
 }
 
 .element{
-  width: 25%;
-  height: 30%;
+  max-width: 212px;
+  max-height: 212px;
+  min-width: 162px;
+  min-height: 162px;
   background-color: #ffff;
-  border-radius: 15px;
-  font-size: 2.3vh;
+  border-radius: 28px;
+  
 }
 
 .plant_name{
   font-family: "Stolzl";
   font-weight: 500;
-  font-size: 2.5vh;
+  font-size: 16px;
+  
 }
 
 .place_of_plant{
   font-family: "Stolzl";
-  font-size: 1.5vh;
+  font-size: 12px;
   padding-bottom: 16px;
 }
 
-.element>img{
-  width: calc(100% - 16px);
-  height: calc(69% - 64px);
+.zamiokulcas_left_side{
+  max-width: 196px;
+  max-height: 148px;
+  min-width: 146px;
+  min-height: 112px;
   margin-top: 8px;
   margin-left: 8px;
   margin-right: 8px;
+  border-radius: 20px;
+}
+
+.add_new_plant_new_place{
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 12px;
+  margin-bottom: 42px;
+  margin-top: 12px;
+  
+  
 }
 
 .auth-button {
@@ -148,11 +165,38 @@
   color: white;
   border-radius: 8px;
   padding: 8px 24px;
+  display: flex;
   align-items: center;
   height: 36px;
   display: flex;
+  justify-content: center;
+}
+
+.button_add{
+  background: #A8C686;
+  color: white;
+  border-radius: 20px;
+  display: flex;
+  min-height: 88px;
+  min-width: 64px;
+  max-height: 88px;
+  max-width: 88px;
+  font-size: 20px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: calc(100% - 16px);
-  height: calc(69% - 64px);
+}
+
+.button_room{
+  font-size: 20px;
+  background: #ECF3E3;
+  color: #A8C686;
+  border-radius: 20px;
+  border: 1px solid #ECF3E3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 92px; 
+  height: 92px;
+  margin: 0 8px 8px 0;
 }
