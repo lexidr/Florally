@@ -66,7 +66,6 @@ const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPassw
     e.preventDefault();
     if (validateEmail()) {
       console.log("Отправка email для восстановления:", email);
-      // Здесь будет API запрос
       setCurrentStep('code');
       setErrors({});
     }
@@ -76,7 +75,6 @@ const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPassw
     e.preventDefault();
     if (validateCode()) {
       console.log("Проверка кода:", code);
-      // Здесь будет API запрос
       setCurrentStep('newPassword');
       setErrors({});
     }
@@ -86,9 +84,7 @@ const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPassw
     e.preventDefault();
     if (validateNewPassword()) {
       console.log("Установка нового пароля");
-      // Здесь будет API запрос
       onClose();
-      // Сброс состояния после закрытия
       setTimeout(() => {
         setCurrentStep('email');
         setEmail("");
