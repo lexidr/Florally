@@ -4,6 +4,18 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+.mobile_header{
+  width: 100vw;
+  height: 6.4vh;
+}
+
+.mobile-app{
+  width: 100vw;
+  height: 100vh;
+}
+
+
 @keyframes float {
   0%, 100% {
     transform: translateY(0);
@@ -123,6 +135,7 @@
   min-height: 162px;
   background-color: #ffff;
   border-radius: 28px;
+  text-align: center;
   
 }
 
@@ -155,9 +168,6 @@
   font-weight: 500;
   margin-top: 12px;
   margin-bottom: 42px;
-  margin-top: 12px;
-  
-  
 }
 
 .auth-button {
@@ -198,5 +208,106 @@
   justify-content: center;
   width: 92px; 
   height: 92px;
-  margin: 0 8px 8px 0;
+   margin: 0 8px 8px 0;
+
+}
+
+.my_plant_mobile{
+  margin-top: 32px;
+  font-size: 28px;
+  text-align: center;
+
+}
+
+
+.element_mobile{
+  width: 162px;
+  height: 162px;
+  background-color: #ffff;
+  border-radius: 28px;
+  text-align: center;
+  
+}
+
+.zamiokulcas_mobile{
+  max-width: 146px;
+  max-height: 112px;
+  margin-top: 8px;
+  margin-left: 8px;
+  margin-right: 8px;
+  border-radius: 20px;
+}
+
+.plant_name_mobile{
+  font-family: "Stolzl";
+  font-weight: 500;
+  font-size: 12px;
+  
+}
+
+.place_of_plant_mobile{
+  font-family: "Stolzl";
+  font-size: 8px;
+  padding-bottom: 12px;
+}
+
+.section_mobile{
+  margin-left: 20px ;
+  margin-right: 20px;
+  width: calc(100vw - 40px);
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap:11px;
+}
+
+.add_new_plant_new_place_mobile{
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 12px;
+  margin-bottom: 35px;
+}
+
+.button_add_mobile{
+  background: #A8C686;
+  color: white;
+  border-radius: 20px;
+  display: flex;
+  min-height: 64px;
+  max-width: 64px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button_room_mobile{
+  font-size: 20px;
+  background: #ECF3E3;
+  color: #A8C686;
+  border-radius: 20px;
+  border: 1px solid #ECF3E3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px; 
+  height: 64px;
+  margin:'0 11px 11px 0'
+}
+
+.my_rooms_mobile{
+  margin-top: 32px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.footer{
+  background-color: white;
+  overflow: hidden;
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 68px;
 }
