@@ -136,6 +136,7 @@
   background-color: #ffff;
   border-radius: 28px;
   text-align: center;
+  cursor: pointer;
   
 }
 
@@ -226,6 +227,7 @@
   background-color: #ffff;
   border-radius: 28px;
   text-align: center;
+  cursor: pointer;
   
 }
 
@@ -310,4 +312,51 @@
   justify-content: center;
   align-items: center;
   height: 68px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 28px;
+  min-width: 50vw;
+  min-height: 90vh;
+  position: relative;
+  border-radius: 36px;
+  display: flex;           
+  flex-direction: column;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  
+}
+
+.modal_img_plant_dekstop{
+  width: 220px;
+  height: 220px;
+  border-radius: 20px;
+}
+
+.modal_footer{
+  width:100%;
+  float:left;
+  display:inline-flex ;
+  justify-content: flex-end;
+  margin-top: auto;
 }
