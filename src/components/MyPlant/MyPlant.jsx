@@ -24,13 +24,27 @@ function MyPlant() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // для бургер-меню
+  
+  // Состояния для модального окна
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPlant, setSelectedPlant] = useState(null);
 
   const isCalendarActive = location.pathname === "/";
   const isMyPlantsActive = location.pathname === "/plants/my_plants";
   const isUserActive = location.pathname === "/user";
 
   const isMobile = useMobile();
+
+  // Функции для модального окна
+  const openModal = (plant) => {
+    setSelectedPlant(plant);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedPlant(null);
+  };
 
   useEffect(() => {
     const authCheck = async () => {
@@ -103,19 +117,31 @@ function MyPlant() {
         <h1 className="my_plant_mobile">Мои Растения</h1>
         <section className="section_mobile">
           
-          <div className="element_mobile">
+          <div className="element_mobile" onClick={() => openModal({
+            name: "Замиокулькас", 
+            room: "Спальня",
+            image: "/zamiokulcas_plant.svg"
+          })}>
             <img className="zamiokulcas_mobile" src="/zamiokulcas_plant.svg" alt="" />
             <p className="plant_name_mobile">Замиокулькас</p>
             <p className="place_of_plant_mobile">Комната: Спальня</p>
           </div>
 
-          <div className="element_mobile">
+          <div className="element_mobile" onClick={() => openModal({
+            name: "Замиокулькас", 
+            room: "Спальня",
+            image: "/zamiokulcas_plant_2.svg"
+          })}>
             <img className="zamiokulcas_mobile" src="/zamiokulcas_plant_2.svg" alt="" />
             <p className="plant_name_mobile">Замиокулькас</p>
             <p className="place_of_plant_mobile">Комната: Спальня</p>
           </div>
 
-          <div className="element_mobile">
+          <div className="element_mobile" onClick={() => openModal({
+            name: "Замиокулькас", 
+            room: "Спальня",
+            image: "/zamiokulcas_plant_3.svg"
+          })}>
             <img className="zamiokulcas_mobile" src="/zamiokulcas_plant_3.svg" alt="" />
             <p className="plant_name_mobile">Замиокулькас</p>
             <p className="place_of_plant_mobile">Комната: Спальня</p>
@@ -153,7 +179,66 @@ function MyPlant() {
         <footer className="footer mobile_header">
           <img style={{height:'36px'}} src="/icons_frame.svg" alt="" />
         </footer>
-              
+
+        {/* Модальное окно для мобильной версии */}
+        {modalOpen && (
+           <div className="modal-overlay" onClick={closeModal}>
+          <section className="modal-content" onClick={e => e.stopPropagation()}>
+            {/*<button className="modal-close" onClick={closeModal}>×</button>*/}
+            <div style={{display:"inline-flex"}}>
+              <img className="modal_img_plant_dekstop" src={selectedPlant?.image} alt={selectedPlant?.name}/>
+              <div style={{marginLeft:"33px"}}>
+                <h1 style={{fontSize:"36px" , fontWeight:"500" ,color:"#2E2E2E" , margin:"0"}}>{selectedPlant?.name}</h1>
+                <p style={{fontSize:"16px" ,color:"#2E2E2E" , fontWeight:"450" }}>Комната: {selectedPlant?.room}</p>
+              </div>
+            </div>
+            <h1 style={{fontSize:"36px" , fontWeight:"500" ,color:"#2E2E2E" , margin:"0" , marginTop:"36px"}}>Уход за растением</h1>
+            <div style={{marginTop:"20px"}}>
+                <div style={{width:"100%" , height:"80px" , display:"flex" , alignItems:"center"}}>
+                
+                <div style={{display:"inline-flex" , alignItems:"center"}}>
+                  <img style={{width:"52px" , height:"52px"}} src="/plant_light.svg" alt=""/>
+                  <div style={{marginLeft:"14px"}} >
+                    <p style={{fontSize:"24px" , fontWeight:"450"}}> Полив</p>
+                    <p style={{fontSize:"20px"}}>Комната: {selectedPlant?.room}</p>
+                  </div>
+                </div>    
+              </div>
+              <hr style={{width:"100%", marginBottom:"14px" , opacity:"50%" , borderColor:"#A8C686"}}/>
+
+              <div style={{width:"100%" , height:"80px" , display:"flex" , alignItems:"center"}}>
+                
+                <div style={{display:"inline-flex" , alignItems:"center"}}>
+                  <img style={{width:"52px" , height:"52px"}} src="/plant_light.svg" alt=""/>
+                  <div style={{marginLeft:"14px"}} >
+                    <p style={{fontSize:"24px" , fontWeight:"450"}}> Удобрение</p>
+                    <p style={{fontSize:"20px"}}>Комната: {selectedPlant?.room}</p>
+                  </div>
+                </div>    
+              </div>
+              <hr style={{width:"100%" , marginBottom:"14px" , opacity:"50%" , borderColor:"#A8C686"}}/>
+
+              <div style={{width:"100%" , height:"80px" , display:"flex" , alignItems:"center"}}>
+                
+                <div style={{display:"inline-flex"}}>
+                  <div style={{display:"flex" , alignItems:"center"}}><img style={{width:"52px" , height:"52px"}} src="/plant_add_smth.svg" alt=""/></div>
+                  <div style={{marginLeft:"14px"}} >
+                    <p style={{fontSize:"24px" , fontWeight:"450"}}> Пересадка ▽ </p>
+                  </div>
+                </div>    
+              </div>
+             
+            </div>
+            
+
+            <footer className="modal_footer">
+              <button style={{backgroundColor:"#A8C686" , color:"white", width:"252px" , height:"43px" , fontSize:"16px" , marginRight:"12px"  }}>Сохранить изменения</button>
+              <button style={{backgroundColor:"#DF7171" , color:"white" , width:"252px" , height:"43px" , fontSize:"16px" , borderColor:"#DF7171" }}>Удалить растение</button>
+            </footer>
+          </section>
+          
+        </div>
+        )}
       </div>
     );
   }
@@ -213,31 +298,44 @@ function MyPlant() {
         <section className="left_side_plants">
           <p className="p_center">Мои растения</p>
           <div className="side_elements">
-            <div className="element">
+            <div className="element" onClick={() => openModal({
+              name: "Замиокулькас", 
+              room: "Спальня",
+              image: "/zamiokulcas_plant.svg"
+            })}>
               <img className="zamiokulcas_left_side" src="/zamiokulcas_plant.svg" alt="" />
               <p className="plant_name">Замиокулькас</p>
               <p className="place_of_plant">Комната: Спальня</p>
             </div>
           
-            <div className="element">
+            <div className="element" onClick={() => openModal({
+              name: "Замиокулькас", 
+              room: "Спальня",
+              image: "/zamiokulcas_plant_square.svg"
+            })}>
               <img className="zamiokulcas_left_side" src="/zamiokulcas_plant.svg" alt="" />
               <p className="plant_name">Замиокулькас</p>
               <p className="place_of_plant">Комната: Спальня</p>
             </div>
-            <div className="element">
+
+            <div className="element" onClick={() => openModal({
+              name: "Замиокулькас", 
+              room: "Спальня",
+              image: "/zamiokulcas_plant_square.svg"
+            })}>
               <img className="zamiokulcas_left_side" src="/zamiokulcas_plant.svg" alt="" />
               <p className="plant_name">Замиокулькас</p>
               <p className="place_of_plant">Комната: Спальня</p>
             </div>
+
             <div className="element">
               <div style={{display:'flex' , justifyContent:'center' , alignItems:'flex-end' , height:'131px' , width:'212px'}}>
                 <button className="button_add">+</button>
               </div>
-                <p className="add_new_plant_new_place">Добавить <br /> новое растение</p>
+              <p className="add_new_plant_new_place">Добавить <br /> новое растение</p>
             </div>
 
           </div>
-          
         
         </section>
         <div className="vertical_line"></div>
@@ -248,9 +346,9 @@ function MyPlant() {
 
                 <div>   
                 <div className="element" style={{display:'flex' , flexWrap:'wrap'}}>
-                  <img style={{width:'92px' , height:'92px' , margin:'8px 12px 12px 8px '     }} src="/zamiokulcas_plant_square.svg" alt="" />
-                  <img  style={{width:'92px' , height:'92px' , margin:'8px 8px 0 0'  }} src="/zamiokulcas_plant_square.svg" alt="" />
-                  <img  style={{width:'92px' , height:'92px' , margin:'0 12px 8px 8px' }} src="/zamiokulcas_plant_square.svg" alt="" />
+                  <img style={{width:'92px' , height:'92px' , margin:'8px 12px 12px 8px '}} src="/zamiokulcas_plant_square.svg" alt="" />
+                  <img  style={{width:'92px' , height:'92px' , margin:'8px 8px 0 0'  }} src="/zamiokulcas_plant_2_square.svg" alt="" />
+                  <img  style={{width:'92px' , height:'92px' , margin:'0 12px 8px 8px' }} src="/zamiokulcas_plant_3_square.svg" alt="" />
                   <button className="button_room">+</button>
                 </div>
                 
@@ -267,6 +365,66 @@ function MyPlant() {
           </div>          
         </section>
       </main>
+
+      {/* Модальное окно для десктопной версии */}
+      {modalOpen && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <section className="modal-content" onClick={e => e.stopPropagation()}>
+            {/*<button className="modal-close" onClick={closeModal}>×</button>*/}
+            <div style={{display:"inline-flex"}}>
+              <img className="modal_img_plant_dekstop" src={selectedPlant?.image} alt={selectedPlant?.name}/>
+              <div style={{marginLeft:"33px"}}>
+                <h1 style={{fontSize:"36px" , fontWeight:"500" ,color:"#2E2E2E" , margin:"0"}}>{selectedPlant?.name}</h1>
+                <p style={{fontSize:"16px" ,color:"#2E2E2E" , fontWeight:"450" }}>Комната: {selectedPlant?.room}</p>
+              </div>
+            </div>
+            <h1 style={{fontSize:"36px" , fontWeight:"500" ,color:"#2E2E2E" , margin:"0" , marginTop:"36px"}}>Уход за растением</h1>
+            <div style={{marginTop:"20px"}}>
+                <div style={{width:"100%" , height:"80px" , display:"flex" , alignItems:"center"}}>
+                
+                <div style={{display:"inline-flex" , alignItems:"center"}}>
+                  <img style={{width:"52px" , height:"52px"}} src="/plant_light.svg" alt=""/>
+                  <div style={{marginLeft:"14px"}} >
+                    <p style={{fontSize:"24px" , fontWeight:"450"}}> Полив</p>
+                    <p style={{fontSize:"20px"}}>Комната: {selectedPlant?.room}</p>
+                  </div>
+                </div>    
+              </div>
+              <hr style={{width:"100%", marginBottom:"14px" , opacity:"50%" , borderColor:"#A8C686"}}/>
+
+              <div style={{width:"100%" , height:"80px" , display:"flex" , alignItems:"center"}}>
+                
+                <div style={{display:"inline-flex" , alignItems:"center"}}>
+                  <img style={{width:"52px" , height:"52px"}} src="/plant_light.svg" alt=""/>
+                  <div style={{marginLeft:"14px"}} >
+                    <p style={{fontSize:"24px" , fontWeight:"450"}}> Удобрение</p>
+                    <p style={{fontSize:"20px"}}>Комната: {selectedPlant?.room}</p>
+                  </div>
+                </div>    
+              </div>
+              <hr style={{width:"100%" , marginBottom:"14px" , opacity:"50%" , borderColor:"#A8C686"}}/>
+
+              <div style={{width:"100%" , height:"80px" , display:"flex" , alignItems:"center"}}>
+                
+                <div style={{display:"inline-flex"}}>
+                  <div style={{display:"flex" , alignItems:"center"}}><img style={{width:"52px" , height:"52px"}} src="/plant_add_smth.svg" alt=""/></div>
+                  <div style={{marginLeft:"14px"}} >
+                    <p style={{fontSize:"24px" , fontWeight:"450"}}> Пересадка ▽ </p>
+                  </div>
+                </div>    
+              </div>
+             
+            </div>
+            
+
+            <footer className="modal_footer">
+              <button style={{backgroundColor:"#A8C686" , color:"white", width:"252px" , height:"43px" , fontSize:"16px" , marginRight:"12px"  }}>Сохранить изменения</button>
+              <button style={{backgroundColor:"#DF7171" , color:"white" , width:"252px" , height:"43px" , fontSize:"16px" , borderColor:"#DF7171" }}>Удалить растение</button>
+            </footer>
+          </section>
+          
+        </div>
+      )}
     </div>
   );
 }
