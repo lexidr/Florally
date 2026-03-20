@@ -201,6 +201,9 @@ function HomePage() {
             <p>Проверка аутентификации...</p>
           </div>
         </main>
+        <div className="mobile-bottom-panel">
+          {/* контент панели */}
+        </div>
       </div>
     );
   }
