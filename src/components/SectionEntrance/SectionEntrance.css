@@ -30,7 +30,7 @@
   width: auto;
   background-color: #b9d19f;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: flex-start;
   flex: 1;
 }
@@ -46,16 +46,15 @@
   font-size: large;
   padding-top: 25vh;
   position: relative;
-  
+  margin-bottom: 36px;
 }
 
 .image-section {
   background-color: #b9d19f;
   display: flex;
   justify-content: flex-start;
-  align-items: center;
   flex: 1;
-  margin-bottom: 72px;
+  padding-bottom: 2.5vh;
 }
 
 .background-image {
@@ -119,8 +118,7 @@ button:hover {
   border: 2.5px solid #809568;
 }
 
-.forgot-password{
-
+.forgot-password {
   font-size: 1.8vh;
   text-align: end;
   margin-left: 60px;
@@ -139,86 +137,76 @@ button:hover {
   margin-bottom: 1rem;
 }
 
-.login-link>a , .forgot-password>a{
+.login-link > a,
+.forgot-password > a {
   text-decoration: underline;
   text-decoration-thickness: 1.3px;
   text-underline-offset: 1px;
   font-weight: 400;
 }
 
-.login-link{
+.login-link {
   font-size: 2.4vh;
 }
 
+.LinkSelect {
+  text-decoration: underline;
+  text-decoration-thickness: 1.3px;
+}
 
+.LinkSelect:hover {
+  color: #5e6e4c;
+}
 
+.buttonContainerStyle {
+  margin-top: 1vh;
+}
 
+/* Единый стиль для логотипа */
+.logoStyle {
+  margin-top: 5px;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 9vw;
+  height: auto;
+}
 
-
-@media (max-width: 1300px) and (min-width: 1160px) {
+@media (min-width: 1101px) and (max-width: 1370px) {
   .image-section {
     height: 100vh;
-    padding-bottom: 4vh;
-    margin-top: -3vh;
+    padding-bottom: 5vh;
+    margin-left: 7px !important;
   }
 
-  
+  .entrance-card {
+    margin: 0 !important;
+  }
 
   .entrance-container {
-   padding-left: 2vh;
-   display: flex;
-   justify-content: center;
-  }
-
-  .login-link>a , .forgot-password>a{
-  text-decoration: underline;
-  text-decoration-thickness: 1.3px;
-  text-underline-offset: 1px;
-  font-weight: 400;
+    padding: 0 10px !important;
   }
 }
 
-@media (max-width: 1160px) and (min-width: 701px) {
+@media ((min-width: 621px) and (max-width: 1100px)) {
   .image-section {
     display: none !important;
-  }
-
-  .login-link>a , .forgot-password>a{
-  text-decoration: underline;
-  text-decoration-thickness: 1.3px;
-  text-underline-offset: 1px;
-  font-weight: 400;
-}
-
-}
-
-@media (max-width: 1300px) and (min-width: 701px) {
-  .image-section {
-    display: none;
   }
 
   .entrance-card {
     margin: 0 auto;
   }
-
-  .login-link>a , .forgot-password>a{
-  text-decoration: underline;
-  text-decoration-thickness: 1.3px;
-  text-underline-offset: 1px;
-  font-weight: 400;
-  }
 }
 
-
-@media (max-width: 700px) and (min-height:700px) {
-
-  .LogotypeStyle {
+@media (max-width: 620px) {
+  .logoStyle {
     width: 19vw;
     height: auto;
   }
 
   .login-link {
-    font-size: 90%
+    font-size: 90%;
   }
 
   .entrance-container {
@@ -241,7 +229,7 @@ button:hover {
 
   .entrance-card {
     height: 60vh;
-    width: 100% ;
+    width: 100%;
     margin: 0;
     border-radius: 10% 10% 0 0;
     box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
@@ -257,10 +245,11 @@ button:hover {
     align-items: flex-end;
     margin-bottom: 0 !important;
     margin-left: 0 !important;
+    padding-bottom: 0vh;
   }
 
   .background-image {
-    display: block;  
+    display: block;
     width: 100vw;
     height: 47vh;
     max-width: 100%;
@@ -268,19 +257,18 @@ button:hover {
   }
 
   input {
-    width: 76%;
+    width: 90%;
     margin: 10px auto;
     padding: 12px 20px;
     box-sizing: border-box;
   }
-  
-  .forgot-password{
 
-  font-size: 1.8vh;
-  text-align: end;
-  margin-left: auto;
-  margin-right: auto;
-  width: 76%;
+  .forgot-password {
+    font-size: 1.8vh;
+    text-align: end;
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
   }
 
   h2 {
@@ -290,22 +278,22 @@ button:hover {
 
   button {
     width: 90%;
+    margin: 10px auto;
+    font-size: 90%;
+    box-sizing: border-box;
   }
 
-  .login-link>a , .forgot-password>a{
-  text-decoration: underline;
-  text-decoration-thickness: 1.3px;
-  text-underline-offset: 1px;
-  font-weight: 400;
+  .login-link > a,
+  .forgot-password > a {
+    text-decoration: underline;
+    text-decoration-thickness: 1.3px;
+    text-underline-offset: 1px;
+    font-weight: 400;
   }
-  
 }
 
-
-
-@media (max-height: 500px) and (max-width: 700px) {
-
-  .LogotypeStyle { 
+@media (max-height: 500px) and (max-width: 620px) {
+  .logoStyle {
     width: 0;
   }
 
@@ -347,18 +335,18 @@ button:hover {
   }
 
   button {
-    width: 90% ;
+    width: 90%;
     padding-bottom: 2.5vh;
     padding-top: 2.5vh;
     font-size: 85%;
     margin: 0 auto;
   }
-  
-  .login-link>a , .forgot-password>a{
-  text-decoration: underline;
-  text-decoration-thickness: 1.3px;
-  text-underline-offset: 1px;
-  font-weight: 400;
+
+  .login-link > a,
+  .forgot-password > a {
+    text-decoration: underline;
+    text-decoration-thickness: 1.3px;
+    text-underline-offset: 1px;
+    font-weight: 400;
   }
-  
 }

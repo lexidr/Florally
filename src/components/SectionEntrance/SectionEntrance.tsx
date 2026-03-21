@@ -285,7 +285,7 @@ const SectionEntrance = () => {
             </div>
           </form>
 
-          <img style={logoStyle} src="/logo.svg" alt="logo" />
+          <img className="logoStyle" src="/logo.svg" alt="logo" />
         </div>
       </div>
 

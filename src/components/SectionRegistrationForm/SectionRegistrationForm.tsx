@@ -336,7 +336,7 @@ const RegistrationForm = () => {
               </span>
             </div>
 
-            <img className="LogotypeStyle" src="/logo.svg" alt="logo" />
+            <img className="logoStyle" src="/logo.svg" alt="logo" />
           </form>
         </div>
       </div>
