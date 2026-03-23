@@ -517,28 +517,31 @@ body {
   .info-card{
     width: 48vw;
     height: 78vh;
+    border-radius: 32px;
   }
 
   .calendar-container{
     height: 58vh;
     width: 48vw;
-    padding: 1vh 2.7vw;
+    padding: 1vh 3vw;
   }
   .calendar-header{
     height: 1vh;
     margin-bottom: 8.7vh;
   }
+  .calendar{
+    gap: 0;
+  }
   .calenda, 
   .calendar-days{
-    gap: 5px;
+    gap: 0;
   }
   .weekdays{
     margin-bottom: 0;
   }
   .week{
-    gap: 30px;
+    gap: 40px;
   }
-
 }
 
 @media((max-width: 1501px) and (min-height: 1001px)){
@@ -557,7 +560,6 @@ body {
 /*Нивидимость растений*/
 /*--------------------*/
 @media ((max-width: 976px) and (max-height: 853px))
- or ((width <= 1200px) and (height <= 963px))
  or (max-height: 771px) {
 
   .plant-image-right,
