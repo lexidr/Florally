@@ -140,7 +140,6 @@ body {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 8px;
-  margin-bottom: 8px;
   list-style: none;
 }
 
@@ -544,7 +543,7 @@ body {
   }
 }
 
-@media((max-width: 1501px) and (min-height: 1001px)){
+@media((max-width: 1500px) and (min-height: 1001px)){
   .calendar-container{
     width: 48vw;
   }
@@ -553,6 +552,12 @@ body {
   }
   .week{
     gap: 32px;
+  }
+}
+
+@media((max-width: 1020px) and (min-width: 768px) and (max-height: 1000px)){
+  .week{
+    gap: 0px;
   }
 }
 
@@ -583,10 +588,31 @@ body {
     display: flex;
     margin: 0 auto;;
   }
+  /* Календарь */
   .calendar-with-plants{
     order: 1;
     width: 100%;
   }
+  .calendar-header{
+    height: 1vh;
+    margin-bottom: 8.7vh;
+  }
+  .calendar{
+    gap: 0;
+  }
+  .calenda, 
+  .calendar-days{
+    gap: 0;
+  }
+  .weekdays{
+    margin-bottom: 0;
+  }
+  .weekdays,
+  .week{
+    gap: 34px;
+  }
+  /* *** */
+
   .info-card{
     order: 2;
     width: 100%;
@@ -621,6 +647,7 @@ body {
     margin-left: 4vw;
   }
   /* *** */
+
   .mobile-bottom-panel{
     background: white;
     width: 100%;
@@ -651,4 +678,42 @@ body {
     padding-right: 17px;
   }
 
+}
+@media ((max-width: 768px) and (min-width: 700px)){
+  .week,
+  .weekdays{
+    gap: 50px;
+  }
+}
+@media ((max-width: 630px) and (min-width: 0px)){
+  .week,
+  .weekdays{
+    gap: 25px;
+  }
+}
+/*-----------------*/
+/*Мобильная верстка: старые устройства*/
+/*-----------------*/
+@media ((max-width: 460px) and (min-width: 0px)){
+  .header{
+    width: auto;
+  }
+  .header-content{
+    width: 100vw;
+  }
+  .main-content{
+    padding: 48px 0px 65px;
+  }
+  .main-content{
+    width: 95%;
+  }
+  .calendar-header {
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-top: 0;
+  }
+  .weekdays,
+  .week{
+    gap: 25px;
+  }
 }
