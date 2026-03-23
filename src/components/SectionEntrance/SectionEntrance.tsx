@@ -2,6 +2,7 @@ import "./SectionEntrance.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
+import ForgotPasswordModal from "../ForgotPasswordModal/ForgotPasswordModal";
 
 interface LoginFormData {
   email: string;
@@ -20,6 +21,7 @@ const SectionEntrance = () => {
   });
 
   const [formErrors, setFormErrors] = useState<Partial<LoginFormData>>({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   console.log("SectionEntrance: Начальное состояние:", {
     isLoading,
@@ -171,6 +173,11 @@ const SectionEntrance = () => {
   const handleForgotPassword = (e: React.MouseEvent) => {
     e.preventDefault();
     console.log("SectionEntrance: Клик по 'Забыли пароль?' для email:", formData.email);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   const buttonContainerStyle = {
@@ -296,6 +303,12 @@ const SectionEntrance = () => {
           className="background-image"
         />
       </div>
+
+      <ForgotPasswordModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        initialEmail={formData.email}
+      />
     </section>
   );
 };
