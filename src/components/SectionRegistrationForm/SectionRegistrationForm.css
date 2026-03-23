@@ -136,8 +136,9 @@ button:hover {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 10vw;
-  height: auto;
+  
+  width: 138px;
+  height: 35px;
 }
 
 .LinkSelect {
@@ -152,8 +153,6 @@ button:hover {
 .buttonContainerStyle {
   margin-top: 1vh;
 }
-
-/*ЭТИ МЕДИА - ВЕРСТКА ПРИ СУЖЕНИИ НА ПК  :P  */
 
 @media (min-width: 1101px) and (max-width: 1370px) {
   .image-section {
@@ -181,17 +180,21 @@ button:hover {
   }
 }
 
-/*МОБИЛЬНАЯ ВЕРСТКА o(^▽^)o */
-
 @media (max-width: 620px) {
-
-  .logoStyle {
-    width: 50vw;
-    height: auto;
+  .logoStyle.mobileVersion {
+    position: relative;
+    display: block;
+    margin: 20px auto 20px auto; 
+    left: auto;
+    transform: none;
+    width: 88px;
+    height: 24px;
   }
 
   .login-link {
-    font-size: 90%
+    font-size: 90%;
+    display: block;
+    margin-bottom: 10px;
   }
 
   .registration-container {
@@ -213,13 +216,20 @@ button:hover {
   }
 
   .registration-card {
-    height: 60vh;
-    width: 100% ;
+    height: auto !important; 
+    min-height: 60vh;
+    width: 100%;
     margin: 0;
     border-radius: 10% 10% 0 0;
     box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
     font-size: large;
-    padding: 10px 0;
+    padding: 10px 0 20px 0; 
+    position: relative;
+    overflow-y: auto; 
+  }
+
+  .registration-form {
+    padding-bottom: 10px;
   }
 
   .image-section {
@@ -234,7 +244,7 @@ button:hover {
   }
 
   .background-image {
-    display: block;  
+    display: block;
     width: 100vw;
     height: 47vh;
     max-width: 100%;
@@ -254,14 +264,15 @@ button:hover {
   }
 
   .registration-buttom {
-    width: 97% ;
+    width: 97%;
     margin: 0 auto;
     font-size: 90%;
   }
 
+  .buttonContainerStyle {
+    margin-top: 1vh;
+  }
 }
-
-/*ЭТОТ МЕДИА ДЛЯ ВВОДА (￣﹃￣) */
 
 @media (max-height: 500px) and (max-width: 620px) {
 

@@ -335,9 +335,9 @@ const RegistrationForm = () => {
                 Есть аккаунт? <Link to="/auth/signin" className="LinkSelect">Войти</Link>
               </span>
             </div>
-
-            <img className="logoStyle" src="/logo.svg" alt="logo" />
           </form>
+
+          <img className="logoStyle mobileVersion" src="/logo.svg" alt="logo" />
         </div>
       </div>
 
