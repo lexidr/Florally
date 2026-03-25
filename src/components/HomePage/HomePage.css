@@ -606,6 +606,16 @@ button{
     display: none;
   }
 }
+@media((max-height: 500px) and (max-width: 768px)){
+  .not-authorized-message{
+    display: none;
+  }
+  .registration-button{
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    font-size: 12px;
+  }
+}
 
 /*--------------------*/
 /*Нивидимость растений*/
