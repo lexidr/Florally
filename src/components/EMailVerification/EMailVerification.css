@@ -1,0 +1,117 @@
+/* Основные стили для страницы подтверждения */
+.email-confirmation-content {
+  width: 100%;
+  height: calc(100vh - 72px);
+  background: #E7E7E7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.confirmation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  padding: 20px;
+}
+
+.success-icon {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.success-icon svg {
+  animation: scaleIn 0.4s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.confirmation-title {
+  font-family: "Stolzl", sans-serif;
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 120%;
+  color: #2E2E2E;
+  margin: 0 0 16px 0;
+}
+
+.confirmation-text {
+  font-family: "Stolzl", sans-serif;
+  font-size: 24px;
+  line-height: 150%;
+  color: #666;
+  margin: 0 0 24px 0;
+  max-width: 500px;
+}
+
+
+.confirmation-button {
+  background-color: #a8c28a;
+  border: 2.5px solid #a8c28a;
+  border-radius: 20vh;
+  padding-top: 1.2vh;
+  padding-bottom: 1.2vh;
+  text-align: center;
+  font-size: 2vh;
+  text-decoration: none;
+  color: white;
+  font-weight: 550;
+  width: 30%;
+}
+
+.confirmation-button:hover {
+  background-color: #74885d;
+}
+
+@media (max-width: 620px) {
+  .confirmation-title {
+    font-size: 28px;
+  }
+
+  .confirmation-text {
+    font-size: 16px;
+    margin-bottom: 28px;
+    max-width: 90%;
+  }
+
+  .success-icon svg {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+@media (max-width: 400px) {
+  .confirmation-title {
+    font-size: 24px;
+  }
+
+  .confirmation-text {
+    font-size: 14px;
+  }
+
+  .success-icon svg {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@media (max-height: 500px) and (max-width: 620px) {
+  .email-confirmation-content {
+    height: auto;
+    min-height: calc(100vh - 72px);
+    padding: 40px 0;
+  }
+}
