@@ -414,16 +414,51 @@ function MyPlant() {
     return (
       <div className="app">
         <header className="header">
-          <div className="header-content">
-            <img src={"/logo.svg"} alt="Florally" className="logo" />
-            <nav className="navigation">
-              <Link to="/" className="nav-link">Календарь</Link>
-            </nav>
-            <button className="auth-button login-button" onClick={handleLoginClick}>
-              Войти
-            </button>
+        <div className="header-content">
+          <img src={"/logo.svg"} alt="Florally" className="logo" />
+          <nav className="navigation">
+            <Link
+              to="/plants/my_plants"
+              className={`nav-link ${
+                isMyPlantsActive ? "calendar-active" : ""
+              }`}
+            >
+              Мои растения
+            </Link>
+            <Link
+              to="/"
+              className={`nav-link ${
+                isCalendarActive ? "calendar-active" : ""
+              }`}
+            >
+              Календарь
+            </Link>
+            <Link
+              to="/user"
+              className={`nav-link ${isUserActive ? "calendar-active" : ""}`}
+            >
+              Профиль
+            </Link>
+          </nav>
+          <div className="auth-section">
+            {isLoggedIn ? (
+              <button
+                className="auth-button logout-button"
+                onClick={handleLogoutClick}
+              >
+                Выйти
+              </button>
+            ) : (
+              <button
+                className="auth-button login-button"
+                onClick={handleLoginClick}
+              >
+                Войти
+              </button>
+            )}
           </div>
-        </header>
+        </div>
+      </header>
         <main className="my-plants-content">
           <div className="login-required-container">
             <h2>Войдите в систему</h2>
@@ -436,7 +471,7 @@ function MyPlant() {
       </div>
     );
   }
-  
+
   return (
     <div className="app">
       <header className="header">
