@@ -354,7 +354,7 @@ body {
 
 .registration-form-section {
   width: 100%;
-  max-width: 300px;
+  max-width: 400px;
   margin: 0 auto;
 }
 
@@ -455,6 +455,9 @@ body {
   display: none;
 }
 /* *** */
+button{
+  padding: 0 0;
+}
 
 @media (min-width: 1500px) {
   .calendar-container {
@@ -640,6 +643,8 @@ body {
 
     width: 90vw;
     margin: 0 auto;
+
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
   }
   
   .not-authorized-container{
@@ -655,8 +660,9 @@ body {
   .header{
     width: 100vw;
     margin: 0 auto;
-    border-bottom-left-radius: 3.3vh;
-    border-bottom-right-radius: 3.3vh;
+    border-bottom-left-radius: 2.2vh;
+    border-bottom-right-radius: 2.2vh;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
   }
 
   .navigation,
@@ -694,7 +700,6 @@ body {
     order: 1;
     font-size: 43px;
   }
-  /* *** */
   
   /*h2: задачи на день - выход из блока*/
   .card-title-middle{
@@ -708,13 +713,18 @@ body {
   .card-title{
     display: none;
   }
-  /* *** */
+
+  /*Внутреблочные элементы info-card */
+  .info-card{
+    align-items: center;
+  }
   .not-authorized-container{
-    display: block;
-    display: none;
+    align-items: center;
+    height: 100%;
   }
   .not-authorized-message{
     font-size: 20px;
+    display: none;
   }
 
   /*Нижняя панель */
