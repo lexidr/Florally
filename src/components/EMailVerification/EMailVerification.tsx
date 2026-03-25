@@ -1,28 +1,107 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { checkAuth, SignOut } from "../../api/authApi";
 import "./EMailVerification.css";
 
 function EMailVerification() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+
+  const isCalendarActive = location.pathname === "/";
+  const isMyPlantsActive = location.pathname === "/plants/my_plants";
+  const isUserActive = location.pathname === "/user";
+
+  // Проверка авторизации при загрузке
+  useEffect(() => {
+    const authCheck = async () => {
+      try {
+        const authData = checkAuth();
+        setIsLoggedIn(authData.isAuthenticated);
+        setUser(authData.user);
+      } catch (error) {
+        console.error("Ошибка при проверке аутентификации:", error);
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    };
+
+    authCheck();
+  }, []);
+
+  const handleLoginClick = () => {
+    navigate("/auth/signin");
+  };
+
+  const handleLogoutClick = async () => {
+    try {
+      const confirmLogout = window.confirm("Вы уверены, что хотите выйти?");
+      if (!confirmLogout) return;
+      
+      await SignOut();
+      setIsLoggedIn(false);
+      setUser(null);
+
+      if (location.pathname === "/user") {
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Ошибка при выходе:", error);
+      alert("Произошла ошибка при выходе из системы");
+    }
+  };
+
+  const handleSignInClick = () => {
+    navigate("/auth/signin");
+  };
+
   return (
     <div className="app">
       <header className="header">
         <div className="header-content">
           <img src={"/logo.svg"} alt="Florally" className="logo" />
           <nav className="navigation">
-            <Link to="/plants/my_plants" className="nav-link">
+            <Link
+              to="/plants/my_plants"
+              className={`nav-link ${
+                isMyPlantsActive ? "calendar-active" : ""
+              }`}
+            >
               Мои растения
             </Link>
-            <Link to="/" className="nav-link">
+            <Link
+              to="/"
+              className={`nav-link ${
+                isCalendarActive ? "calendar-active" : ""
+              }`}
+            >
               Календарь
             </Link>
-            <Link to="/user" className="nav-link">
+            <Link
+              to="/user"
+              className={`nav-link ${isUserActive ? "calendar-active" : ""}`}
+            >
               Профиль
             </Link>
           </nav>
           <div className="auth-section">
-            <button className="auth-button login-button">
-              Войти
-            </button>
+            {isLoggedIn ? (
+              <button
+                className="auth-button logout-button"
+                onClick={handleLogoutClick}
+              >
+                Выйти
+              </button>
+            ) : (
+              <button
+                className="auth-button login-button"
+                onClick={handleLoginClick}
+              >
+                Войти
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -38,7 +117,10 @@ function EMailVerification() {
           <p className="confirmation-text">
             Теперь вы можете войти в свой аккаунт
           </p>
-          <button className="confirmation-button">
+          <button 
+            className="confirmation-button"
+            onClick={handleSignInClick}
+          >
             Войти
           </button>
         </div>
