@@ -257,6 +257,8 @@ function HomePage() {
         </div>
       </header>
       <main className="main-content">
+        <h1 className="calendar-text-upper">Календарь</h1>
+        <h2 className="card-title-middle">Задачи на день</h2>
         <section className="info-card">
           <h2 className="card-title">Задачи на день</h2>
           {!isLoggedIn && (

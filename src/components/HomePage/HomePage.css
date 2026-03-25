@@ -17,7 +17,6 @@ body {
   color: #2d3436;
 }
 
-/*BodyWithoutFlex*/
 body {
   display: block !important;
 }
@@ -446,6 +445,15 @@ body {
   margin-top: -50px;
 }
 
+/*Убираем мобильные элементы */
+.calendar-text-upper{
+  display: none;
+}
+.card-title-middle{
+  display: none;
+}
+/* *** */
+
 @media (min-width: 1500px) {
   .calendar-container {
     width: 400px;
@@ -499,7 +507,9 @@ body {
 }
 
 /*---------------------*/
-/*Верстка для ноутбуков*/
+
+/*ПК ВЕРСТКА: для ноутбуков*/
+
 /*---------------------*/
 @media((max-width: 1510px) and (max-height: 1000px)){
   .plant-image-right,
@@ -574,10 +584,12 @@ body {
 }
 
 /*-----------------*/
-/*Мобильная верстка*/
-/*-----------------*/
-@media (max-width: 768px) {
 
+/*МОБИЛЬНАЯ ВЕРСТКА*/
+
+/*-----------------*/
+
+@media (max-width: 768px) {
   .plant-image-right,
   .plant-image-left {
     display: none;
@@ -588,9 +600,11 @@ body {
     display: flex;
     margin: 0 auto;;
   }
+
   /* Календарь */
   .calendar-with-plants{
-    order: 1;
+    order: 2;
+    padding-top: -10vh;
     width: 100%;
   }
   .calendar-header{
@@ -614,7 +628,7 @@ body {
   /* *** */
 
   .info-card{
-    order: 2;
+    order: 4;
     width: 100%;
     height: 20vh;
     display: block;
@@ -657,7 +671,7 @@ body {
     box-shadow: 0 5px 13px rgba(0, 0, 0, 0.05);
     position: absolute;
     z-index: 100;
-    order: 3;
+    display: none;
   }
 
   .calendar-container{
@@ -677,6 +691,28 @@ body {
     padding-left: 17px;
     padding-right: 17px;
   }
+  /*h1: Календарь*/
+  .calendar-text-upper{
+    display: block;
+    margin: 0 auto;
+    order: 1;
+    font-size: 43px;
+  }
+  /* *** */
+  
+  /*h2: задачи на день - выход из блока*/
+  .card-title-middle{
+    display: block;
+    margin: 0 auto;
+    order: 3;
+    font-size: 30px;
+    font-weight: 400;
+    padding-top: 10px;
+  }
+  .card-title{
+    display: none;
+  }
+  /* *** */
 
 }
 @media ((max-width: 768px) and (min-width: 700px)){
@@ -691,8 +727,11 @@ body {
     gap: 25px;
   }
 }
+
 /*-----------------*/
-/*Мобильная верстка: старые устройства*/
+
+/*МОБИЛЬНАЯ ВЕРСТКА: старые устройства*/
+
 /*-----------------*/
 @media ((max-width: 460px) and (min-width: 0px)){
   .header{
