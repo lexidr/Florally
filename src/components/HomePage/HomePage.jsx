@@ -349,6 +349,12 @@ function HomePage() {
             <div className="plant-image-right"></div>
           </section>
         </div>
+        <section className="mobile-bottom-panel">
+            <div className="first-icon-bottom-panel"> </div>
+            <div className="second-icon-bottom-panel"> </div>
+            <div className="third-icon-bottom-panel"> </div>
+            <div className="fourth-icon-bottom-panel"> </div>
+        </section>
       </main>
     </div>
   );

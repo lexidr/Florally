@@ -446,10 +446,12 @@ body {
 }
 
 /*Убираем мобильные элементы */
-.calendar-text-upper{
-  display: none;
-}
-.card-title-middle{
+.calendar-text-upper,
+.card-title-middle,
+.first-icon-bottom-panel,
+.second-icon-bottom-panel,
+.third-icon-bottom-panel,
+.fourth-icon-bottom-panel{
   display: none;
 }
 /* *** */
@@ -598,14 +600,16 @@ body {
   .main-content{
     flex-direction: column;
     display: flex;
-    margin: 0 auto;;
+    margin: 0 auto;
+    padding-bottom: 0;
   }
 
   /* Календарь */
   .calendar-with-plants{
     order: 2;
     padding-top: -10vh;
-    width: 100%;
+    width: 90vw;
+    margin: 0 auto;
   }
   .calendar-header{
     height: 1vh;
@@ -633,6 +637,9 @@ body {
     height: 20vh;
     display: block;
     border-radius: 3.5vh;
+
+    width: 90vw;
+    margin: 0 auto;
   }
   
   .not-authorized-container{
@@ -647,6 +654,7 @@ body {
   /*Верхний блок - header */
   .header{
     width: 100vw;
+    margin: 0 auto;
     border-bottom-left-radius: 3.3vh;
     border-bottom-right-radius: 3.3vh;
   }
@@ -661,18 +669,6 @@ body {
     margin-left: 4vw;
   }
   /* *** */
-
-  .mobile-bottom-panel{
-    background: white;
-    width: 100%;
-    height: 10vh;
-    border-top-left-radius: 3vh;
-    border-top-right-radius: 3vh;
-    box-shadow: 0 5px 13px rgba(0, 0, 0, 0.05);
-    position: absolute;
-    z-index: 100;
-    display: none;
-  }
 
   .calendar-container{
     padding: 0 0;
@@ -713,6 +709,62 @@ body {
     display: none;
   }
   /* *** */
+  .not-authorized-container{
+    display: block;
+    display: none;
+  }
+  .not-authorized-message{
+    font-size: 20px;
+  }
+
+  /*Нижняя панель */
+  .mobile-bottom-panel{
+    order: 5;
+
+    background: white;
+    width: 100vw;
+    height: 9vh;
+    border-top-left-radius: 3vh;
+    border-top-right-radius: 3vh;
+    box-shadow: 0 5px 13px rgba(0, 0, 0, 0.05);
+    display: flex;
+    margin: 0 auto;
+    margin-top: auto;
+
+    flex-direction: row;
+    align-items: center;
+
+    padding-left: 4vw;
+    padding-right: 4vw;
+  }
+
+  /*Иконки нижней панели*/
+  .first-icon-bottom-panel,
+  .second-icon-bottom-panel,
+  .third-icon-bottom-panel,
+  .fourth-icon-bottom-panel{
+    display: flex;
+    width: 9.2vw;
+    height: 6vh;
+    margin: 0 auto;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+  }
+  
+  .first-icon-bottom-panel{
+    background-image: url("/public/mingcute_notification-fill.svg");
+  }
+  .second-icon-bottom-panel{
+    background-image: url("public/ion_person-outline.svg");
+  }
+  .third-icon-bottom-panel{
+    background-image: url("public/proicons_calendar.svg");
+  }
+  .fourth-icon-bottom-panel{
+    background-image: url("public/ph_plant-light.svg");
+  }
+  /* *** */
 
 }
 @media ((max-width: 768px) and (min-width: 700px)){
@@ -727,6 +779,12 @@ body {
     gap: 25px;
   }
 }
+@media((max-height: 950px) and (max-width: 768px)){
+  .main-content{
+    padding: 0 0 0;
+    padding-top: 2vh;
+  }
+}
 
 /*-----------------*/
 
@@ -734,18 +792,6 @@ body {
 
 /*-----------------*/
 @media ((max-width: 460px) and (min-width: 0px)){
-  .header{
-    width: auto;
-  }
-  .header-content{
-    width: 100vw;
-  }
-  .main-content{
-    padding: 48px 0px 65px;
-  }
-  .main-content{
-    width: 95%;
-  }
   .calendar-header {
     padding-left: 40px;
     padding-right: 40px;
