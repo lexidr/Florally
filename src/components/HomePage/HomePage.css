@@ -553,7 +553,7 @@ button{
     margin-bottom: 0;
   }
   .week{
-    gap: 40px;
+    gap: 3vw;
   }
 }
 
@@ -565,7 +565,7 @@ button{
     width: 48vw;
   }
   .week{
-    gap: 32px;
+    gap: 3vw;
   }
 }
 
@@ -671,7 +671,18 @@ button{
   }
   .weekdays,
   .week{
-    gap: 34px;
+    gap: 1vw;
+    padding-left: 2vw;
+    padding-right: 2vw;
+  }
+  .week{
+    height: 4vh;
+    width: auto;
+  }
+
+  .calendar-nav-button{
+    width: 8vw;
+    height: 4vh;
   }
   /* *** */
 
@@ -730,10 +741,6 @@ button{
     padding-top: 10px;
   }
 
-  .calendar{
-    padding-left: 17px;
-    padding-right: 17px;
-  }
   /*h1: Календарь*/
   .calendar-text-upper{
     display: block;
@@ -821,13 +828,13 @@ button{
 @media ((max-width: 768px) and (min-width: 700px)){
   .week,
   .weekdays{
-    gap: 50px;
+    gap: 3vw;
   }
 }
 @media ((max-width: 630px) and (min-width: 0px)){
   .week,
   .weekdays{
-    gap: 25px;
+    gap: 3.5vw;
   }
 }
 @media((max-height: 950px) and (min-height: 700px) and(max-width: 768px)){
@@ -844,12 +851,10 @@ button{
 /*-----------------*/
 @media ((max-width: 460px) and (min-width: 0px)){
   .calendar-header {
-    padding-left: 40px;
-    padding-right: 40px;
     padding-top: 0;
   }
   .weekdays,
   .week{
-    gap: 25px;
+    gap: 4vh;
   }
 }
