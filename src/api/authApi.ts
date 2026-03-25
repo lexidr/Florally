@@ -164,6 +164,50 @@ export const SignIn = async (userData: ISignIn) => {
   }
 };
 
+export const confirmEmail = async (token: string) => {
+  console.log("confirmEmail: Начало подтверждения email");
+  console.log("confirmEmail: Токен:", token ? `${token.substring(0, 20)}...` : "отсутствует");
+
+  try {
+    const url = `${API}/auth/signup/confirmation/${token}`;
+    console.log("confirmEmail: URL запроса:", url);
+
+    const response = await Http({
+      method: "post",
+      url: url,
+    });
+
+    console.log("confirmEmail: Ответ от сервера:", {
+      status: response.status,
+      statusText: response.statusText,
+      data: response.data,
+    });
+
+    console.log("confirmEmail: Email успешно подтвержден");
+    return response.data;
+  } catch (error: any) {
+    console.error("confirmEmail: Ошибка при подтверждении email:", error);
+    console.error("confirmEmail: Детали ошибки:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+
+
+    if (error.response?.status === 404) {
+      error.message = "Ссылка подтверждения недействительна или устарела";
+    } else if (error.response?.status === 400) {
+      error.message = error.response?.data?.message || "Неверный токен подтверждения";
+    } else if (error.response?.status === 409) {
+      error.message = "Email уже подтвержден";
+    } else {
+      error.message = error.response?.data?.message || "Ошибка при подтверждении email";
+    }
+    
+    throw error;
+  }
+};
+
 export const SignOut = async () => {
   console.log("SignOut: Выход из системы");
   console.log("SignOut: Проверка localStorage перед выходом:", {
@@ -372,4 +416,5 @@ export default {
   checkAuth,
   getCurrentUser,
   refreshToken,
+  confirmEmail, 
 };

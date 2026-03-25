@@ -24,6 +24,8 @@ export default function App() {
           {/* Страницы аутентификации */}
           <Route path="/auth/signup" element={<SectionRegistrationForm />} />
           <Route path="/auth/signin" element={<SectionEntrance />} />
+
+          <Route path="/auth/signup/confirmation/:confirmationToken" element={<EMailVerification />} />
           
           {/* Резервный маршрут */}
           <Route path="*" element={<HomePage />} />
