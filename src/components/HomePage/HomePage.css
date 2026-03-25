@@ -454,11 +454,12 @@ body {
 .fourth-icon-bottom-panel{
   display: none;
 }
-/* *** */
+
 button{
   padding: 0 0;
 }
 
+/*ПК ВЕРСТКА: Корректирующий медиа запрос*/
 @media (min-width: 1500px) {
   .calendar-container {
     width: 400px;
@@ -512,9 +513,7 @@ button{
 }
 
 /*---------------------*/
-
 /*ПК ВЕРСТКА: для ноутбуков*/
-
 /*---------------------*/
 @media((max-width: 1510px) and (max-height: 1000px)){
   .plant-image-right,
@@ -576,6 +575,38 @@ button{
   }
 }
 
+/*--------------------------*/
+/*ПК ВЕРСТКА: маленькое окно*/
+/*--------------------------*/
+@media((max-height: 700px) and (max-width: 768px)){
+  .calendar-text-upper,
+  .calendar-with-plants
+  {
+    display: none;
+  }
+  .main-content{
+    display: block;
+  }
+  .info-card{
+    margin: 0 auto;
+    width: 90vw;
+    height: 100%;
+  }
+  .card-title{
+    margin: 0 auto;
+  }
+
+  .header{
+    width: 100vw;
+  }
+
+  .navigation,
+  .auth-section,
+  .plants-container-wrapper{
+    display: none;
+  }
+}
+
 /*--------------------*/
 /*Нивидимость растений*/
 /*--------------------*/
@@ -594,7 +625,7 @@ button{
 
 /*-----------------*/
 
-@media (max-width: 768px) {
+@media ((max-width: 768px) and (min-height: 700px)) {
   .plant-image-right,
   .plant-image-left {
     display: none;
@@ -789,7 +820,7 @@ button{
     gap: 25px;
   }
 }
-@media((max-height: 950px) and (max-width: 768px)){
+@media((max-height: 950px) and (min-height: 700px) and(max-width: 768px)){
   .main-content{
     padding: 0 0 0;
     padding-top: 2vh;
