@@ -5,6 +5,8 @@ import SectionEntrance from './components/SectionEntrance/SectionEntrance';
 import HomePage from './components/HomePage/HomePage';
 import MyPlant from './components/MyPlant/MyPlant';
 import User from './components/User/User';
+import EMailVerification from './components/EMailVerification/EMailVerification';
+
 import './App.css';
 
 export default function App() {
