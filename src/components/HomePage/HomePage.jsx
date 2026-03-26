@@ -210,10 +210,12 @@ function HomePage() {
       <header className="header">
         <div className="header-content">
           <img src={"/logo.svg"} alt="Florally" className="logo" />
-          <nav className="navigation">
+          
+          {/* Десктопная навигация */}
+          <nav className="desktop-navigation">
             <Link
               to="/plants/my_plants"
-              className={`nav-link ${
+              className={`desktop-nav-link ${
                 isMyPlantsActive ? "calendar-active" : ""
               }`}
             >
@@ -221,7 +223,7 @@ function HomePage() {
             </Link>
             <Link
               to="/"
-              className={`nav-link ${
+              className={`desktop-nav-link ${
                 isCalendarActive ? "calendar-active" : ""
               }`}
             >
@@ -229,11 +231,12 @@ function HomePage() {
             </Link>
             <Link
               to="/user"
-              className={`nav-link ${isUserActive ? "calendar-active" : ""}`}
+              className={`desktop-nav-link ${isUserActive ? "calendar-active" : ""}`}
             >
               Профиль
             </Link>
           </nav>
+          
           <div className="auth-section">
             {isLoggedIn ? (
               <button
@@ -253,43 +256,47 @@ function HomePage() {
           </div>
         </div>
       </header>
+      
       <main className="main-content">
         <section className="info-card">
           <h2 className="card-title">Задачи на день</h2>
-          {!isLoggedIn && (
-            <div className="not-authorized-container">
-              <div className="not-authorized-message">
-                <p>
-                  Зарегистрируйся,<br></br>
-                  чтобы знать больше<br></br>о своих растениях!
-                </p>
-              </div>
-              <div className="registration-form-section">
-                <div style={{ margin: "1.2vh 0" }}>
-                  <button
-                    className="registration-button"
-                    style={{ width: "100%", margin: "0 auto" }}
-                    onClick={() => navigate("/auth/signup")}
-                  >
-                    Зарегистрироваться
-                  </button>
+          <div className="tasks-scroll-container">
+            {!isLoggedIn && (
+              <div className="not-authorized-container">
+                <div className="not-authorized-message">
+                  <p>
+                    Зарегистрируйся,<br />
+                    чтобы знать больше<br />
+                    о своих растениях!
+                  </p>
                 </div>
-
-                <div style={{ margin: "1vh 0", textAlign: "center" }}>
-                  <span style={{ fontSize: "1.7vh" }} className="login-link">
-                    Есть аккаунт?{" "}
-                    <Link
-                      to="/auth/signin"
-                      style={{ color: "#74885d", textDecoration: "none" }}
+                <div className="registration-form-section">
+                  <div style={{ margin: "1.2vh 0" }}>
+                    <button
+                      className="registration-button"
+                      style={{ width: "100%", margin: "0 auto" }}
+                      onClick={() => navigate("/auth/signup")}
                     >
-                      Войти
-                    </Link>
-                  </span>
+                      Зарегистрироваться
+                    </button>
+                  </div>
+                  <div style={{ margin: "1vh 0", textAlign: "center" }}>
+                    <span style={{ fontSize: "1.7vh" }} className="login-link">
+                      Есть аккаунт?{" "}
+                      <Link
+                        to="/auth/signin"
+                        style={{ color: "#74885d", textDecoration: "none" }}
+                      >
+                        Войти
+                      </Link>
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </section>
+        
         <div className="calendar-with-plants">
           <section className="calendar-container">
             <div className="calendar-header">
@@ -345,6 +352,33 @@ function HomePage() {
           </section>
         </div>
       </main>
+
+      {/* Мобильная навигация внизу */}
+      <div className="mobile-bottom-menu">
+        <Link to="/plants/my_plants" className="mobile-menu-item">
+          <img 
+            src="/ph_plant-light.svg" 
+            alt="Мои растения" 
+            className={`mobile-menu-icon ${isMyPlantsActive ? 'active-icon' : ''}`}
+          />
+        </Link>
+        
+        <Link to="/" className="mobile-menu-item">
+          <img 
+            src="/proicons_calendar.svg" 
+            alt="Календарь" 
+            className={`mobile-menu-icon ${isCalendarActive ? 'active-icon' : ''}`}
+          />
+        </Link>
+        
+        <Link to="/user" className="mobile-menu-item">
+          <img 
+            src="/ion_person-outline.svg" 
+            alt="Профиль" 
+            className={`mobile-menu-icon ${isUserActive ? 'active-icon' : ''}`}
+          />
+        </Link>
+      </div>
     </div>
   );
 }
