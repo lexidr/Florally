@@ -242,6 +242,7 @@
   font-size: 32px;
   color: #2d3436;
   margin-bottom: 20px;
+  line-height: 1.05;
 }
 
 .not-logged-in p {
@@ -282,4 +283,414 @@ a {
 
 button:hover {
   cursor: pointer;
+}
+
+.buttonContainerStyle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 2vh 0;
+}
+
+.registration-button-link {
+  text-decoration: none;
+  width: 100%;
+  max-width: 300px;
+}
+
+.registration-button {
+  width: 100%;
+  padding: 12px 24px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.registration-button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.registration-button:active {
+  transform: translateY(0);
+}
+
+.LinkSelectR {
+  color: #f0f0f0;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.LinkSelect:hover {
+  color: #45a049;
+  text-decoration: underline;
+}
+
+.login-link {
+  color: #666;
+  font-size: 14px;
+}
+
+.not-logged-in {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.not-logged-in h2 {
+  font-size: 24px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.buttonContainerStyle {
+  margin-top: 1vh;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.registration-button-link {
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  max-width: 300px;
+}
+
+.registration-button {
+  background-color: #a8c28a;
+  border: 2.5px solid #a8c28a;
+  width: 100%;
+  border-radius: 20vh;
+  padding-top: 1.2vh;
+  padding-bottom: 1.2vh;
+  text-align: center;
+  font-size: 2vh;
+  text-decoration: none;
+  color: white;
+  font-weight: 550;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.registration-button:hover {
+  border-color: #74885d;
+  cursor: pointer;
+  background-color: #809568;
+  border: 2.5px solid #809568;
+}
+
+.not-logged-in-title {
+  font-family: "Stolzl", sans-serif;
+  font-weight: 500;
+  font-size: 4.3vh;
+  margin: 1vh;
+  color: #333;
+  text-align: center;
+}
+
+.LinkSelect {
+  text-decoration: underline;
+  text-decoration-thickness: 1.3px;
+  color: #74885d;
+}
+
+.LinkSelect:hover {
+  color: #5e6e4c;
+  text-decoration: underline;
+}
+
+.login-link {
+  color: #666;
+  font-size: 1.7vh;
+}
+
+.not-logged-in {
+  text-align: center;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+}
+
+@media (max-width: 810px) {
+  .registration-button {
+    width: 90%;
+    font-size: 90%;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+  }
+  
+  .not-logged-in-title {
+    font-size: 4vh;
+    margin: 2vh 0;
+  }
+  
+  .login-link {
+    font-size: 90%;
+  }
+  
+  .buttonContainerStyle {
+    margin-top: 2vh;
+  }
+}
+
+@media (max-height: 500px) and (max-width: 620px) {
+  .registration-button {
+    padding-bottom: 2.5vh;
+    padding-top: 2.5vh;
+    font-size: 85%;
+  }
+  
+  .not-logged-in-title {
+    font-size: 170%;
+    padding-top: 5svh;
+  }
+  
+  .login-link {
+    font-size: 80% !important;
+  }
+}
+
+.mobile-app {
+  min-height: 100vh;
+  background-color: #b9d19f;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  background-color: white;
+  z-index: 1000;
+  border-radius: 0 0 20px 20px;
+}
+
+.mobile-header-content {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 16px;
+}
+
+.mobile-logo {
+  width: 72px;
+  height: 20px;
+}
+
+.mobile-main-content {
+  flex: 1;
+  padding-top: 52px;
+  padding-bottom: 68px;
+  min-height: 100vh;
+  background-color: #E7E7E7;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-content-wrapper {
+  width: 100%;
+}
+
+.mobile-form-container {
+  width: 100%;
+  background-color: #E7E7E7;
+  border-radius: 24px 24px 0 0;
+  padding: 30px 20px 40px;
+}
+
+.mobile-form-container.full-height {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mobile-title {
+  font-family: "Stolzl", sans-serif;
+  font-size: 25px;
+  text-align: center;
+  color: #333;
+  line-height: 1.3;
+}
+
+.mobile-button-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.mobile-registration-link {
+  text-decoration: none;
+  width: 100%;
+  max-width: 280px;
+}
+
+.mobile-registration-button {
+  width: 100%;
+  background-color: #a8c28a;
+  border: 2.5px solid #a8c28a;
+  border-radius: 40px;
+  padding: 12px 24px;
+  font-size: 14px;
+  color: white;
+  font-weight: 550;
+  cursor: pointer;
+  margin-top: -20px;
+}
+
+.mobile-login-container {
+  text-align: center;
+  margin-top: -10px;
+}
+
+.mobile-login-text {
+  color: #666;
+  font-size: 14px;
+}
+
+.mobile-login-link {
+  text-decoration: underline;
+  color: #74885d;
+}
+
+.mobile-bottom-menu {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 68px;
+  background-color: white;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+  border-radius: 20px 20px 0 0;
+}
+
+.mobile-menu-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  gap: 4px;
+}
+
+.mobile-menu-icon {
+  width: 24px;
+  height: 24px;
+  opacity: 0.6;
+}
+
+.mobile-menu-item span {
+  font-size: 10px;
+  color: #666;
+}
+
+.active-icon {
+  opacity: 1;
+  filter: brightness(0) saturate(100%) invert(68%) sepia(25%) saturate(527%) hue-rotate(44deg) brightness(91%) contrast(86%);
+}
+
+.active-text {
+  color: #a8c28a !important;
+  font-weight: 600;
+}
+
+.mobile-user-name {
+  font-size: 24px;
+  text-align: center;
+}
+
+.mobile-input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 2px solid #a8c28a;
+  border-radius: 40px;
+  box-sizing: border-box;
+}
+
+.mobile-save-changes-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #a8c28a;
+  color: white;
+  border: none;
+  border-radius: 40px;
+  margin-top: 20px;
+}
+
+.mobile-plants-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.mobile-plant-square {
+  aspect-ratio: 1;
+  background-color: #f0f0f0;
+  border-radius: 12px;
+}
+
+.mobile-view-more-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: transparent;
+  border: 2px solid #a8c28a;
+  color: #a8c28a;
+  border-radius: 40px;
+  margin-top: 10px;
+}
+
+.mobile-logout-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 40px;
+  margin-top: 20px;
+}
+
+@media (width <= 1055px) {
+  .user-background-image {
+    display: none;
+  }
+
+  .user-container {
+   display: flex !important;
+   justify-content: center !important;
+   align-items: center !important;
+   margin-left: 20px;
+  }
+}
+
+@media (min-width: 811px) {
+  .mobile-app {
+    display: none;
+  }
+}
+
+@media (max-width: 810px) {
+  .app {
+    display: none;
+  }
 }

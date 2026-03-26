@@ -15,10 +15,30 @@ function User() {
     password: "",
     newPassword: "",
   });
+  const [screenSize, setScreenSize] = useState('desktop'); // desktop, tablet, mobile
 
   const isCalendarActive = location.pathname === "/";
   const isMyPlantsActive = location.pathname === "/plants/my_plants";
   const isUserActive = location.pathname === "/user";
+
+  // Определение размера экрана
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      if (width <= 810) {
+        setScreenSize('mobile');
+      } else if (width <= 1055) {
+        setScreenSize('tablet');
+      } else {
+        setScreenSize('desktop');
+      }
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   useEffect(() => {
     const authCheck = async () => {
@@ -115,6 +135,171 @@ function User() {
             <p>Проверка аутентификации...</p>
           </div>
         </main>
+      </div>
+    );
+  }
+
+  if (screenSize === 'mobile') {
+    return (
+      <div className="mobile-app">
+        <header className="mobile-header">
+          <div className="mobile-header-content">
+            <img src={"/logo.svg"} alt="Florally" className="mobile-logo" />
+          </div>
+        </header>
+
+        <main className="mobile-main-content">
+          <div className="mobile-content-wrapper">
+            <div className="mobile-form-container full-height">
+              {isLoggedIn && user ? (
+                <div className="mobile-user-profile">
+                  <div className="mobile-user-header">
+                    <h1 className="mobile-user-name">{getUserName()}</h1>
+                    <p className="mobile-registration-date">
+                      Зарегистрирован {formatRegistrationDate()}
+                    </p>
+                  </div>
+
+                  <div className="mobile-user-form">
+                    <h2 className="mobile-section-title">Редактировать профиль</h2>
+                    <div className="mobile-form-grid">
+                      <div className="mobile-form-group">
+                        <label htmlFor="username">Имя</label>
+                        <input
+                          type="text"
+                          id="username"
+                          name="username"
+                          value={formData.username}
+                          onChange={handleFormChange}
+                          placeholder="Имя"
+                          className="mobile-input"
+                        />
+                      </div>
+
+                      <div className="mobile-form-group">
+                        <label htmlFor="email">Почта</label>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleFormChange}
+                          placeholder="Почта"
+                          className="mobile-input"
+                        />
+                      </div>
+
+                      <div className="mobile-form-group">
+                        <label htmlFor="password">Текущий пароль</label>
+                        <input
+                          type="password"
+                          id="password"
+                          name="password"
+                          value={formData.password}
+                          onChange={handleFormChange}
+                          placeholder="Текущий пароль"
+                          className="mobile-input"
+                        />
+                      </div>
+
+                      <div className="mobile-form-group">
+                        <label htmlFor="newPassword">Новый пароль</label>
+                        <input
+                          type="password"
+                          id="newPassword"
+                          name="newPassword"
+                          value={formData.newPassword}
+                          onChange={handleFormChange}
+                          placeholder="Новый пароль"
+                          className="mobile-input"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      className="mobile-save-changes-btn"
+                      onClick={handleSaveChanges}
+                    >
+                      Сохранить изменения
+                    </button>
+                  </div>
+
+                  <div className="mobile-user-plants">
+                    <h2 className="mobile-section-title">Мои растения</h2>
+                    <div className="mobile-plants-grid">
+                      <div className="mobile-plant-square"></div>
+                      <div className="mobile-plant-square"></div>
+                      <div className="mobile-plant-square"></div>
+                    </div>
+                    <button className="mobile-view-more-btn">Посмотреть еще</button>
+                  </div>
+
+                  <div className="mobile-user-actions">
+                    <button
+                      className="mobile-logout-btn"
+                      onClick={handleLogoutClick}
+                    >
+                      Выйти из аккаунта
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <h2 className="mobile-title">
+                    Зарегистрируйся,
+                    <br />
+                    чтобы знать больше
+                    <br />
+                    о своих растениях!
+                  </h2>
+                  
+                  <div className="mobile-button-container">
+                    <Link to="/auth/signup" className="mobile-registration-link">
+                      <button className="mobile-registration-button">
+                        Зарегистрироваться
+                      </button>
+                    </Link>
+                  </div>
+
+                  <div className="mobile-login-container">
+                    <span className="mobile-login-text">
+                      Есть аккаунт?{" "}
+                      <Link to="/auth/signin" className="mobile-login-link">
+                        Войти
+                      </Link>
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </main>
+
+        <div className="mobile-bottom-menu">
+          <Link to="/plants/my_plants" className="mobile-menu-item">
+            <img 
+              src="/ph_plant-light.svg" 
+              alt="Мои растения" 
+              className={`mobile-menu-icon ${isMyPlantsActive ? 'active-icon' : ''}`}
+            />
+          </Link>
+          
+          <Link to="/" className="mobile-menu-item">
+            <img 
+              src="/proicons_calendar.svg" 
+              alt="Календарь" 
+              className={`mobile-menu-icon ${isCalendarActive ? 'active-icon' : ''}`}
+            />
+          </Link>
+          
+          <Link to="/user" className="mobile-menu-item">
+            <img 
+              src="/ion_person-outline.svg" 
+              alt="Профиль" 
+              className={`mobile-menu-icon ${isUserActive ? 'active-icon' : ''}`}
+            />
+          </Link>
+        </div>
       </div>
     );
   }
@@ -262,11 +447,26 @@ function User() {
               </div>
             ) : (
               <div className="not-logged-in">
-                <h2>Профиль</h2>
-                <p>Войдите, чтобы увидеть свой профиль</p>
-                <button className="login-btn" onClick={handleLoginClick}>
-                  Войти
-                </button>
+                <h2>Зарегистрируйся,
+                    <br />
+                    чтобы знать больше
+                    <br />
+                    о своих растениях!</h2>
+                <div className="buttonContainerStyle">
+                  <button
+                    type="submit"
+                    className="registration-buttom"
+                    style={{ margin: "0 auto" }}
+                  >
+                    <Link to="/auth/signup" className="LinkSelectR">Зарегистрироваться</Link>
+                  </button>
+                </div>
+
+                <div style={{ margin: "1vh" }}>
+                  <span style={{ fontSize: "1.7vh" }} className="login-link">
+                    Есть аккаунт? <Link to="/auth/signin" className="LinkSelect">Войти</Link>
+                  </span>
+                </div>
               </div>
             )}
           </div>
