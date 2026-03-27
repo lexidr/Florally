@@ -355,6 +355,15 @@ export const refreshToken = async () => {
   }
 };
 
+export const updateProfile = async (updateDto: { username?: string; email?: string }) => {
+  const response = await Http.patch("/user", updateDto);
+  return response.data;
+};
+
+export const changeUserPassword = async (passwordDto: { oldPassword: string; newPassword: string }) => {
+  const response = await Http.post("/user/change-password", passwordDto);
+  return response.data;
+};
 console.log("authApi.ts: Настройка interceptors для Http");
 
 Http.interceptors.response.use(

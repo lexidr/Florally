@@ -50,7 +50,7 @@ const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPassw
 
   const validatePasswords = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (newPassword.length < 8) newErrors.newPassword = "Минимум 8 символов";
+    if (newPassword.length < 6) newErrors.newPassword = "Минимум 6 символов";
     if (newPassword !== confirmPassword) newErrors.confirmPassword = "Пароли не совпадают";
     
     setErrors(newErrors);
