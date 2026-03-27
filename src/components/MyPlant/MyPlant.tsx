@@ -87,19 +87,27 @@ const PlantImage: React.FC<{
   );
 };
 
-// Хук для определения мобильного устройства
-function useMobile() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+// Хук для определения размера экрана
+function useScreenSize() {
+  const [screenSize, setScreenSize] = useState<'mobile' | 'desktop'>('desktop');
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      if (width <= 810) {
+        setScreenSize('mobile');
+      } else {
+        setScreenSize('desktop');
+      }
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  return isMobile;
+  return screenSize;
 }
 
 function MyPlant() {
@@ -124,38 +132,31 @@ function MyPlant() {
   const [addPlantModalOpen, setAddPlantModalOpen] = useState(false);
   const [addRoomModalOpen, setAddRoomModalOpen] = useState(false);
   const [addToRoomModalOpen, setAddToRoomModalOpen] = useState(false);
-  const [addCustomCareModalOpen, setAddCustomCareModalOpen] = useState(false);
   const [selectedRoomForAdd, setSelectedRoomForAdd] = useState<string>("");
   const [selectedRoomForPlant, setSelectedRoomForPlant] = useState<Room | null>(null);
   const [newRoomName, setNewRoomName] = useState("");
   const [selectedPlantToAdd, setSelectedPlantToAdd] = useState<Plant | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedColor, setSelectedColor] = useState("#FFFFFF");
-  
-  // Состояния для добавления пользовательского поля
-  const [newCareTitle, setNewCareTitle] = useState("");
-  const [newCareDescription, setNewCareDescription] = useState("");
 
   const isCalendarActive = location.pathname === "/";
   const isMyPlantsActive = location.pathname === "/plants/my_plants";
   const isUserActive = location.pathname === "/user";
 
-  const isMobile = useMobile();
+  const screenSize = useScreenSize();
+  const isMobile = screenSize === 'mobile';
 
   // Загрузка данных с бэкенда
   const loadData = async () => {
     try {
       setLoading(true);
       
-      // Загружаем все растения для поиска
       const plants = await getAllPlants();
       setAllPlants(plants);
       
-      // Загружаем растения пользователя
       const userPlantsData = await getUserPlants();
       setUserPlants(userPlantsData);
       
-      // Группируем по комнатам
       const roomsMap = new Map<string, UserPlant[]>();
       userPlantsData.forEach((plant) => {
         const roomName = plant.room || "Без комнаты";
@@ -179,7 +180,6 @@ function MyPlant() {
     }
   };
 
-  // Поиск растений
   const handleSearchPlants = (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -191,12 +191,11 @@ function MyPlant() {
     setSearchResults(results);
   };
 
-  // Добавление нового растения пользователю
   const handleAddUserPlant = async () => {
     if (selectedPlantToAdd) {
       try {
         await addUserPlant(selectedPlantToAdd.id, selectedColor);
-        await loadData(); // Перезагружаем данные
+        await loadData();
         setAddPlantModalOpen(false);
         setSelectedPlantToAdd(null);
         setSearchQuery("");
@@ -210,7 +209,6 @@ function MyPlant() {
     }
   };
 
-  // Добавление растения в комнату
   const handleAddPlantToRoom = async () => {
     if (selectedPlantToAdd && selectedRoomForPlant) {
       try {
@@ -236,7 +234,6 @@ function MyPlant() {
     }
   };
 
-  // Удаление растения
   const handleDeleteUserPlant = async (userPlantId: string) => {
     const confirmDelete = window.confirm("Вы уверены, что хотите удалить это растение?");
     if (confirmDelete) {
@@ -252,7 +249,6 @@ function MyPlant() {
     }
   };
 
-  // Добавление комнаты (локально, так как на бэкенде пока нет комнат)
   const addNewRoom = () => {
     if (!newRoomName.trim()) {
       alert("Введите название комнаты");
@@ -276,7 +272,6 @@ function MyPlant() {
     alert("Комната успешно добавлена!");
   };
 
-  // Обновление цвета растения
   const handleUpdateColor = async (userPlantId: string, color: string) => {
     try {
       await updateUserPlant(userPlantId, { color });
@@ -288,13 +283,11 @@ function MyPlant() {
     }
   };
 
-  // Открытие модального окна комнаты
   const openRoomModal = (room: Room) => {
     setSelectedRoom(room);
     setRoomModalOpen(true);
   };
 
-  // Функции для модального окна просмотра растения
   const openPlantModal = (plant: UserPlant) => {
     setSelectedPlant({
       id: plant.id,
@@ -311,12 +304,6 @@ function MyPlant() {
   const closePlantModal = () => {
     setModalOpen(false);
     setSelectedPlant(null);
-  };
-
-  // Получение фото растения
-  const getPlantPhoto = (plant: Plant | undefined): string => {
-    if (!plant) return "";
-    return plant.photo || "";
   };
 
   useEffect(() => {
@@ -341,7 +328,6 @@ function MyPlant() {
     authCheck();
   }, []);
 
-  // Дебаунс для поиска
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (addPlantModalOpen || addToRoomModalOpen) {
@@ -376,7 +362,6 @@ function MyPlant() {
     }
   };
 
-  // Добавляем анимацию спиннера в CSS
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
@@ -410,68 +395,332 @@ function MyPlant() {
     );
   }
 
-  if (!isLoggedIn) {
+  // Мобильная версия
+  if (isMobile) {
     return (
-      <div className="app">
-        <header className="header">
-        <div className="header-content">
-          <img src={"/logo.svg"} alt="Florally" className="logo" />
-          <nav className="navigation">
-            <Link
-              to="/plants/my_plants"
-              className={`nav-link ${
-                isMyPlantsActive ? "calendar-active" : ""
-              }`}
-            >
-              Мои растения
-            </Link>
-            <Link
-              to="/"
-              className={`nav-link ${
-                isCalendarActive ? "calendar-active" : ""
-              }`}
-            >
-              Календарь
-            </Link>
-            <Link
-              to="/user"
-              className={`nav-link ${isUserActive ? "calendar-active" : ""}`}
-            >
-              Профиль
-            </Link>
-          </nav>
-          <div className="auth-section">
-            {isLoggedIn ? (
-              <button
-                className="auth-button logout-button"
-                onClick={handleLogoutClick}
-              >
-                Выйти
-              </button>
+      <div className="mobile-app">
+        {/* Шапка */}
+        <header className="mobile-header">
+          <div className="mobile-header-content">
+            <img src={"/logo.svg"} alt="Florally" className="mobile-logo" />
+          </div>
+        </header>
+
+        <main className="mobile-myplants-content">
+          <div className="mobile-myplants-container">
+            {!isLoggedIn ? (
+              <div className="mobile-login-required">
+                <h2>Войдите в систему</h2>
+                <p>Чтобы просматривать свои растения, пожалуйста, войдите в аккаунт</p>
+                <button className="mobile-login-button" onClick={handleLoginClick}>
+                  Войти
+                </button>
+              </div>
             ) : (
-              <button
-                className="auth-button login-button"
-                onClick={handleLoginClick}
-              >
-                Войти
-              </button>
+              <>
+                {/* Мои растения */}
+                <div className="mobile-plants-section">
+                  <h2 className="mobile-section-title">Мои растения</h2>
+                  <div className="mobile-plants-grid">
+                    {userPlants.map((plant) => (
+                      <div 
+                        key={plant.id} 
+                        className="mobile-plant-card"
+                        onClick={() => openPlantModal(plant)}
+                      >
+                        <div className="mobile-plant-image">
+                          <PlantImage
+                            src={plant.plant.photo}
+                            alt={plant.plant.name}
+                            style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px'}}
+                          />
+                        </div>
+                        <p className="mobile-plant-name">{plant.plant.name}</p>
+                        <p className="mobile-plant-room">Комната: {plant.room || "Без комнаты"}</p>
+                      </div>
+                    ))}
+                    
+                    <div 
+                      className="mobile-add-card"
+                      onClick={() => setAddPlantModalOpen(true)}
+                    >
+                      <div className="mobile-add-button">+</div>
+                      <p className="mobile-add-text">Добавить растение</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Мои комнаты */}
+                <div className="mobile-rooms-section">
+                  <h2 className="mobile-section-title">Мои комнаты</h2>
+                  <div className="mobile-rooms-grid">
+                    {rooms.map((room) => (
+                      <div 
+                        key={room.id} 
+                        className="mobile-room-card"
+                        onClick={() => openRoomModal(room)}
+                      >
+                        <div className="mobile-room-preview">
+                          {room.userPlants.slice(0, 2).map((plant: UserPlant) => (
+                            <div key={plant.id} className="mobile-room-preview-image">
+                              <PlantImage
+                                src={plant.plant.photo}
+                                alt={plant.plant.name}
+                                style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px'}}
+                              />
+                            </div>
+                          ))}
+                          <button 
+                            className="mobile-room-add-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedRoomForPlant(room);
+                              setAddToRoomModalOpen(true);
+                            }}
+                          >
+                            +
+                          </button>
+                        </div>
+                        <p className="mobile-room-name">{room.name}</p>
+                      </div>
+                    ))}
+                    
+                    <div 
+                      className="mobile-add-card"
+                      onClick={() => setAddRoomModalOpen(true)}
+                    >
+                      <div className="mobile-add-button">+</div>
+                      <p className="mobile-add-text">Добавить комнату</p>
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
           </div>
-        </div>
-      </header>
-        <main className="my-plants-content">
-          <div className="login-required-container">
-            <h2>Войдите в систему</h2>
-            <p>Чтобы просматривать свои растения, пожалуйста, войдите в аккаунт</p>
-            <button className="auth-button login-button" onClick={handleLoginClick}>
-              Войти
-            </button>
-          </div>
         </main>
+
+        {/* Нижнее меню */}
+        <div className="mobile-bottom-menu">
+          <Link to="/plants/my_plants" className="mobile-menu-item">
+            <img 
+              src="/ph_plant-light.svg" 
+              alt="Мои растения" 
+              className={`mobile-menu-icon ${isMyPlantsActive ? 'active-icon' : ''}`}
+            />
+          </Link>
+          
+          <Link to="/" className="mobile-menu-item">
+            <img 
+              src="/proicons_calendar.svg" 
+              alt="Календарь" 
+              className={`mobile-menu-icon ${isCalendarActive ? 'active-icon' : ''}`}
+            />
+          </Link>
+          
+          <Link to="/user" className="mobile-menu-item">
+            <img 
+              src="/ion_person-outline.svg" 
+              alt="Профиль" 
+              className={`mobile-menu-icon ${isUserActive ? 'active-icon' : ''}`}
+            />
+          </Link>
+        </div>
+
+        {/* Модальные окна для мобильной версии */}
+        {isLoggedIn && (
+          <>
+            {roomModalOpen && selectedRoom && (
+              <div className="modal-overlay" onClick={() => setRoomModalOpen(false)}>
+                <section className="modal-content" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto'}}>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+                    <h2 style={{margin: 0, fontSize: '24px'}}>{selectedRoom.name}</h2>
+                    <button onClick={() => setRoomModalOpen(false)} style={{background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer'}}>×</button>
+                  </div>
+                  <div style={{display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center'}}>
+                    {selectedRoom.userPlants.map((plant) => (
+                      <div 
+                        key={plant.id} 
+                        onClick={() => {
+                          setRoomModalOpen(false);
+                          openPlantModal(plant);
+                        }}
+                        style={{
+                          width: '140px',
+                          cursor: 'pointer',
+                          textAlign: 'center',
+                          backgroundColor: '#fff',
+                          borderRadius: '12px',
+                          padding: '12px',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        }}
+                      >
+                        <div style={{width: '116px', height: '88px', margin: '0 auto', backgroundColor: '#F5F5F5', borderRadius: '8px', overflow: 'hidden'}}>
+                          <PlantImage
+                            src={plant.plant.photo}
+                            alt={plant.plant.name}
+                            style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                          />
+                        </div>
+                        <p style={{fontWeight: '500', margin: '8px 0 0 0', fontSize: '14px'}}>{plant.plant.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {modalOpen && selectedPlant && (
+              <div className="modal-overlay" onClick={closePlantModal}>
+                <section className="modal-content" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto'}}>
+                  <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
+                    <div style={{width: '100%', height: '200px', backgroundColor: '#F5F5F5', borderRadius: '16px', overflow: 'hidden'}}>
+                      <PlantImage
+                        src={selectedPlant.image}
+                        alt={selectedPlant.name}
+                        style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                      />
+                    </div>
+                    <div>
+                      <h2 style={{fontSize: '24px', margin: '0 0 8px 0'}}>{selectedPlant.name}</h2>
+                      <p style={{fontSize: '14px', color: '#666'}}>Комната: {selectedPlant.room}</p>
+                      <div style={{marginTop: '12px'}}>
+                        <label>Цвет фона: </label>
+                        <input 
+                          type="color" 
+                          value={userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF"}
+                          onChange={(e) => {
+                            const plant = userPlants.find(p => p.id === selectedPlant.id);
+                            if (plant) handleUpdateColor(plant.id, e.target.value);
+                          }}
+                          style={{marginLeft: '10px'}}
+                        />
+                      </div>
+                    </div>
+                    <h3 style={{fontSize: '20px', margin: '16px 0 8px 0'}}>Уход за растением</h3>
+                    <div>
+                      <p><strong>Описание:</strong> {selectedPlant.description}</p>
+                      <p><strong>Сезон:</strong> {selectedPlant.season}</p>
+                    </div>
+                    <button 
+                      style={{backgroundColor: '#DF7171', color: 'white', width: '100%', padding: '12px', fontSize: '16px', border: 'none', borderRadius: '8px', cursor: 'pointer', marginTop: '16px'}}
+                      onClick={() => handleDeleteUserPlant(selectedPlant.id)}
+                    >
+                      Удалить растение
+                    </button>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {addPlantModalOpen && (
+              <div className="modal-overlay" onClick={() => setAddPlantModalOpen(false)}>
+                <section className="modal-content" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px'}}>
+                  <h2>Добавить растение</h2>
+                  <input
+                    type="text"
+                    placeholder="Поиск растения..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{width: '100%', padding: '10px', margin: '10px 0', borderRadius: '8px', border: '1px solid #ccc'}}
+                  />
+                  {searchResults.length > 0 && (
+                    <div style={{maxHeight: '300px', overflowY: 'auto', margin: '10px 0'}}>
+                      {searchResults.map((plant) => (
+                        <div
+                          key={plant.id}
+                          onClick={() => setSelectedPlantToAdd(plant)}
+                          style={{
+                            padding: '10px',
+                            border: selectedPlantToAdd?.id === plant.id ? '2px solid #A8C686' : '1px solid #eee',
+                            borderRadius: '8px',
+                            margin: '5px 0',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px'
+                          }}
+                        >
+                          <div style={{width: '40px', height: '40px', backgroundColor: '#F5F5F5', borderRadius: '8px', overflow: 'hidden'}}>
+                            <PlantImage
+                              src={plant.photo}
+                              alt={plant.name}
+                              style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                            />
+                          </div>
+                          <div>
+                            <strong>{plant.name}</strong>
+                            <p style={{fontSize: '12px', margin: '0'}}>{plant.season}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {selectedPlantToAdd && (
+                    <div style={{marginTop: '10px'}}>
+                      <label>Выбрать комнату: </label>
+                      <select 
+                        value={selectedRoomForAdd}
+                        onChange={(e) => setSelectedRoomForAdd(e.target.value)}
+                        style={{marginLeft: '10px', padding: '5px', borderRadius: '5px'}}
+                      >
+                        <option value="">Без комнаты</option>
+                        {rooms.map(room => (
+                          <option key={room.id} value={room.name}>{room.name}</option>
+                        ))}
+                      </select>
+                      <div style={{marginTop: '10px'}}>
+                        <label>Цвет фона: </label>
+                        <input 
+                          type="color" 
+                          value={selectedColor}
+                          onChange={(e) => setSelectedColor(e.target.value)}
+                          style={{marginLeft: '10px'}}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <footer style={{marginTop: '20px'}}>
+                    <button 
+                      style={{backgroundColor: '#A8C686', color: 'white', width: '100%', padding: '12px', fontSize: '16px', border: 'none', borderRadius: '8px', cursor: 'pointer'}}
+                      onClick={handleAddUserPlant}
+                      disabled={!selectedPlantToAdd}
+                    >
+                      Добавить
+                    </button>
+                  </footer>
+                </section>
+              </div>
+            )}
+
+            {addRoomModalOpen && (
+              <div className="modal-overlay" onClick={() => setAddRoomModalOpen(false)}>
+                <section className="modal-content" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px'}}>
+                  <h2>Добавить комнату</h2>
+                  <input
+                    type="text"
+                    placeholder="Название комнаты..."
+                    value={newRoomName}
+                    onChange={(e) => setNewRoomName(e.target.value)}
+                    style={{width: '100%', padding: '10px', margin: '10px 0', borderRadius: '8px', border: '1px solid #ccc'}}
+                  />
+                  <footer style={{marginTop: '20px'}}>
+                    <button 
+                      style={{backgroundColor: '#A8C686', color: 'white', width: '100%', padding: '12px', fontSize: '16px', border: 'none', borderRadius: '8px', cursor: 'pointer'}}
+                      onClick={addNewRoom}
+                    >
+                      Добавить
+                    </button>
+                  </footer>
+                </section>
+              </div>
+            )}
+          </>
+        )}
       </div>
     );
   }
 
+  // Десктопная версия
   return (
     <div className="app">
       <header className="header">
@@ -498,404 +747,399 @@ function MyPlant() {
             </Link>
           </nav>
           <div className="auth-section">
-            <div className="user-info">
-              <button className="auth-button logout-button" onClick={handleLogoutClick}>
-                Выйти
+            {isLoggedIn ? (
+              <div className="user-info">
+                <button className="auth-button logout-button" onClick={handleLogoutClick}>
+                  Выйти
+                </button>
+              </div>
+            ) : (
+              <button className="auth-button login-button" onClick={handleLoginClick}>
+                Войти
               </button>
-            </div>
+            )}
           </div>
         </div>
       </header>
       <main className="my-plants-content">
-        {/* Левая секция - Мои растения */}
-        <section className="left_side_plants" style={{overflowY: 'auto', maxHeight: 'calc(100vh - 74px)'}}>
-          <p className="p_center">Мои растения</p>
-          <div className="side_elements">
-            
-            {userPlants.map((plant) => (
-              <div 
-                key={plant.id} 
-                className="element" 
-                onClick={() => openPlantModal(plant)}
-                style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', height: '212px'}}
-              >
-                <div style={{width: '196px', height: '148px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F5F5', borderRadius: '20px', marginTop: '8px', overflow: 'hidden'}}>
-                  <PlantImage
-                    src={plant.plant.photo}
-                    alt={plant.plant.name}
-                    style={{width: '100%', height: '100%', objectFit: 'cover'}}
-                  />
-                </div>
-                <p className="plant_name">{plant.plant.name}</p>
-                <p className="place_of_plant">Комната: {plant.room || "Без комнаты"}</p>
-              </div>
-            ))}
-
-            <div className="element" onClick={() => setAddPlantModalOpen(true)} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-              <div style={{display:'flex', justifyContent:'center', alignItems:'flex-end', height:'148px', width:'196px'}}>
-                <button className="button_add">+</button>
-              </div>
-              <p className="add_new_plant_new_place">Добавить <br /> новое растение</p>
-            </div>
-
+        {!isLoggedIn ? (
+          <div className="login-required-container-desktop">
+            <h2>Войдите в систему</h2>
+            <p>Чтобы просматривать свои растения, пожалуйста, войдите в аккаунт</p>
+            <button className="auth-button login-button" onClick={handleLoginClick}>
+              Войти
+            </button>
           </div>
-        </section>
-        
-        <div className="vertical_line"></div>
-
-        {/* Правая секция - Мои комнаты */}
-        <section className="right_side_rooms" style={{overflowY: 'auto', maxHeight: 'calc(100vh - 74px)'}}>
-          <p className="p_center">Мои комнаты</p>
-          <div className="side_elements">
-
-            {rooms.map((room) => (
-              <div key={room.id} onClick={() => openRoomModal(room)} style={{cursor: 'pointer'}}>   
-                <div className="element" style={{display:'flex', flexWrap:'wrap', justifyContent: 'center', alignItems: 'center', minHeight: '212px'}}>
-                  {room.userPlants.slice(0, 2).map((plant: UserPlant) => (
-                    <div key={plant.id} style={{width: '92px', height: '92px', margin: '8px 12px 12px 8px'}}>
+        ) : (
+          <>
+            <section className="left_side_plants" style={{overflowY: 'auto', maxHeight: 'calc(100vh - 74px)'}}>
+              <p className="p_center">Мои растения</p>
+              <div className="side_elements">
+                {userPlants.map((plant) => (
+                  <div 
+                    key={plant.id} 
+                    className="element" 
+                    onClick={() => openPlantModal(plant)}
+                    style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', height: '212px'}}
+                  >
+                    <div style={{width: '196px', height: '148px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F5F5', borderRadius: '20px', marginTop: '8px', overflow: 'hidden'}}>
                       <PlantImage
                         src={plant.plant.photo}
                         alt={plant.plant.name}
-                        style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '20px'}}
+                        style={{width: '100%', height: '100%', objectFit: 'cover'}}
                       />
                     </div>
-                  ))}
-                  <button 
-                    className="button_room"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedRoomForPlant(room);
-                      setAddToRoomModalOpen(true);
-                    }}
-                  >
-                    +
-                  </button>
+                    <p className="plant_name">{plant.plant.name}</p>
+                    <p className="place_of_plant">Комната: {plant.room || "Без комнаты"}</p>
+                  </div>
+                ))}
+                <div className="element" onClick={() => setAddPlantModalOpen(true)} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                  <div style={{display:'flex', justifyContent:'center', alignItems:'flex-end', height:'148px', width:'196px'}}>
+                    <button className="button_add">+</button>
+                  </div>
+                  <p className="add_new_plant_new_place">Добавить <br /> новое растение</p>
                 </div>
-                <p style={{fontWeight:'500', fontSize:'16px', marginTop:'12px', textAlign: 'center'}}>{room.name}</p>
-              </div> 
-            ))}
-
-            <div className="element" onClick={() => setAddRoomModalOpen(true)} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-              <div style={{display:'flex', justifyContent:'center', alignItems:'flex-end', height:'131px', width:'212px'}}>
-                <button className="button_add">+</button>
               </div>
-              <p className="add_new_plant_new_place">Добавить<br />новую комнату</p>
-            </div>                
-          </div>          
-        </section>
+            </section>
+            
+            <div className="vertical_line"></div>
+
+            <section className="right_side_rooms" style={{overflowY: 'auto', maxHeight: 'calc(100vh - 74px)'}}>
+              <p className="p_center">Мои комнаты</p>
+              <div className="side_elements">
+                {rooms.map((room) => (
+                  <div key={room.id} onClick={() => openRoomModal(room)} style={{cursor: 'pointer'}}>   
+                    <div className="element" style={{display:'flex', flexWrap:'wrap', justifyContent: 'center', alignItems: 'center', minHeight: '212px'}}>
+                      {room.userPlants.slice(0, 2).map((plant: UserPlant) => (
+                        <div key={plant.id} style={{width: '92px', height: '92px', margin: '8px 12px 12px 8px'}}>
+                          <PlantImage
+                            src={plant.plant.photo}
+                            alt={plant.plant.name}
+                            style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '20px'}}
+                          />
+                        </div>
+                      ))}
+                      <button 
+                        className="button_room"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedRoomForPlant(room);
+                          setAddToRoomModalOpen(true);
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <p style={{fontWeight:'500', fontSize:'16px', marginTop:'12px', textAlign: 'center'}}>{room.name}</p>
+                  </div> 
+                ))}
+                <div className="element" onClick={() => setAddRoomModalOpen(true)} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                  <div style={{display:'flex', justifyContent:'center', alignItems:'flex-end', height:'131px', width:'212px'}}>
+                    <button className="button_add">+</button>
+                  </div>
+                  <p className="add_new_plant_new_place">Добавить<br />новую комнату</p>
+                </div>                
+              </div>          
+            </section>
+          </>
+        )}
       </main>
 
-      {/* Модальное окно комнаты */}
-      {roomModalOpen && selectedRoom && (
-        <div className="modal-overlay" onClick={() => setRoomModalOpen(false)}>
-          <section className="modal-content" onClick={e => e.stopPropagation()} style={{width: '70%', maxWidth: '900px', maxHeight: '85vh', overflowY: 'auto'}}>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
-              <h2 style={{margin: 0, fontSize: '28px'}}>{selectedRoom.name}</h2>
-              <button onClick={() => setRoomModalOpen(false)} style={{background: 'none', border: 'none', fontSize: '28px', cursor: 'pointer'}}>×</button>
+      {/* Модальные окна для десктопной версии */}
+      {isLoggedIn && (
+        <>
+          {roomModalOpen && selectedRoom && (
+            <div className="modal-overlay" onClick={() => setRoomModalOpen(false)}>
+              <section className="modal-content" onClick={e => e.stopPropagation()} style={{width: '70%', maxWidth: '900px', maxHeight: '85vh', overflowY: 'auto'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
+                  <h2 style={{margin: 0, fontSize: '28px'}}>{selectedRoom.name}</h2>
+                  <button onClick={() => setRoomModalOpen(false)} style={{background: 'none', border: 'none', fontSize: '28px', cursor: 'pointer'}}>×</button>
+                </div>
+                <div style={{display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'flex-start'}}>
+                  {selectedRoom.userPlants.map((plant) => (
+                    <div 
+                      key={plant.id} 
+                      onClick={() => {
+                        setRoomModalOpen(false);
+                        openPlantModal(plant);
+                      }}
+                      style={{
+                        width: '180px',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        backgroundColor: '#fff',
+                        borderRadius: '16px',
+                        padding: '16px',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                      }}
+                    >
+                      <div style={{width: '148px', height: '112px', margin: '0 auto', backgroundColor: '#F5F5F5', borderRadius: '12px', overflow: 'hidden'}}>
+                        <PlantImage
+                          src={plant.plant.photo}
+                          alt={plant.plant.name}
+                          style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                        />
+                      </div>
+                      <p style={{fontWeight: '500', margin: '12px 0 4px 0', fontSize: '16px'}}>{plant.plant.name}</p>
+                    </div>
+                  ))}
+                  <div 
+                    onClick={() => {
+                      setSelectedRoomForPlant(selectedRoom);
+                      setAddToRoomModalOpen(true);
+                      setRoomModalOpen(false);
+                    }}
+                    style={{
+                      width: '180px',
+                      cursor: 'pointer',
+                      textAlign: 'center',
+                      backgroundColor: '#F5F5F5',
+                      borderRadius: '16px',
+                      padding: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      minHeight: '180px',
+                    }}
+                  >
+                    <button className="button_add" style={{width: '60px', height: '60px', fontSize: '28px'}}>+</button>
+                    <p style={{marginTop: '16px', fontSize: '14px', fontWeight: '500'}}>Добавить растение</p>
+                  </div>
+                </div>
+              </section>
             </div>
-            
-            <div style={{display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'flex-start'}}>
-              {selectedRoom.userPlants.map((plant) => (
-                <div 
-                  key={plant.id} 
-                  onClick={() => {
-                    setRoomModalOpen(false);
-                    openPlantModal(plant);
-                  }}
-                  style={{
-                    width: '180px',
-                    cursor: 'pointer',
-                    textAlign: 'center',
-                    backgroundColor: '#fff',
-                    borderRadius: '16px',
-                    padding: '16px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                    transition: 'transform 0.2s, box-shadow 0.2s'
-                  }}
-                >
-                  <div style={{width: '148px', height: '112px', margin: '0 auto', backgroundColor: '#F5F5F5', borderRadius: '12px', overflow: 'hidden'}}>
+          )}
+
+          {modalOpen && selectedPlant && (
+            <div className="modal-overlay" onClick={closePlantModal}>
+              <section className="modal-content" onClick={e => e.stopPropagation()} style={{maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto'}}>
+                <div style={{display:"inline-flex", gap: "33px", flexWrap: "wrap"}}>
+                  <div style={{width: '220px', height: '220px', backgroundColor: '#F5F5F5', borderRadius: '20px', overflow: 'hidden'}}>
                     <PlantImage
-                      src={plant.plant.photo}
-                      alt={plant.plant.name}
+                      src={selectedPlant.image}
+                      alt={selectedPlant.name}
                       style={{width: '100%', height: '100%', objectFit: 'cover'}}
                     />
                   </div>
-                  <p style={{fontWeight: '500', margin: '12px 0 4px 0', fontSize: '16px'}}>{plant.plant.name}</p>
-                  <p style={{fontSize: '12px', color: '#666', margin: 0}}>Кликните для деталей</p>
-                </div>
-              ))}
-              
-              <div 
-                onClick={() => {
-                  setSelectedRoomForPlant(selectedRoom);
-                  setAddToRoomModalOpen(true);
-                  setRoomModalOpen(false);
-                }}
-                style={{
-                  width: '180px',
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                  backgroundColor: '#F5F5F5',
-                  borderRadius: '16px',
-                  padding: '16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minHeight: '180px',
-                  transition: 'background-color 0.2s'
-                }}
-              >
-                <button className="button_add" style={{width: '60px', height: '60px', fontSize: '28px'}}>+</button>
-                <p style={{marginTop: '16px', fontSize: '14px', fontWeight: '500'}}>Добавить растение</p>
-              </div>
-            </div>
-          </section>
-        </div>
-      )}
-
-      {/* Модальное окно для просмотра растения */}
-      {modalOpen && selectedPlant && (
-        <div className="modal-overlay" onClick={closePlantModal}>
-          <section className="modal-content" onClick={e => e.stopPropagation()} style={{maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto'}}>
-            <div style={{display:"inline-flex", gap: "33px", flexWrap: "wrap"}}>
-              <div style={{width: '220px', height: '220px', backgroundColor: '#F5F5F5', borderRadius: '20px', overflow: 'hidden'}}>
-                <PlantImage
-                  src={selectedPlant.image}
-                  alt={selectedPlant.name}
-                  style={{width: '100%', height: '100%', objectFit: 'cover'}}
-                />
-              </div>
-              <div>
-                <h1 style={{fontSize:"36px", fontWeight:"500", color:"#2E2E2E", margin:"0"}}>{selectedPlant.name}</h1>
-                <p style={{fontSize:"16px", color:"#2E2E2E", fontWeight:"450" }}>Комната: {selectedPlant.room}</p>
-                <div style={{marginTop: "10px"}}>
-                  <label>Цвет фона: </label>
-                  <input 
-                    type="color" 
-                    value={userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF"}
-                    onChange={(e) => {
-                      const plant = userPlants.find(p => p.id === selectedPlant.id);
-                      if (plant) handleUpdateColor(plant.id, e.target.value);
-                    }}
-                    style={{marginLeft: "10px"}}
-                  />
-                </div>
-              </div>
-            </div>
-            
-            <h1 style={{fontSize:"36px", fontWeight:"500", color:"#2E2E2E", margin:"0", marginTop:"36px"}}>Уход за растением</h1>
-            
-            <div style={{marginTop:"20px"}}>
-              <div style={{width:"100%", display:"flex", alignItems:"center", marginBottom: "15px"}}>
-                <img style={{width:"52px", height:"52px"}} src="/plant_light.svg" alt=""/>
-                <div style={{marginLeft:"14px"}}>
-                  <p style={{fontSize:"24px", fontWeight:"450"}}>Описание</p>
-                  <p style={{fontSize:"20px"}}>{selectedPlant.description}</p>
-                </div>
-              </div>
-              <hr style={{width:"100%", marginBottom:"14px", opacity:"50%", borderColor:"#A8C686"}}/>
-
-              <div style={{width:"100%", display:"flex", alignItems:"center", marginBottom: "15px"}}>
-                <img style={{width:"52px", height:"52px"}} src="/plant_light.svg" alt=""/>
-                <div style={{marginLeft:"14px"}}>
-                  <p style={{fontSize:"24px", fontWeight:"450"}}>Сезон</p>
-                  <p style={{fontSize:"20px"}}>{selectedPlant.season}</p>
-                </div>
-              </div>
-              <hr style={{width:"100%", marginBottom:"14px", opacity:"50%", borderColor:"#A8C686"}}/>
-            </div>
-            
-            <footer className="modal_footer" style={{marginTop: "20px", display: "flex", gap: "12px", justifyContent: "flex-end"}}>
-              <button 
-                style={{backgroundColor:"#DF7171", color:"white", width:"252px", height:"43px", fontSize:"16px", border: "none", borderRadius: "8px", cursor: "pointer"}}
-                onClick={() => handleDeleteUserPlant(selectedPlant.id)}
-              >
-                Удалить растение
-              </button>
-            </footer>
-          </section>
-        </div>
-      )}
-
-      {/* Модальное окно для добавления растения */}
-      {addPlantModalOpen && (
-        <div className="modal-overlay" onClick={() => setAddPlantModalOpen(false)}>
-          <section className="modal-content" onClick={e => e.stopPropagation()}>
-            <h2>Добавить растение</h2>
-            <input
-              type="text"
-              placeholder="Поиск растения..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{width: "100%", padding: "10px", margin: "10px 0", borderRadius: "8px", border: "1px solid #ccc"}}
-            />
-            
-            {searchResults.length > 0 && (
-              <div style={{maxHeight: "300px", overflowY: "auto", margin: "10px 0"}}>
-                {searchResults.map((plant) => (
-                  <div
-                    key={plant.id}
-                    onClick={() => setSelectedPlantToAdd(plant)}
-                    style={{
-                      padding: "10px",
-                      border: selectedPlantToAdd?.id === plant.id ? "2px solid #A8C686" : "1px solid #eee",
-                      borderRadius: "8px",
-                      margin: "5px 0",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px"
-                    }}
-                  >
-                    <div style={{width: "40px", height: "40px", backgroundColor: "#F5F5F5", borderRadius: "8px", overflow: "hidden"}}>
-                      <PlantImage
-                        src={plant.photo}
-                        alt={plant.name}
-                        style={{width: "100%", height: "100%", objectFit: "cover"}}
+                  <div>
+                    <h1 style={{fontSize:"36px", fontWeight:"500", color:"#2E2E2E", margin:"0"}}>{selectedPlant.name}</h1>
+                    <p style={{fontSize:"16px", color:"#2E2E2E", fontWeight:"450" }}>Комната: {selectedPlant.room}</p>
+                    <div style={{marginTop: "10px"}}>
+                      <label>Цвет фона: </label>
+                      <input 
+                        type="color" 
+                        value={userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF"}
+                        onChange={(e) => {
+                          const plant = userPlants.find(p => p.id === selectedPlant.id);
+                          if (plant) handleUpdateColor(plant.id, e.target.value);
+                        }}
+                        style={{marginLeft: "10px"}}
                       />
                     </div>
-                    <div>
-                      <strong>{plant.name}</strong>
-                      <p style={{fontSize: "12px", margin: "0"}}>{plant.season}</p>
+                  </div>
+                </div>
+                <h1 style={{fontSize:"36px", fontWeight:"500", color:"#2E2E2E", margin:"0", marginTop:"36px"}}>Уход за растением</h1>
+                <div style={{marginTop:"20px"}}>
+                  <div style={{width:"100%", display:"flex", alignItems:"center", marginBottom: "15px"}}>
+                    <img style={{width:"52px", height:"52px"}} src="/plant_light.svg" alt=""/>
+                    <div style={{marginLeft:"14px"}}>
+                      <p style={{fontSize:"24px", fontWeight:"450"}}>Описание</p>
+                      <p style={{fontSize:"20px"}}>{selectedPlant.description}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-
-            {selectedPlantToAdd && (
-              <div style={{marginTop: "10px"}}>
-                <label>Выбрать комнату: </label>
-                <select 
-                  value={selectedRoomForAdd}
-                  onChange={(e) => setSelectedRoomForAdd(e.target.value)}
-                  style={{marginLeft: "10px", padding: "5px", borderRadius: "5px"}}
-                >
-                  <option value="">Без комнаты</option>
-                  {rooms.map(room => (
-                    <option key={room.id} value={room.name}>{room.name}</option>
-                  ))}
-                </select>
-                
-                <div style={{marginTop: "10px"}}>
-                  <label>Цвет фона: </label>
-                  <input 
-                    type="color" 
-                    value={selectedColor}
-                    onChange={(e) => setSelectedColor(e.target.value)}
-                    style={{marginLeft: "10px"}}
-                  />
+                  <hr style={{width:"100%", marginBottom:"14px", opacity:"50%", borderColor:"#A8C686"}}/>
+                  <div style={{width:"100%", display:"flex", alignItems:"center", marginBottom: "15px"}}>
+                    <img style={{width:"52px", height:"52px"}} src="/plant_light.svg" alt=""/>
+                    <div style={{marginLeft:"14px"}}>
+                      <p style={{fontSize:"24px", fontWeight:"450"}}>Сезон</p>
+                      <p style={{fontSize:"20px"}}>{selectedPlant.season}</p>
+                    </div>
+                  </div>
+                  <hr style={{width:"100%", marginBottom:"14px", opacity:"50%", borderColor:"#A8C686"}}/>
                 </div>
-              </div>
-            )}
-
-            <footer className="modal_footer">
-              <button 
-                style={{backgroundColor:"#A8C686", color:"white", width:"100%", height:"43px", fontSize:"16px", border: "none", borderRadius: "8px", cursor: "pointer"}}
-                onClick={handleAddUserPlant}
-                disabled={!selectedPlantToAdd}
-              >
-                Добавить
-              </button>
-            </footer>
-          </section>
-        </div>
-      )}
-
-      {/* Модальное окно для добавления растения в комнату */}
-      {addToRoomModalOpen && selectedRoomForPlant && (
-        <div className="modal-overlay" onClick={() => setAddToRoomModalOpen(false)}>
-          <section className="modal-content" onClick={e => e.stopPropagation()}>
-            <h2>Добавить растение в "{selectedRoomForPlant.name}"</h2>
-            <input
-              type="text"
-              placeholder="Поиск растения..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{width: "100%", padding: "10px", margin: "10px 0", borderRadius: "8px", border: "1px solid #ccc"}}
-            />
-            
-            {searchResults.length > 0 && (
-              <div style={{maxHeight: "300px", overflowY: "auto", margin: "10px 0"}}>
-                {searchResults.map((plant) => (
-                  <div
-                    key={plant.id}
-                    onClick={() => setSelectedPlantToAdd(plant)}
-                    style={{
-                      padding: "10px",
-                      border: selectedPlantToAdd?.id === plant.id ? "2px solid #A8C686" : "1px solid #eee",
-                      borderRadius: "8px",
-                      margin: "5px 0",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px"
-                    }}
+                <footer className="modal_footer" style={{marginTop: "20px", display: "flex", gap: "12px", justifyContent: "flex-end"}}>
+                  <button 
+                    style={{backgroundColor:"#DF7171", color:"white", width:"252px", height:"43px", fontSize:"16px", border: "none", borderRadius: "8px", cursor: "pointer"}}
+                    onClick={() => handleDeleteUserPlant(selectedPlant.id)}
                   >
-                    <div style={{width: "40px", height: "40px", backgroundColor: "#F5F5F5", borderRadius: "8px", overflow: "hidden"}}>
-                      <PlantImage
-                        src={plant.photo}
-                        alt={plant.name}
-                        style={{width: "100%", height: "100%", objectFit: "cover"}}
+                    Удалить растение
+                  </button>
+                </footer>
+              </section>
+            </div>
+          )}
+
+          {addPlantModalOpen && (
+            <div className="modal-overlay" onClick={() => setAddPlantModalOpen(false)}>
+              <section className="modal-content" onClick={e => e.stopPropagation()}>
+                <h2>Добавить растение</h2>
+                <input
+                  type="text"
+                  placeholder="Поиск растения..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{width: "100%", padding: "10px", margin: "10px 0", borderRadius: "8px", border: "1px solid #ccc"}}
+                />
+                {searchResults.length > 0 && (
+                  <div style={{maxHeight: "300px", overflowY: "auto", margin: "10px 0"}}>
+                    {searchResults.map((plant) => (
+                      <div
+                        key={plant.id}
+                        onClick={() => setSelectedPlantToAdd(plant)}
+                        style={{
+                          padding: "10px",
+                          border: selectedPlantToAdd?.id === plant.id ? "2px solid #A8C686" : "1px solid #eee",
+                          borderRadius: "8px",
+                          margin: "5px 0",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px"
+                        }}
+                      >
+                        <div style={{width: "40px", height: "40px", backgroundColor: "#F5F5F5", borderRadius: "8px", overflow: "hidden"}}>
+                          <PlantImage
+                            src={plant.photo}
+                            alt={plant.name}
+                            style={{width: "100%", height: "100%", objectFit: "cover"}}
+                          />
+                        </div>
+                        <div>
+                          <strong>{plant.name}</strong>
+                          <p style={{fontSize: "12px", margin: "0"}}>{plant.season}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {selectedPlantToAdd && (
+                  <div style={{marginTop: "10px"}}>
+                    <label>Выбрать комнату: </label>
+                    <select 
+                      value={selectedRoomForAdd}
+                      onChange={(e) => setSelectedRoomForAdd(e.target.value)}
+                      style={{marginLeft: "10px", padding: "5px", borderRadius: "5px"}}
+                    >
+                      <option value="">Без комнаты</option>
+                      {rooms.map(room => (
+                        <option key={room.id} value={room.name}>{room.name}</option>
+                      ))}
+                    </select>
+                    <div style={{marginTop: "10px"}}>
+                      <label>Цвет фона: </label>
+                      <input 
+                        type="color" 
+                        value={selectedColor}
+                        onChange={(e) => setSelectedColor(e.target.value)}
+                        style={{marginLeft: "10px"}}
                       />
                     </div>
-                    <div>
-                      <strong>{plant.name}</strong>
-                      <p style={{fontSize: "12px", margin: "0"}}>{plant.season}</p>
-                    </div>
                   </div>
-                ))}
-              </div>
-            )}
+                )}
+                <footer className="modal_footer">
+                  <button 
+                    style={{backgroundColor:"#A8C686", color:"white", width:"100%", height:"43px", fontSize:"16px", border: "none", borderRadius: "8px", cursor: "pointer"}}
+                    onClick={handleAddUserPlant}
+                    disabled={!selectedPlantToAdd}
+                  >
+                    Добавить
+                  </button>
+                </footer>
+              </section>
+            </div>
+          )}
 
-            {selectedPlantToAdd && (
-              <div style={{marginTop: "10px"}}>
-                <label>Цвет фона: </label>
-                <input 
-                  type="color" 
-                  value={selectedColor}
-                  onChange={(e) => setSelectedColor(e.target.value)}
-                  style={{marginLeft: "10px"}}
+          {addToRoomModalOpen && selectedRoomForPlant && (
+            <div className="modal-overlay" onClick={() => setAddToRoomModalOpen(false)}>
+              <section className="modal-content" onClick={e => e.stopPropagation()}>
+                <h2>Добавить растение в "{selectedRoomForPlant.name}"</h2>
+                <input
+                  type="text"
+                  placeholder="Поиск растения..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{width: "100%", padding: "10px", margin: "10px 0", borderRadius: "8px", border: "1px solid #ccc"}}
                 />
-              </div>
-            )}
+                {searchResults.length > 0 && (
+                  <div style={{maxHeight: "300px", overflowY: "auto", margin: "10px 0"}}>
+                    {searchResults.map((plant) => (
+                      <div
+                        key={plant.id}
+                        onClick={() => setSelectedPlantToAdd(plant)}
+                        style={{
+                          padding: "10px",
+                          border: selectedPlantToAdd?.id === plant.id ? "2px solid #A8C686" : "1px solid #eee",
+                          borderRadius: "8px",
+                          margin: "5px 0",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px"
+                        }}
+                      >
+                        <div style={{width: "40px", height: "40px", backgroundColor: "#F5F5F5", borderRadius: "8px", overflow: "hidden"}}>
+                          <PlantImage
+                            src={plant.photo}
+                            alt={plant.name}
+                            style={{width: "100%", height: "100%", objectFit: "cover"}}
+                          />
+                        </div>
+                        <div>
+                          <strong>{plant.name}</strong>
+                          <p style={{fontSize: "12px", margin: "0"}}>{plant.season}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {selectedPlantToAdd && (
+                  <div style={{marginTop: "10px"}}>
+                    <label>Цвет фона: </label>
+                    <input 
+                      type="color" 
+                      value={selectedColor}
+                      onChange={(e) => setSelectedColor(e.target.value)}
+                      style={{marginLeft: "10px"}}
+                    />
+                  </div>
+                )}
+                <footer className="modal_footer">
+                  <button 
+                    style={{backgroundColor:"#A8C686", color:"white", width:"100%", height:"43px", fontSize:"16px", border: "none", borderRadius: "8px", cursor: "pointer"}}
+                    onClick={handleAddPlantToRoom}
+                    disabled={!selectedPlantToAdd}
+                  >
+                    Добавить в комнату
+                  </button>
+                </footer>
+              </section>
+            </div>
+          )}
 
-            <footer className="modal_footer">
-              <button 
-                style={{backgroundColor:"#A8C686", color:"white", width:"100%", height:"43px", fontSize:"16px", border: "none", borderRadius: "8px", cursor: "pointer"}}
-                onClick={handleAddPlantToRoom}
-                disabled={!selectedPlantToAdd}
-              >
-                Добавить в комнату
-              </button>
-            </footer>
-          </section>
-        </div>
-      )}
-
-      {/* Модальное окно для добавления комнаты */}
-      {addRoomModalOpen && (
-        <div className="modal-overlay" onClick={() => setAddRoomModalOpen(false)}>
-          <section className="modal-content" onClick={e => e.stopPropagation()}>
-            <h2>Добавить комнату</h2>
-            <input
-              type="text"
-              placeholder="Название комнаты..."
-              value={newRoomName}
-              onChange={(e) => setNewRoomName(e.target.value)}
-              style={{width: "100%", padding: "10px", margin: "10px 0", borderRadius: "8px", border: "1px solid #ccc"}}
-            />
-            <footer className="modal_footer">
-              <button 
-                style={{backgroundColor:"#A8C686", color:"white", width:"100%", height:"43px", fontSize:"16px", border: "none", borderRadius: "8px", cursor: "pointer"}}
-                onClick={addNewRoom}
-              >
-                Добавить
-              </button>
-            </footer>
-          </section>
-        </div>
+          {addRoomModalOpen && (
+            <div className="modal-overlay" onClick={() => setAddRoomModalOpen(false)}>
+              <section className="modal-content" onClick={e => e.stopPropagation()}>
+                <h2>Добавить комнату</h2>
+                <input
+                  type="text"
+                  placeholder="Название комнаты..."
+                  value={newRoomName}
+                  onChange={(e) => setNewRoomName(e.target.value)}
+                  style={{width: "100%", padding: "10px", margin: "10px 0", borderRadius: "8px", border: "1px solid #ccc"}}
+                />
+                <footer className="modal_footer">
+                  <button 
+                    style={{backgroundColor:"#A8C686", color:"white", width:"100%", height:"43px", fontSize:"16px", border: "none", borderRadius: "8px", cursor: "pointer"}}
+                    onClick={addNewRoom}
+                  >
+                    Добавить
+                  </button>
+                </footer>
+              </section>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

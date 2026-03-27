@@ -15,13 +15,12 @@ function User() {
     password: "",
     newPassword: "",
   });
-  const [screenSize, setScreenSize] = useState('desktop'); // desktop, tablet, mobile
+  const [screenSize, setScreenSize] = useState('desktop'); 
 
   const isCalendarActive = location.pathname === "/";
   const isMyPlantsActive = location.pathname === "/plants/my_plants";
   const isUserActive = location.pathname === "/user";
 
-  // Определение размера экрана
   useEffect(() => {
     const checkScreenSize = () => {
       const width = window.innerWidth;
