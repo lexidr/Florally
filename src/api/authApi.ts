@@ -173,7 +173,7 @@ export const confirmEmail = async (token: string) => {
     console.log("confirmEmail: URL запроса:", url);
 
     const response = await Http({
-      method: "post",
+      method: "get",
       url: url,
     });
 
@@ -267,7 +267,7 @@ export const getCurrentUser = async () => {
   console.log("getCurrentUser: Получение текущего пользователя");
 
   try {
-    const url = `${API}/auth/me`;
+    const url = `${API}/auth`;
     console.log("getCurrentUser: URL запроса:", url);
     console.log("getCurrentUser: Текущие заголовки:", Http.defaults.headers);
 

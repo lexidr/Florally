@@ -1,5 +1,6 @@
 import "./ForgotPasswordModal.css";
 import { useState } from "react";
+import { forgotPassword, verifyResetCode, resetPassword } from "../../api/passwordApi";
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;
@@ -7,7 +8,7 @@ interface ForgotPasswordModalProps {
   initialEmail?: string;
 }
 
-type ModalStep = 'email' | 'code' | 'newPassword';
+type ModalStep = 'email' | 'code' | 'newPassword' | 'success';
 
 const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPasswordModalProps) => {
   const [currentStep, setCurrentStep] = useState<ModalStep>('email');
@@ -16,8 +17,16 @@ const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPassw
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleClose = () => {
+    setCurrentStep('email');
+    setErrors({});
+    setIsLoading(false);
+    onClose();
+  };
 
   const validateEmail = (): boolean => {
     if (!email.trim()) {
@@ -36,76 +45,68 @@ const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPassw
       setErrors({ code: "Введите код" });
       return false;
     }
-    if (code.length < 4) {
-      setErrors({ code: "Код должен содержать минимум 4 символа" });
-      return false;
-    }
     return true;
   };
 
-  const validateNewPassword = (): boolean => {
+  const validatePasswords = (): boolean => {
     const newErrors: Record<string, string> = {};
-    
-    if (!newPassword) {
-      newErrors.newPassword = "Введите пароль";
-    } else if (newPassword.length < 6) {
-      newErrors.newPassword = "Пароль должен содержать минимум 6 символов";
-    }
-    
-    if (!confirmPassword) {
-      newErrors.confirmPassword = "Повторите пароль";
-    } else if (newPassword !== confirmPassword) {
-      newErrors.confirmPassword = "Пароли не совпадают";
-    }
+    if (newPassword.length < 8) newErrors.newPassword = "Минимум 8 символов";
+    if (newPassword !== confirmPassword) newErrors.confirmPassword = "Пароли не совпадают";
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateEmail()) {
-      console.log("Отправка email для восстановления:", email);
+    if (!validateEmail()) return;
+
+    setIsLoading(true);
+    try {
+      await forgotPassword({ email });
       setCurrentStep('code');
       setErrors({});
+    } catch (err: any) {
+      setErrors({ email: err.response?.data?.message || "Ошибка при отправке кода" });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleCodeSubmit = (e: React.FormEvent) => {
+  const handleCodeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateCode()) {
-      console.log("Проверка кода:", code);
-      setCurrentStep('newPassword');
-      setErrors({});
-    }
-  };
+    if (!validateCode()) return;
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validateNewPassword()) {
-      console.log("Установка нового пароля");
-      onClose();
-      setTimeout(() => {
-        setCurrentStep('email');
-        setEmail("");
-        setCode("");
-        setNewPassword("");
-        setConfirmPassword("");
+    setIsLoading(true);
+    try {
+      const res = await verifyResetCode({ email, code });
+      if (res.verified) {
+        setCurrentStep('newPassword');
         setErrors({});
-      }, 300);
+      } else {
+        setErrors({ code: "Неверный код" });
+      }
+    } catch (err: any) {
+      setErrors({ code: err.response?.data?.message || "Ошибка проверки кода" });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleClose = () => {
-    onClose();
-    setTimeout(() => {
-      setCurrentStep('email');
-      setEmail("");
-      setCode("");
-      setNewPassword("");
-      setConfirmPassword("");
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validatePasswords()) return;
+
+    setIsLoading(true);
+    try {
+      await resetPassword({ email, newPassword });
+      setCurrentStep('success');
       setErrors({});
-    }, 300);
+    } catch (err: any) {
+      setErrors({ newPassword: err.response?.data?.message || "Не удалось сменить пароль" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const renderStep = () => {
@@ -113,25 +114,22 @@ const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPassw
       case 'email':
         return (
           <>
-            <h2 className="modal-title">Введите почту</h2>
-            <form onSubmit={handleEmailSubmit} className="modal-form">
+            <h2 className="modal-title">Восстановление</h2>
+            <form onSubmit={handleEmailSubmit}>
               <div className="modal-field">
                 <input
                   type="email"
-                  id="reset-email"
-                  placeholder="Почта"
+                  placeholder="Ваш Email"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
                     if (errors.email) setErrors({});
                   }}
-                  className={errors.email ? "input-error" : ""}
                 />
                 {errors.email && <div className="error-text">{errors.email}</div>}
               </div>
-              
-              <button type="submit" className="modal-button">
-                Готово
+              <button type="submit" className="modal-button" disabled={isLoading}>
+                {isLoading ? "Отправка..." : "Отправить код"}
               </button>
             </form>
           </>
@@ -141,29 +139,22 @@ const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPassw
         return (
           <>
             <h2 className="modal-title">Введите код</h2>
-            <form onSubmit={handleCodeSubmit} className="modal-form">
-              
-              <div className="modal-note">
-                Отправленный на почту {email}
-              </div>
-              
+            <p className="modal-note">Код отправлен на {email}</p>
+            <form onSubmit={handleCodeSubmit}>
               <div className="modal-field">
                 <input
                   type="text"
-                  id="reset-code"
-                  placeholder="Код"
+                  placeholder="000000"
                   value={code}
                   onChange={(e) => {
                     setCode(e.target.value);
                     if (errors.code) setErrors({});
                   }}
-                  className={errors.code ? "input-error" : ""}
                 />
                 {errors.code && <div className="error-text">{errors.code}</div>}
               </div>
-              
-              <button type="submit" className="modal-button">
-                Готово
+              <button type="submit" className="modal-button" disabled={isLoading}>
+                {isLoading ? "Проверка..." : "Подтвердить"}
               </button>
             </form>
           </>
@@ -172,19 +163,17 @@ const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPassw
       case 'newPassword':
         return (
           <>
-            <h2 className="modal-title">Придумайте новый пароль</h2>
-            <form onSubmit={handlePasswordSubmit} className="modal-form">
+            <h2 className="modal-title">Новый пароль</h2>
+            <form onSubmit={handlePasswordSubmit}>
               <div className="modal-field">
                 <input
                   type="password"
-                  id="new-password"
-                  placeholder="Пароль"
+                  placeholder="Новый пароль"
                   value={newPassword}
                   onChange={(e) => {
                     setNewPassword(e.target.value);
                     if (errors.newPassword) setErrors({});
                   }}
-                  className={errors.newPassword ? "input-error" : ""}
                 />
                 {errors.newPassword && <div className="error-text">{errors.newPassword}</div>}
               </div>
@@ -192,22 +181,31 @@ const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPassw
               <div className="modal-field">
                 <input
                   type="password"
-                  id="confirm-password"
                   placeholder="Повторите пароль"
                   value={confirmPassword}
                   onChange={(e) => {
                     setConfirmPassword(e.target.value);
                     if (errors.confirmPassword) setErrors({});
                   }}
-                  className={errors.confirmPassword ? "input-error" : ""}
                 />
                 {errors.confirmPassword && <div className="error-text">{errors.confirmPassword}</div>}
               </div>
               
-              <button type="submit" className="modal-button">
-                Готово
+              <button type="submit" className="modal-button" disabled={isLoading}>
+                {isLoading ? "Сохранение..." : "Готово"}
               </button>
             </form>
+          </>
+        );
+
+      case 'success':
+        return (
+          <>
+            <h2 className="modal-title">Успешно!</h2>
+            <p className="modal-note">Ваш пароль был успешно изменен.</p>
+            <button className="modal-button" onClick={handleClose}>
+              Войти в аккаунт
+            </button>
           </>
         );
     }

@@ -27,6 +27,17 @@ const RegistrationForm = () => {
     {}
   );
 
+  // Состояние для всплывающего сообщения
+  const [toastMessage, setToastMessage] = useState<{
+    show: boolean;
+    message: string;
+    type: "success" | "error";
+  }>({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
   console.log("RegistrationForm: Начальное состояние:", {
     isLoading,
     error,
@@ -61,6 +72,16 @@ const RegistrationForm = () => {
       user: user ? "присутствует" : "отсутствует",
     });
   }, [isAuthenticated, navigate]);
+
+  // Автоматическое скрытие всплывающего сообщения через 5 секунд
+  useEffect(() => {
+    if (toastMessage.show) {
+      const timer = setTimeout(() => {
+        setToastMessage({ ...toastMessage, show: false });
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage.show]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -151,6 +172,14 @@ const RegistrationForm = () => {
     return Object.keys(errors).length === 0;
   };
 
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToastMessage({
+      show: true,
+      message,
+      type,
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -191,6 +220,16 @@ const RegistrationForm = () => {
           user: localStorage.getItem("user") ? "присутствует" : "отсутствует",
         }
       );
+
+      showToast("Регистрация успешна! Проверьте email для подтверждения", "success");
+      
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+      
     } catch (err: any) {
       console.error("RegistrationForm: Ошибка при регистрации:", err);
       console.error("RegistrationForm: Детали ошибки:", {
@@ -199,6 +238,9 @@ const RegistrationForm = () => {
         status: err.response?.status,
         config: err.config,
       });
+      
+      const errorMessage = err.response?.data?.message || err.message || "Ошибка при регистрации";
+      showToast(errorMessage, "error");
     }
   };
 
@@ -210,6 +252,16 @@ const RegistrationForm = () => {
     fontSize: "1.7vh",
   };
 
+  const toastStyles = {
+    success: {
+      backgroundColor: "#4caf50",
+      color: "white",
+    },
+    error: {
+      backgroundColor: "#f44336",
+      color: "white",
+    },
+  };
 
   console.log("RegistrationForm: Рендер компонента с состоянием:", {
     isLoading,
@@ -224,6 +276,54 @@ const RegistrationForm = () => {
 
   return (
     <section className="registration-container">
+      {/* Всплывающее сообщение */}
+      {toastMessage.show && (
+        <div
+          style={{
+            position: "fixed",
+            top: "20px",
+            right: "20px",
+            zIndex: 9999,
+            animation: "slideIn 0.3s ease-out",
+          }}
+        >
+          <div
+            style={{
+              ...toastStyles[toastMessage.type],
+              padding: "16px 24px",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              fontSize: "14px",
+              fontWeight: "500",
+              minWidth: "300px",
+              maxWidth: "400px",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+            }}
+          >
+            <span style={{ fontSize: "20px" }}>
+              {toastMessage.type === "success" ? "✓" : "✗"}
+            </span>
+            <span style={{ flex: 1 }}>{toastMessage.message}</span>
+            <button
+              onClick={() => setToastMessage({ ...toastMessage, show: false })}
+              style={{
+                background: "none",
+                border: "none",
+                color: "white",
+                fontSize: "18px",
+                cursor: "pointer",
+                padding: "0",
+                marginLeft: "8px",
+              }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="form-section">
         <div className="registration-card">
           <h2>Регистрация</h2>
@@ -348,6 +448,21 @@ const RegistrationForm = () => {
           className="background-image"
         />
       </div>
+
+      <style>
+        {`
+          @keyframes slideIn {
+            from {
+              transform: translateX(100%);
+              opacity: 0;
+            }
+            to {
+              transform: translateX(0);
+              opacity: 1;
+            }
+          }
+        `}
+      </style>
     </section>
   );
 };
