@@ -188,7 +188,7 @@ function HomePage() {
 
   if (loading) {
     return (
-      <div className="app">
+      <div className="appp">
         <header className="header">
           <div className="header-content">
             <img src={"/logo.svg"} alt="Florally" className="logo" />
@@ -206,7 +206,7 @@ function HomePage() {
   }
 
   return (
-    <div className="app">
+    <div className="appp">
       <header className="header">
         <div className="header-content">
           <img src={"/logo.svg"} alt="Florally" className="logo" />

@@ -17,7 +17,7 @@ body {
   color: #2d3436;
 }
 
-.app {
+.appp {
   position: relative;
   width: 100vw;
   height: 100vh;
@@ -109,7 +109,7 @@ body {
   align-items: flex-start;
 }
 
-/* Десктопная навигация - видна на десктопе, скрыта на мобильных */
+/* Десктопная навигация - видна на десктопе и планшетах */
 .desktop-navigation {
   display: flex;
   align-items: center;
@@ -149,7 +149,7 @@ body {
   height: 36px;
 }
 
-/* Мобильная навигация внизу - скрыта на десктопе */
+/* Мобильная навигация внизу - по умолчанию скрыта */
 .mobile-bottom-menu {
   display: none;
   position: fixed;
@@ -445,7 +445,7 @@ body {
   margin-top: -50px;
 }
 
-/* ========== АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (как десктоп, но с уменьшенными блоками) ========== */
+/* ========== АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ ========== */
 @media (min-width: 769px) and (max-width: 1200px) {
   .main-content {
     gap: 16px;
@@ -493,9 +493,13 @@ body {
     display: none;
   }
   
-  /* На планшетах мобильная навигация скрыта, десктопная видна */
+  /* На планшетах показываем десктопную навигацию, скрываем мобильную */
+  .desktop-navigation {
+    display: flex !important;
+  }
+  
   .mobile-bottom-menu {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -512,15 +516,14 @@ body {
     margin-left: 15px;
   }
 
-  /* Скрываем десктопную навигацию */
+  /* На мобильных скрываем десктопную навигацию */
   .desktop-navigation {
-    display: none;
+    display: none !important;
   }
 
-  /* Показываем мобильную навигацию */
+  /* На мобильных показываем мобильную навигацию */
   .mobile-bottom-menu {
-    display: flex;
-    flex-shrink: 0;
+    display: flex !important;
   }
 
   .auth-section {
@@ -735,5 +738,17 @@ body {
   .plant-image-right,
   .plant-image-left {
     display: none;
+  }
+}
+
+/* Десктоп (ширина более 1200px) */
+@media (min-width: 1201px) {
+  /* На десктопе показываем только десктопную навигацию */
+  .desktop-navigation {
+    display: flex !important;
+  }
+  
+  .mobile-bottom-menu {
+    display: none !important;
   }
 }
