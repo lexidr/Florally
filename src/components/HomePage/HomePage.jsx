@@ -12,9 +12,26 @@ function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [screenSize, setScreenSize] = useState('desktop');
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      if (width <= 810) {
+        setScreenSize('mobile');
+      } else {
+        setScreenSize('desktop');
+      }
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   useEffect(() => {
     const authCheck = async () => {
@@ -201,6 +218,159 @@ function HomePage() {
             <p>Проверка аутентификации...</p>
           </div>
         </main>
+      </div>
+    );
+  }
+
+  if (screenSize === 'mobile') {
+    return (
+      <div className="mobile-app">
+        <header className="mobile-header">
+          <div className="mobile-header-content">
+            <img src={"/logo.svg"} alt="Florally" className="mobile-logo" />
+          </div>
+        </header>
+
+        <main className="mobile-main-content">
+          <div className="mobile-content-wrapper">
+            <div className="mobile-form-container full-height">
+              {!isLoggedIn ? (
+                <>
+                  <h2 className="mobile-title">
+                    Зарегистрируйся,
+                    <br />
+                    чтобы знать больше
+                    <br />
+                    о своих растениях!
+                  </h2>
+                  
+                  <div className="mobile-button-container">
+                    <Link to="/auth/signup" className="mobile-registration-link">
+                      <button className="mobile-registration-button">
+                        Зарегистрироваться
+                      </button>
+                    </Link>
+                  </div>
+
+                  <div className="mobile-login-container">
+                    <span className="mobile-login-text">
+                      Есть аккаунт?{" "}
+                      <Link to="/auth/signin" className="mobile-login-link">
+                        Войти
+                      </Link>
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="mobile-calendar-wrapper">
+                  <h2 className="mobile-calendar-title">Календарь</h2>
+                  
+                  <div className="mobile-calendar-container">
+                    <div className="mobile-calendar-nav">
+                      <button className="mobile-calendar-nav-button" onClick={prevMonth}>
+                        &lt;
+                      </button>
+                      <h3 className="mobile-calendar-month">
+                        {currentMonth} {currentYear}
+                      </h3>
+                      <button className="mobile-calendar-nav-button" onClick={nextMonth}>
+                        &gt;
+                      </button>
+                    </div>
+                    
+                    <div className="mobile-calendar">
+                      <ul className="mobile-weekdays">
+                        <li>Пн</li>
+                        <li>Вт</li>
+                        <li>Ср</li>
+                        <li>Чт</li>
+                        <li>Пт</li>
+                        <li>Сб</li>
+                        <li>Вс</li>
+                      </ul>
+                      <div className="mobile-calendar-days">
+                        {calendarDays.map((week, weekIndex) => (
+                          <div key={weekIndex} className="mobile-week">
+                            {week.map((day, dayIndex) => {
+                              const today = isToday(day);
+                              const selected = isSelected(day);
+
+                              return (
+                                <div
+                                  key={`${weekIndex}-${dayIndex}`}
+                                  className={`mobile-calendar-day ${day === "" ? "mobile-empty" : ""} ${
+                                    today ? "mobile-today" : ""
+                                  } ${selected ? "mobile-selected" : ""}`}
+                                  onClick={() => handleDayClick(day)}
+                                >
+                                  {day}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <h2 className="mobile-tasks-title">Задачи на день</h2>
+                  
+                  <div className="mobile-tasks-container">
+                    <div className="mobile-tasks-list">
+                      <div className="mobile-task-item">
+                        <div className="mobile-task-checkbox"></div>
+                        <div className="mobile-task-content">
+                          <p className="mobile-task-title">Полить цветы</p>
+                          <p className="mobile-task-time">Сегодня, 18:00</p>
+                        </div>
+                      </div>
+                      <div className="mobile-task-item">
+                        <div className="mobile-task-checkbox"></div>
+                        <div className="mobile-task-content">
+                          <p className="mobile-task-title">Удобрить растения</p>
+                          <p className="mobile-task-time">Завтра, 10:00</p>
+                        </div>
+                      </div>
+                      <div className="mobile-task-item">
+                        <div className="mobile-task-checkbox"></div>
+                        <div className="mobile-task-content">
+                          <p className="mobile-task-title">Опрыскать листья</p>
+                          <p className="mobile-task-time">Сегодня, 15:30</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </main>
+
+        <div className="mobile-bottom-menu">
+          <Link to="/plants/my_plants" className="mobile-menu-item">
+            <img 
+              src="/ph_plant-light.svg" 
+              alt="Мои растения" 
+              className={`mobile-menu-icon ${isMyPlantsActive ? 'active-icon' : ''}`}
+            />
+          </Link>
+          
+          <Link to="/" className="mobile-menu-item">
+            <img 
+              src="/proicons_calendar.svg" 
+              alt="Календарь" 
+              className={`mobile-menu-icon ${isCalendarActive ? 'active-icon' : ''}`}
+            />
+          </Link>
+          
+          <Link to="/user" className="mobile-menu-item">
+            <img 
+              src="/ion_person-outline.svg" 
+              alt="Профиль" 
+              className={`mobile-menu-icon ${isUserActive ? 'active-icon' : ''}`}
+            />
+          </Link>
+        </div>
       </div>
     );
   }
