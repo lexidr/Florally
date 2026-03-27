@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { checkAuth, SignOut } from "../../api/authApi";
+import { checkAuth, SignOut,update } from "../../api/authApi";
+import { IUpdateUserDto } from "../../api/authApi.types";
+import { getUserPlants } from "../../api/plantsApi";
 import "./User.css";
 
 function User() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [plants, setPlants] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
     newPassword: "",
   });
-  const [screenSize, setScreenSize] = useState('desktop'); 
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
+  const [screenSize, setScreenSize] = useState('desktop');
 
   const isCalendarActive = location.pathname === "/";
   const isMyPlantsActive = location.pathname === "/plants/my_plants";
@@ -53,6 +59,11 @@ function User() {
             password: "",
             newPassword: "",
           });
+
+          if (authData.user.id) {
+            const userPlants = await getUserPlants();
+            setPlants(userPlants);
+          }
         }
       } catch (error) {
         console.error("Ошибка при проверке аутентификации:", error);
@@ -68,6 +79,14 @@ function User() {
 
   const handleLoginClick = () => {
     navigate("/auth/signin");
+  };
+
+  const handleViewMoreClick = () => {
+    navigate("/plants/my_plants");
+  };  
+
+  const handleAddPlantClick = () => {
+    navigate("/plants/my_plants");
   };
 
   const handleLogoutClick = async () => {
@@ -88,17 +107,73 @@ function User() {
     }
   };
 
-  const handleFormChange = (e) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+    setError("");
+    setSuccessMessage("");
   };
 
-  const handleSaveChanges = () => {
-    console.log("Сохранение изменений:", formData);
-    alert("Изменения сохранены");
+  const handleSaveChanges = async () => {
+    const updatePayload: IUpdateUserDto = {};
+
+    // Проверка изменения имени
+    if (formData.username !== user?.username && formData.username.trim() !== "") {
+      updatePayload.username = formData.username;
+    }
+
+    // Проверка изменения email
+    if (formData.email !== user?.email && formData.email.trim() !== "") {
+      updatePayload.email = formData.email;
+    }
+
+    // Логика смены пароля
+    const isNewPasswordEntered = formData.newPassword.trim() !== "";
+    
+    if (isNewPasswordEntered) {
+      if (!formData.password.trim()) {
+        setError("Для смены пароля необходимо ввести текущий пароль");
+        return;
+      }
+      if (formData.newPassword.length < 6) {
+        setError("Новый пароль должен быть не менее 6 символов");
+        return;
+      }
+      updatePayload.oldPassword = formData.password; 
+      updatePayload.password = formData.newPassword;
+    }
+
+    if (Object.keys(updatePayload).length === 0) {
+      setError("Вы не внесли никаких изменений");
+      return;
+    }
+
+    setIsSaving(true);
+    setError("");
+    setSuccessMessage("");
+
+    try {
+      const updatedUser = await update(updatePayload);
+      
+      setUser(updatedUser);
+      
+      setFormData(prev => ({
+        ...prev,
+        password: "",
+        newPassword: ""
+      }));
+
+      setSuccessMessage("Данные успешно обновлены!");
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error: any) {
+      const message = error.response?.data?.message || "Ошибка при сохранении";
+      setError(Array.isArray(message) ? message[0] : message); 
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const formatRegistrationDate = () => {
@@ -161,6 +236,33 @@ function User() {
 
                   <div className="mobile-user-form">
                     <h2 className="mobile-section-title">Редактировать профиль</h2>
+                    
+                    {error && (
+                      <div className="error-message" style={{
+                        backgroundColor: '#ffebee',
+                        color: '#c62828',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        marginBottom: '15px',
+                        fontSize: '14px'
+                      }}>
+                        {error}
+                      </div>
+                    )}
+                    
+                    {successMessage && (
+                      <div className="success-message" style={{
+                        backgroundColor: '#e8f5e9',
+                        color: '#2e7d32',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        marginBottom: '15px',
+                        fontSize: '14px'
+                      }}>
+                        {successMessage}
+                      </div>
+                    )}
+                    
                     <div className="mobile-form-grid">
                       <div className="mobile-form-group">
                         <label htmlFor="username">Имя</label>
@@ -198,6 +300,7 @@ function User() {
                           onChange={handleFormChange}
                           placeholder="Текущий пароль"
                           className="mobile-input"
+                          autoComplete="current-password"
                         />
                       </div>
 
@@ -211,6 +314,7 @@ function User() {
                           onChange={handleFormChange}
                           placeholder="Новый пароль"
                           className="mobile-input"
+                          autoComplete="new-password"
                         />
                       </div>
                     </div>
@@ -218,19 +322,47 @@ function User() {
                     <button
                       className="mobile-save-changes-btn"
                       onClick={handleSaveChanges}
+                      disabled={isSaving}
+                      style={{
+                        opacity: isSaving ? 0.7 : 1,
+                        cursor: isSaving ? 'not-allowed' : 'pointer'
+                      }}
                     >
-                      Сохранить изменения
+                      {isSaving ? "Сохранение..." : "Сохранить изменения"}
                     </button>
                   </div>
 
                   <div className="mobile-user-plants">
                     <h2 className="mobile-section-title">Мои растения</h2>
-                    <div className="mobile-plants-grid">
-                      <div className="mobile-plant-square"></div>
-                      <div className="mobile-plant-square"></div>
-                      <div className="mobile-plant-square"></div>
-                    </div>
-                    <button className="mobile-view-more-btn">Посмотреть еще</button>
+                    {plants && plants.length > 0 ? (
+                      <>
+                        <div className="mobile-plants-grid">
+                          {plants.slice(0, 3).map((userPlant) => (
+                            <div key={userPlant.id} className="mobile-plant-square">
+                              <img 
+                                src={userPlant.plant?.photo || "/plug-image-plant.png"} 
+                                alt={userPlant.plant?.name || "Растение"} 
+                                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} 
+                                onError={(e) => { (e.target as HTMLImageElement).src = "/plug-image-plant.png"; }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <button 
+                          className="mobile-view-more-btn" 
+                          onClick={handleViewMoreClick}
+                        >
+                          Посмотреть еще
+                        </button>
+                      </>
+                    ) : (
+                      <button 
+                        className="mobile-view-more-btn" 
+                        onClick={handleAddPlantClick}
+                      >
+                        Добавить растение
+                      </button>
+                    )}
                   </div>
 
                   <div className="mobile-user-actions">
@@ -367,6 +499,31 @@ function User() {
 
                 <div className="user-form">
                   <h2>Редактировать профиль</h2>
+                  
+                  {error && (
+                    <div className="error-message" style={{
+                      backgroundColor: '#ffebee',
+                      color: '#c62828',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      marginBottom: '20px'
+                    }}>
+                      {error}
+                    </div>
+                  )}
+                  
+                  {successMessage && (
+                    <div className="success-message" style={{
+                      backgroundColor: '#e8f5e9',
+                      color: '#2e7d32',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      marginBottom: '20px'
+                    }}>
+                      {successMessage}
+                    </div>
+                  )}
+                  
                   <div className="form-grid">
                     <div className="form-group">
                       <label htmlFor="username">Имя</label>
@@ -401,6 +558,7 @@ function User() {
                         value={formData.password}
                         onChange={handleFormChange}
                         placeholder="Текущий пароль"
+                        autoComplete="current-password"
                       />
                     </div>
 
@@ -413,6 +571,7 @@ function User() {
                         value={formData.newPassword}
                         onChange={handleFormChange}
                         placeholder="Новый пароль"
+                        autoComplete="new-password"
                       />
                     </div>
                   </div>
@@ -420,19 +579,37 @@ function User() {
                   <button
                     className="save-changes-btn"
                     onClick={handleSaveChanges}
+                    disabled={isSaving}
+                    style={{
+                      opacity: isSaving ? 0.7 : 1,
+                      cursor: isSaving ? 'not-allowed' : 'pointer'
+                    }}
                   >
-                    Сохранить изменения
+                    {isSaving ? "Сохранение..." : "Сохранить изменения"}
                   </button>
                 </div>
 
                 <div className="user-plants">
                   <h2>Мои растения</h2>
-                  <div className="plants-grid">
-                    <div className="plant-square"></div>
-                    <div className="plant-square"></div>
-                    <div className="plant-square"></div>
-                  </div>
-                  <button className="view-more-btn">Посмотреть еще</button>
+                  {plants && plants.length > 0 ? (
+                    <>
+                      <div className="plants-grid">
+                        {plants.slice(0, 3).map((userPlant) => (
+                          <div key={userPlant.id} className="plant-square">
+                            <img 
+                              src={userPlant.plant?.photo || "/plug-image-plant.png"} 
+                              alt={userPlant.plant?.name || "Растение"} 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} 
+                              onError={(e) => { (e.target as HTMLImageElement).src = "/plug-image-plant.png"; }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <button className="view-more-btn" onClick={handleViewMoreClick}>Посмотреть еще</button>
+                    </>
+                  ) : (
+                    <button className="view-more-btn" onClick={handleAddPlantClick}>Добавить растение</button>
+                  )}
                 </div>
 
                 <div className="user-actions">

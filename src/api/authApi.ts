@@ -1,5 +1,13 @@
 import { Http, API } from "../constants/api";
-import { ISignIn, ISignUp } from "./authApi.types";
+import { ISignIn, ISignUp, IUpdateUserDto} from "./authApi.types";
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 console.log("authApi.ts: Импортированные переменные:");
 console.log("  - API:", API);
@@ -355,15 +363,24 @@ export const refreshToken = async () => {
   }
 };
 
-export const updateProfile = async (updateDto: { username?: string; email?: string }) => {
-  const response = await Http.patch("/user", updateDto);
-  return response.data;
+export const update = async (userData: IUpdateUserDto) => {
+  try {
+    const url = `${API}/user`; 
+    const response = await Http.patch(url, userData);
+
+    if (response.data) {
+      const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+      const updatedUser = { ...currentUser, ...response.data };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      return updatedUser;
+    }
+    return response.data;
+  } catch (error: any) {
+    console.error("Ошибка при обновлении:", error);
+    throw error;
+  }
 };
 
-export const changeUserPassword = async (passwordDto: { oldPassword: string; newPassword: string }) => {
-  const response = await Http.post("/user/change-password", passwordDto);
-  return response.data;
-};
 console.log("authApi.ts: Настройка interceptors для Http");
 
 Http.interceptors.response.use(
@@ -425,5 +442,6 @@ export default {
   checkAuth,
   getCurrentUser,
   refreshToken,
-  confirmEmail, 
+  confirmEmail,
+  update,
 };

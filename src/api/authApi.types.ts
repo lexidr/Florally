@@ -22,3 +22,10 @@ export interface IAuthResponse {
     updated_at?: string;
   };
 }
+
+export interface IUpdateUserDto {
+  username?: string;
+  email?: string;
+  oldPassword?: string;
+  password?: string;
+}
