@@ -14,7 +14,6 @@
   height: 100vh;
 }
 
-
 @keyframes float {
   0%, 100% {
     transform: translateY(0);
@@ -124,11 +123,17 @@
 }
 
 .left_side_plants{
-
   max-width: 699px;
   margin: 37px 80px;
   max-height: calc(100vh - 74px);
   text-align: center;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;    
+}
+
+.left_side_plants::-webkit-scrollbar {
+  display: none;
 }
 
 .side_elements{
@@ -138,8 +143,6 @@
   width: 100%;
   margin-top: 20px;
   justify-content: flex-start;
-
-
 }
 
 .left_side_plants>p{
@@ -149,12 +152,17 @@
 }
 
 .right_side_rooms{
-  
   max-width: 445px;
   margin: 37px 80px;
   height: calc(100vh - 74px);
-  
   text-align: center;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;    
+}
+
+.right_side_rooms::-webkit-scrollbar {
+  display: none;  
 }
 
 .right_side_rooms>p{
@@ -164,32 +172,34 @@
 }
 
 .vertical_line{
-
   border-right: 3px solid #A8C686;
   height: calc(100% - 74px);
   margin: 37px 0;
   display: flex;
   align-items: center;
-  
 }
 
-.element{
-  max-width: 212px;
-  max-height: 212px;
-  min-width: 162px;
-  min-height: 162px;
-  background-color: #ffff;
-  border-radius: 28px;
-  text-align: center;
-  cursor: pointer;
-  
+.element {
+    width: 212px;
+    height: 212px;
+    background-color: #ffff;
+    border-radius: 28px;
+    text-align: center;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-.plant_name{
-  font-family: "Stolzl";
-  font-weight: 500;
-  font-size: 16px;
-  
+.plant_name {
+    font-family: "Stolzl";
+    font-weight: 500;
+    font-size: 16px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 196px;
+    text-align: center;
 }
 
 .place_of_plant{
@@ -199,14 +209,14 @@
 }
 
 .zamiokulcas_left_side{
-  max-width: 196px;
-  max-height: 148px;
-  min-width: 146px;
-  min-height: 112px;
+  width: 196px;
+  height: 148px;
+  object-fit: cover;
   margin-top: 8px;
   margin-left: 8px;
   margin-right: 8px;
   border-radius: 20px;
+  display: block;
 }
 
 .add_new_plant_new_place{
@@ -224,7 +234,6 @@
   display: flex;
   align-items: center;
   height: 36px;
-  display: flex;
   justify-content: center;
 }
 
@@ -238,7 +247,6 @@
   max-height: 88px;
   max-width: 88px;
   font-size: 20px;
-  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -254,17 +262,14 @@
   justify-content: center;
   width: 92px; 
   height: 92px;
-   margin: 0 8px 8px 0;
-
+  margin: 0 8px 8px 0;
 }
 
 .my_plant_mobile{
   margin-top: 32px;
   font-size: 28px;
   text-align: center;
-
 }
-
 
 .element_mobile{
   width: 162px;
@@ -273,23 +278,23 @@
   border-radius: 28px;
   text-align: center;
   cursor: pointer;
-  
 }
 
 .zamiokulcas_mobile{
-  max-width: 146px;
-  max-height: 112px;
+  width: 146px;
+  height: 112px;
+  object-fit: cover;
   margin-top: 8px;
   margin-left: 8px;
   margin-right: 8px;
   border-radius: 20px;
+  display: block;
 }
 
 .plant_name_mobile{
   font-family: "Stolzl";
   font-weight: 500;
   font-size: 12px;
-  
 }
 
 .place_of_plant_mobile{
@@ -323,7 +328,6 @@
   min-height: 64px;
   max-width: 64px;
   font-size: 20px;
-  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -339,7 +343,7 @@
   justify-content: center;
   width: 64px; 
   height: 64px;
-  margin:'0 11px 11px 0'
+  margin: 0 11px 11px 0;
 }
 
 .my_rooms_mobile{
@@ -372,7 +376,7 @@
   z-index: 1000;
 }
 
-.modal-content {
+.modal-contentMP {
   background: white;
   padding: 28px;
   min-width: 50vw;
@@ -389,13 +393,13 @@
   right: 10px;
   font-size: 20px;
   cursor: pointer;
-  
 }
 
 .modal_img_plant_dekstop{
   width: 220px;
   height: 220px;
   border-radius: 20px;
+  object-fit: cover;
 }
 
 .modal_footer{
@@ -406,8 +410,6 @@
   margin-top: auto;
 }
 
-
-/* Мобильная версия MyPlant */
 .mobile-myplants-content {
   flex: 1;
   padding-top: 52px;
@@ -444,18 +446,12 @@
 .mobile-add-card {
   width: calc(50% - 8px);
   min-width: 140px;
-  background-color: white;
+  background-color: white !important;
   border-radius: 20px;
   padding: 12px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   text-align: center;
-}
-
-.mobile-plant-card:active,
-.mobile-room-card:active,
-.mobile-add-card:active {
-  transform: scale(0.98);
 }
 
 .mobile-plant-image {
@@ -467,12 +463,20 @@
   margin-bottom: 12px;
 }
 
+.mobile-plant-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .mobile-room-preview {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
+  align-items: center;
   margin-bottom: 12px;
+  min-height: 128px;
 }
 
 .mobile-room-preview-image {
@@ -481,6 +485,13 @@
   background-color: #F5F5F5;
   border-radius: 12px;
   overflow: hidden;
+  flex-shrink: 0;
+}
+
+.mobile-room-preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .mobile-room-add-btn {
@@ -640,8 +651,6 @@
   transition: all 0.3s ease;
 }
 
-.login-required-container-desktop .login-button:hover {
-  background-color: #9cb97a;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(156, 185, 122, 0.3);
+.element .button_room {
+  transition: transform 0.2s;
 }
