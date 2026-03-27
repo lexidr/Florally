@@ -69,12 +69,10 @@ async function deleteComment(commentId: string): Promise<void> {
     throw new Error("Failed to delete comment");
   }
 }
-// ---- End Comments API helpers ----
-
-// Тип для комнаты
 interface Room {
   id: string;
   name: string;
+  user_id: string;
   userPlants: UserPlant[];
 }
 
@@ -83,10 +81,86 @@ interface SelectedPlant {
   id: string;
   name: string;
   room: string;
+  roomId?: string;
   image: string;
   description: string;
   season: string;
   customCare?: any[];
+}
+
+async function getUserRooms(): Promise<Room[]> {
+  const token = localStorage.getItem("access_token");
+  const response = await fetch(`${API}/user_rooms`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch rooms");
+  }
+  return response.json();
+}
+
+async function createRoom(name: string): Promise<Room> {
+  const token = localStorage.getItem("access_token");
+  const response = await fetch(`${API}/user_rooms`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+    body: JSON.stringify({ name }),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to create room");
+  }
+  return response.json();
+}
+
+async function deleteRoom(roomId: string): Promise<void> {
+  const token = localStorage.getItem("access_token");
+  const response = await fetch(`${API}/user_rooms/${roomId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to delete room");
+  }
+}
+
+async function addPlantToRoom(roomId: string, userPlantId: string): Promise<Room> {
+  const token = localStorage.getItem("access_token");
+  const response = await fetch(`${API}/user_rooms/${roomId}/plants/${userPlantId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to add plant to room");
+  }
+  return response.json();
+}
+
+async function removePlantFromRoom(roomId: string, userPlantId: string): Promise<Room> {
+  const token = localStorage.getItem("access_token");
+  const response = await fetch(`${API}/user_rooms/${roomId}/plants/${userPlantId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to remove plant from room");
+  }
+  return response.json();
 }
 
 // Компонент для отображения фото с обработкой ошибок
@@ -170,12 +244,12 @@ function MyPlant() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedColor, setSelectedColor] = useState("#FFFFFF");
   const [searchError, setSearchError] = useState<string>("");
+  const [deletingRoomId, setDeletingRoomId] = useState<string | null>(null);
 
   const isCalendarActive = location.pathname === "/";
   const isMyPlantsActive = location.pathname === "/plants/my_plants";
   const isUserActive = location.pathname === "/user";
 
-  // Состояния для комментариев
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [newCommentText, setNewCommentText] = useState("");
@@ -207,23 +281,10 @@ function MyPlant() {
       console.log("🌱 MyPlant: Количество растений пользователя:", userPlantsData?.length || 0);
       setUserPlants(userPlantsData || []);
       
-      const roomsMap = new Map<string, UserPlant[]>();
-      (userPlantsData || []).forEach((plant) => {
-        const roomName = plant.room || "Без комнаты";
-        if (!roomsMap.has(roomName)) {
-          roomsMap.set(roomName, []);
-        }
-        roomsMap.get(roomName)!.push(plant);
-      });
-      
-      const roomsArray: Room[] = Array.from(roomsMap.entries()).map(([name, plants]) => ({
-        id: name,
-        name: name,
-        userPlants: plants,
-      }));
-      
-      console.log("🌱 MyPlant: Сформированы комнаты:", roomsArray);
-      setRooms(roomsArray);
+      console.log("🌱 MyPlant: Загружаем комнаты пользователя...");
+      const roomsData = await getUserRooms();
+      console.log("🌱 MyPlant: Получены комнаты:", roomsData);
+      setRooms(roomsData || []);
       
     } catch (error: any) {
       console.error("❌ MyPlant: Ошибка при загрузке данных:", error);
@@ -272,8 +333,18 @@ function MyPlant() {
     if (selectedPlantToAdd) {
       try {
         console.log("🌱 MyPlant: Добавляем растение:", selectedPlantToAdd.name);
-        await addUserPlant(selectedPlantToAdd.id, selectedColor);
+        const newPlant = await addUserPlant(selectedPlantToAdd.id, selectedColor);
         console.log("🌱 MyPlant: Растение успешно добавлено");
+        
+        // Если выбрана комната, добавляем растение в комнату
+        if (selectedRoomForAdd) {
+          const room = rooms.find(r => r.name === selectedRoomForAdd);
+          if (room) {
+            await addPlantToRoom(room.id, newPlant.id);
+            console.log("🌱 MyPlant: Растение добавлено в комнату:", selectedRoomForAdd);
+          }
+        }
+        
         await loadData();
         setAddPlantModalOpen(false);
         setSelectedPlantToAdd(null);
@@ -293,9 +364,17 @@ function MyPlant() {
     if (selectedPlantToAdd && selectedRoomForPlant) {
       try {
         console.log("🌱 MyPlant: Добавляем растение в комнату:", selectedPlantToAdd.name, "в комнату", selectedRoomForPlant.name);
-        const newUserPlant = await addUserPlant(selectedPlantToAdd.id, selectedColor);
-        await updateUserPlant(newUserPlant.id, { room: selectedRoomForPlant.name });
+        
+        let userPlantId = userPlants.find(p => p.plant.id === selectedPlantToAdd.id)?.id;
+        
+        if (!userPlantId) {
+          const newPlant = await addUserPlant(selectedPlantToAdd.id, selectedColor);
+          userPlantId = newPlant.id;
+        }
+        
+        await addPlantToRoom(selectedRoomForPlant.id, userPlantId);
         await loadData();
+        
         setAddToRoomModalOpen(false);
         setSelectedPlantToAdd(null);
         setSearchQuery("");
@@ -303,8 +382,8 @@ function MyPlant() {
         setSearchError("");
         alert(`Растение добавлено в комнату "${selectedRoomForPlant.name}"!`);
         
-        if (roomModalOpen && selectedRoom && selectedRoom.name === selectedRoomForPlant.name) {
-          const updatedRoom = rooms.find(r => r.name === selectedRoomForPlant.name);
+        if (roomModalOpen && selectedRoom && selectedRoom.id === selectedRoomForPlant.id) {
+          const updatedRoom = rooms.find(r => r.id === selectedRoomForPlant.id);
           if (updatedRoom) {
             setSelectedRoom(updatedRoom);
           }
@@ -312,6 +391,27 @@ function MyPlant() {
       } catch (error) {
         console.error("❌ MyPlant: Ошибка при добавлении растения:", error);
         alert("Ошибка при добавлении растения");
+      }
+    }
+  };
+
+  const handleRemovePlantFromRoom = async (userPlantId: string, roomId: string) => {
+    const confirmRemove = window.confirm("Удалить растение из этой комнаты?");
+    if (confirmRemove) {
+      try {
+        await removePlantFromRoom(roomId, userPlantId);
+        await loadData();
+        
+        if (roomModalOpen && selectedRoom && selectedRoom.id === roomId) {
+          const updatedRoom = rooms.find(r => r.id === roomId);
+          if (updatedRoom) {
+            setSelectedRoom(updatedRoom);
+          }
+        }
+        alert("Растение удалено из комнаты");
+      } catch (error) {
+        console.error("Ошибка при удалении растения из комнаты:", error);
+        alert("Ошибка при удалении растения из комнаты");
       }
     }
   };
@@ -332,7 +432,7 @@ function MyPlant() {
     }
   };
 
-  const addNewRoom = () => {
+  const addNewRoom = async () => {
     if (!newRoomName.trim()) {
       alert("Введите название комнаты");
       return;
@@ -343,16 +443,37 @@ function MyPlant() {
       return;
     }
 
-    const newRoom: Room = {
-      id: Date.now().toString(),
-      name: newRoomName.trim(),
-      userPlants: [],
-    };
+    try {
+      await createRoom(newRoomName.trim());
+      await loadData();
+      setAddRoomModalOpen(false);
+      setNewRoomName("");
+      alert("Комната успешно добавлена!");
+    } catch (error: any) {
+      console.error("Ошибка при создании комнаты:", error);
+      alert(error.message || "Ошибка при создании комнаты");
+    }
+  };
 
-    setRooms([...rooms, newRoom]);
-    setAddRoomModalOpen(false);
-    setNewRoomName("");
-    alert("Комната успешно добавлена!");
+  const handleDeleteRoom = async (roomId: string, roomName: string) => {
+    const confirmDelete = window.confirm(`Вы уверены, что хотите удалить комнату "${roomName}"? Растения в этой комнате не будут удалены.`);
+    if (confirmDelete) {
+      setDeletingRoomId(roomId);
+      try {
+        await deleteRoom(roomId);
+        await loadData();
+        if (roomModalOpen && selectedRoom?.id === roomId) {
+          setRoomModalOpen(false);
+          setSelectedRoom(null);
+        }
+        alert("Комната успешно удалена!");
+      } catch (error) {
+        console.error("Ошибка при удалении комнаты:", error);
+        alert("Ошибка при удалении комнаты");
+      } finally {
+        setDeletingRoomId(null);
+      }
+    }
   };
 
   const handleUpdateColor = async (userPlantId: string, color: string) => {
@@ -372,10 +493,12 @@ function MyPlant() {
   };
 
   const openPlantModal = async (plant: UserPlant) => {
+    const roomObj = rooms.find(r => r.userPlants.some(p => p.id === plant.id));
     setSelectedPlant({
       id: plant.id,
       name: plant.plant.name,
       room: plant.room || "Без комнаты",
+      roomId: roomObj?.id,
       image: plant.plant.photo || "",
       description: plant.plant.description,
       season: plant.plant.season,
@@ -558,6 +681,12 @@ function MyPlant() {
                           key={plant.id} 
                           className="mobile-plant-card"
                           onClick={() => openPlantModal(plant)}
+                          style={{
+                            backgroundColor: plant.color || "#FFFFFF",
+                            borderRadius: '16px',
+                            padding: '12px',
+                            transition: 'background-color 0.3s ease'
+                          }}
                         >
                           <div className="mobile-plant-image">
                             <PlantImage
@@ -589,8 +718,12 @@ function MyPlant() {
                       <div key={room.id} className="mobile-room-card" onClick={() => openRoomModal(room)}>
                         <div className="mobile-room-preview">
                           {room.userPlants.slice(0, room.userPlants.length <= 3 ? 3 : 4).map((plant) => (
-                            <div key={plant.id} className="mobile-room-preview-image">
-                              <PlantImage src={plant.plant.photo} alt={plant.plant.name} style={{width:'100%', height:'100%'}}/>
+                            <div key={plant.id} className="mobile-room-preview-image" style={{
+                              backgroundColor: plant.color || "#FFFFFF",
+                              borderRadius: '12px',
+                              padding: '2px'
+                            }}>
+                              <PlantImage src={plant.plant.photo} alt={plant.plant.name} style={{width:'100%', height:'100%', borderRadius: '10px'}}/>
                             </div>
                           ))}
                           {room.userPlants.length <= 3 && (
@@ -601,7 +734,26 @@ function MyPlant() {
                             }}>+</button>
                           )}
                         </div>
-                        <p className="mobile-room-name">{room.name}</p>
+                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px'}}>
+                          <p className="mobile-room-name">{room.name}</p>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteRoom(room.id, room.name);
+                            }}
+                            disabled={deletingRoomId === room.id}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#DF7171',
+                              fontSize: '18px',
+                              cursor: 'pointer',
+                              padding: '4px 8px'
+                            }}
+                          >
+                            {deletingRoomId === room.id ? '...' : '🗑️'}
+                          </button>
+                        </div>
                       </div>
                     ))}
                     <div className="mobile-add-card" onClick={() => setAddRoomModalOpen(true)}>
@@ -662,10 +814,11 @@ function MyPlant() {
                           width: '140px',
                           cursor: 'pointer',
                           textAlign: 'center',
-                          backgroundColor: '#fff',
+                          backgroundColor: plant.color || "#FFFFFF",
                           borderRadius: '12px',
                           padding: '12px',
                           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                          position: 'relative'
                         }}
                       >
                         <div style={{width: '116px', height: '88px', margin: '0 auto', backgroundColor: '#F5F5F5', borderRadius: '8px', overflow: 'hidden'}}>
@@ -676,8 +829,52 @@ function MyPlant() {
                           />
                         </div>
                         <p style={{fontWeight: '500', margin: '8px 0 0 0', fontSize: '14px'}}>{plant.plant.name}</p>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemovePlantFromRoom(plant.id, selectedRoom.id);
+                          }}
+                          style={{
+                            position: 'absolute',
+                            top: '4px',
+                            right: '4px',
+                            background: 'rgba(223, 113, 113, 0.9)',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '24px',
+                            height: '24px',
+                            color: 'white',
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                        >
+                          ×
+                        </button>
                       </div>
                     ))}
+                    <div 
+                      onClick={() => {
+                        setSelectedRoomForPlant(selectedRoom);
+                        setAddToRoomModalOpen(true);
+                        setRoomModalOpen(false);
+                      }}
+                      style={{
+                        width: '140px',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        backgroundColor: '#F5F5F5',
+                        borderRadius: '12px',
+                        padding: '12px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: '140px',
+                      }}
+                    >
+                      <button className="button_add" style={{width: '40px', height: '40px', fontSize: '24px'}}>+</button>
+                      <p style={{marginTop: '8px', fontSize: '12px'}}>Добавить растение</p>
+                    </div>
                   </div>
                 </section>
               </div>
@@ -735,16 +932,52 @@ function MyPlant() {
                   
                   <h1 style={{fontSize:"28px", fontWeight:"500", color:"#2E2E2E", margin:"0", marginTop:"36px"}}>Уход за растением</h1>
                   <div style={{marginTop:"20px"}}>
-                    <div style={{width:"100%", display:"flex", alignItems:"center", marginBottom: "15px"}}>
-                      <img style={{width:"52px", height:"52px"}} src="/plant_light.svg" alt=""/>
+                    <div style={{
+                      width:"100%", 
+                      display:"flex", 
+                      alignItems:"center", 
+                      marginBottom: "15px",
+                      backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#F5F8F2",
+                      borderRadius: "12px",
+                      padding: "12px"
+                    }}>
+                      <div style={{
+                        width:"52px", 
+                        height:"52px", 
+                        backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#A8C686",
+                        borderRadius: "12px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}>
+                        <img style={{width:"32px", height:"32px"}} src="/plant_light.svg" alt=""/>
+                      </div>
                       <div style={{marginLeft:"14px"}}>
                         <p style={{fontSize:"20px", fontWeight:"450"}}>Описание</p>
                         <p style={{fontSize:"16px"}}>{selectedPlant.description}</p>
                       </div>
                     </div>
                     <hr style={{width:"100%", marginBottom:"14px", opacity:"50%", borderColor:"#A8C686"}}/>
-                    <div style={{width:"100%", display:"flex", alignItems:"center", marginBottom: "15px"}}>
-                      <img style={{width:"52px", height:"52px"}} src="/plant_light.svg" alt=""/>
+                    <div style={{
+                      width:"100%", 
+                      display:"flex", 
+                      alignItems:"center", 
+                      marginBottom: "15px",
+                      backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#F5F8F2",
+                      borderRadius: "12px",
+                      padding: "12px"
+                    }}>
+                      <div style={{
+                        width:"52px", 
+                        height:"52px", 
+                        backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#A8C686",
+                        borderRadius: "12px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}>
+                        <img style={{width:"32px", height:"32px"}} src="/plant_light.svg" alt=""/>
+                      </div>
                       <div style={{marginLeft:"14px"}}>
                         <p style={{fontSize:"20px", fontWeight:"450"}}>Сезон</p>
                         <p style={{fontSize:"16px"}}>{selectedPlant.season}</p>
@@ -763,9 +996,27 @@ function MyPlant() {
                       <p style={{color:"#999", fontSize:"14px"}}>Заметок пока нет. Добавьте первую!</p>
                     ) : (
                       comments.map(comment => (
-                        <div key={comment.id} style={{display:"flex", alignItems:"flex-start", gap:"10px", marginBottom:"12px"}}>
-                          <img style={{width:"40px", height:"40px", flexShrink:0}} src="/plant_light.svg" alt=""/>
-                          <div style={{flex:1, background:"#F5F8F2", borderRadius:"10px", padding:"10px 12px"}}>
+                        <div key={comment.id} style={{
+                          display:"flex", 
+                          alignItems:"flex-start", 
+                          gap:"10px", 
+                          marginBottom:"12px",
+                          backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#F5F8F2",
+                          borderRadius: "10px",
+                          padding: "10px 12px"
+                        }}>
+                          <div style={{
+                            width:"40px", 
+                            height:"40px", 
+                            backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#A8C686",
+                            borderRadius: "10px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center"
+                          }}>
+                            <img style={{width:"24px", height:"24px"}} src="/plant_light.svg" alt=""/>
+                          </div>
+                          <div style={{flex:1}}>
                             <p style={{fontSize:"14px", margin:0, lineHeight:"1.5", wordBreak:"break-word"}}>{comment.text}</p>
                           </div>
                           <button
@@ -793,6 +1044,7 @@ function MyPlant() {
                           fontSize:"14px",
                           fontFamily:"inherit",
                           outline:"none",
+                          backgroundColor: "#FFFFFF"
                         }}
                         onKeyDown={e => {
                           if (e.key === "Enter" && !e.shiftKey) {
@@ -813,7 +1065,6 @@ function MyPlant() {
                           fontSize:"14px",
                           cursor: newCommentText.trim() ? "pointer" : "default",
                           height:"44px",
-                          width: "20%",
                           flexShrink:0,
                         }}
                       >
@@ -949,6 +1200,78 @@ function MyPlant() {
                 </section>
               </div>
             )}
+
+            {addToRoomModalOpen && selectedRoomForPlant && (
+              <div className="modal-overlay" onClick={() => setAddToRoomModalOpen(false)}>
+                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px'}}>
+                  <h2>Добавить растение в "{selectedRoomForPlant.name}"</h2>
+                  <input
+                    type="text"
+                    placeholder="Поиск растения..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{width: '100%', padding: '10px', margin: '10px 0', borderRadius: '8px', border: '1px solid #ccc'}}
+                  />
+                  {searchError && (
+                    <div style={{color: 'red', fontSize: '12px', margin: '5px 0'}}>
+                      {searchError}
+                    </div>
+                  )}
+                  {searchResults.length > 0 && (
+                    <div style={{maxHeight: '300px', overflowY: 'auto', margin: '10px 0'}}>
+                      {searchResults.map((plant) => (
+                        <div
+                          key={plant.id}
+                          onClick={() => setSelectedPlantToAdd(plant)}
+                          style={{
+                            padding: '10px',
+                            border: selectedPlantToAdd?.id === plant.id ? '2px solid #A8C686' : '1px solid #eee',
+                            borderRadius: '8px',
+                            margin: '5px 0',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px'
+                          }}
+                        >
+                          <div style={{width: '40px', height: '40px', backgroundColor: '#F5F5F5', borderRadius: '8px', overflow: 'hidden'}}>
+                            <PlantImage
+                              src={plant.photo}
+                              alt={plant.name}
+                              style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                            />
+                          </div>
+                          <div>
+                            <strong>{plant.name}</strong>
+                            <p style={{fontSize: '12px', margin: '0'}}>{plant.season}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {selectedPlantToAdd && (
+                    <div style={{marginTop: '10px'}}>
+                      <label>Цвет фона: </label>
+                      <input 
+                        type="color" 
+                        value={selectedColor}
+                        onChange={(e) => setSelectedColor(e.target.value)}
+                        style={{marginLeft: '10px'}}
+                      />
+                    </div>
+                  )}
+                  <footer style={{marginTop: '20px'}}>
+                    <button 
+                      style={{backgroundColor: '#A8C686', color: 'white', width: '100%', padding: '12px', fontSize: '16px', border: 'none', borderRadius: '8px', cursor: 'pointer'}}
+                      onClick={handleAddPlantToRoom}
+                      disabled={!selectedPlantToAdd}
+                    >
+                      Добавить в комнату
+                    </button>
+                  </footer>
+                </section>
+              </div>
+            )}
           </>
         )}
       </div>
@@ -1020,7 +1343,19 @@ function MyPlant() {
                       key={plant.id} 
                       className="element" 
                       onClick={() => openPlantModal(plant)}
-                      style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', height: '212px', width: '212px'}}
+                      style={{
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between', 
+                        height: '212px', 
+                        width: '212px',
+                        backgroundColor: plant.color || "#F5F5F5",
+                        borderRadius: '20px',
+                        padding: '8px',
+                        transition: 'background-color 0.3s ease',
+                        cursor: 'pointer'
+                      }}
                     >
                       <div style={{width: '196px', height: '148px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F5F5', borderRadius: '20px', marginTop: '8px', overflow: 'hidden'}}>
                         <PlantImage
@@ -1049,32 +1384,65 @@ function MyPlant() {
               <p className="p_center">Мои комнаты</p>
               <div className="side_elements">
                 {rooms.map((room) => (
-                  <div key={room.id} onClick={() => openRoomModal(room)} style={{cursor: 'pointer'}}>   
-                    <div className="element" style={{display:'flex', flexWrap:'wrap', justifyContent: 'center', alignItems: 'center', padding: '8px'}}>
-                      {room.userPlants.slice(0, 4).map((plant) => (
-                        <div key={plant.id} style={{width: '92px', height: '92px', margin: '4px'}}>
-                          <PlantImage 
-                            src={plant.plant.photo} 
-                            alt={plant.plant.name} 
-                            style={{width: '100%', height: '100%', borderRadius: '12px'}}
-                          />
-                        </div>
-                      ))}
-                      {room.userPlants.length < 4 && (
-                        <button 
-                          className="button_room" 
-                          style={{margin: '4px'}} 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedRoomForPlant(room);
-                            setAddToRoomModalOpen(true);
-                          }}
-                        >
-                          +
-                        </button>
-                      )}
+                  <div key={room.id} style={{cursor: 'pointer', position: 'relative'}}>   
+                    <div onClick={() => openRoomModal(room)}>
+                      <div className="element" style={{display:'flex', flexWrap:'wrap', justifyContent: 'center', alignItems: 'center', padding: '8px'}}>
+                        {room.userPlants.slice(0, 4).map((plant) => (
+                          <div key={plant.id} style={{
+                            width: '92px', 
+                            height: '92px', 
+                            margin: '4px',
+                            backgroundColor: plant.color || "#FFFFFF",
+                            borderRadius: '12px',
+                            padding: '4px'
+                          }}>
+                            <PlantImage 
+                              src={plant.plant.photo} 
+                              alt={plant.plant.name} 
+                              style={{width: '100%', height: '100%', borderRadius: '8px'}}
+                            />
+                          </div>
+                        ))}
+                        {room.userPlants.length < 4 && (
+                          <button 
+                            className="button_room" 
+                            style={{margin: '4px'}} 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedRoomForPlant(room);
+                              setAddToRoomModalOpen(true);
+                            }}
+                          >
+                            +
+                          </button>
+                        )}
+                      </div>
+                      <p style={{fontWeight:'500', textAlign: 'center', marginTop: '8px'}}>{room.name}</p>
                     </div>
-                    <p style={{fontWeight:'500', textAlign: 'center', marginTop: '8px'}}>{room.name}</p>
+                    <button
+                      onClick={() => handleDeleteRoom(room.id, room.name)}
+                      disabled={deletingRoomId === room.id}
+                      style={{
+                        position: 'absolute',
+                        top: '8px',
+                        right: '8px',
+                        background: 'rgba(223, 113, 113, 0.8)',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '28px',
+                        height: '28px',
+                        color: 'white',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#DF7171'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(223, 113, 113, 0.8)'}
+                    >
+                      {deletingRoomId === room.id ? '...' : '🗑️'}
+                    </button>
                   </div> 
                 ))}
                 <div className="element" onClick={() => setAddRoomModalOpen(true)}>
@@ -1108,10 +1476,11 @@ function MyPlant() {
                         width: '180px',
                         cursor: 'pointer',
                         textAlign: 'center',
-                        backgroundColor: '#fff',
+                        backgroundColor: plant.color || "#FFFFFF",
                         borderRadius: '16px',
                         padding: '16px',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        position: 'relative'
                       }}
                     >
                       <div style={{width: '148px', height: '112px', margin: '0 auto', backgroundColor: '#F5F5F5', borderRadius: '12px', overflow: 'hidden'}}>
@@ -1122,6 +1491,32 @@ function MyPlant() {
                         />
                       </div>
                       <p style={{fontWeight: '500', margin: '12px 0 4px 0', fontSize: '16px'}}>{plant.plant.name}</p>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemovePlantFromRoom(plant.id, selectedRoom.id);
+                        }}
+                        style={{
+                          position: 'absolute',
+                          top: '8px',
+                          right: '8px',
+                          background: 'rgba(223, 113, 113, 0.9)',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '28px',
+                          height: '28px',
+                          color: 'white',
+                          cursor: 'pointer',
+                          fontSize: '16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#DF7171'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(223, 113, 113, 0.9)'}
+                      >
+                        ×
+                      </button>
                     </div>
                   ))}
                   <div 
@@ -1214,16 +1609,54 @@ function MyPlant() {
                 </h1>
                 
                 <div style={{marginTop: "0"}}>
-                  <div style={{width:"100%", display:"flex", alignItems:"flex-start", marginBottom: "20px"}}>
-                    <img style={{width:"52px", height:"52px", flexShrink: 0}} src="/plant_light.svg" alt=""/>
+                  <div style={{
+                    width:"100%", 
+                    display:"flex", 
+                    alignItems:"flex-start", 
+                    marginBottom: "20px",
+                    backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#F5F8F2",
+                    borderRadius: "12px",
+                    padding: "16px"
+                  }}>
+                    <div style={{
+                      width:"52px", 
+                      height:"52px", 
+                      backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#A8C686",
+                      borderRadius: "12px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0
+                    }}>
+                      <img style={{width:"32px", height:"32px"}} src="/plant_light.svg" alt=""/>
+                    </div>
                     <div style={{marginLeft:"14px", flex: 1}}>
                       <p style={{fontSize:"24px", fontWeight:"450", margin: "0 0 8px 0"}}>Описание</p>
                       <p style={{fontSize:"20px", margin: 0, lineHeight: "1.5"}}>{selectedPlant.description}</p>
                     </div>
                   </div>
                   <hr style={{width:"100%", margin:"20px 0", opacity:"50%", borderColor:"#A8C686"}}/>
-                  <div style={{width:"100%", display:"flex", alignItems:"flex-start", marginBottom: "20px"}}>
-                    <img style={{width:"52px", height:"52px", flexShrink: 0}} src="/plant_light.svg" alt=""/>
+                  <div style={{
+                    width:"100%", 
+                    display:"flex", 
+                    alignItems:"flex-start", 
+                    marginBottom: "20px",
+                    backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#F5F8F2",
+                    borderRadius: "12px",
+                    padding: "16px"
+                  }}>
+                    <div style={{
+                      width:"52px", 
+                      height:"52px", 
+                      backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#A8C686",
+                      borderRadius: "12px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0
+                    }}>
+                      <img style={{width:"32px", height:"32px"}} src="/plant_light.svg" alt=""/>
+                    </div>
                     <div style={{marginLeft:"14px", flex: 1}}>
                       <p style={{fontSize:"24px", fontWeight:"450", margin: "0 0 8px 0"}}>Сезон</p>
                       <p style={{fontSize:"18px", margin: 0, lineHeight: "1.5"}}>{selectedPlant.season}</p>
@@ -1242,9 +1675,28 @@ function MyPlant() {
                     <p style={{color:"#999", fontSize:"16px"}}>Заметок пока нет. Добавьте первую!</p>
                   ) : (
                     comments.map(comment => (
-                      <div key={comment.id} style={{display:"flex", alignItems:"flex-start", gap:"14px", marginBottom:"16px"}}>
-                        <img style={{width:"52px", height:"52px", flexShrink:0}} src="/plant_light.svg" alt=""/>
-                        <div style={{flex:1, background:"#F5F8F2", borderRadius:"12px", padding:"12px 16px"}}>
+                      <div key={comment.id} style={{
+                        display:"flex", 
+                        alignItems:"flex-start", 
+                        gap:"14px", 
+                        marginBottom:"16px",
+                        backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#F5F8F2",
+                        borderRadius: "12px",
+                        padding: "12px 16px"
+                      }}>
+                        <div style={{
+                          width:"52px", 
+                          height:"52px", 
+                          backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#A8C686",
+                          borderRadius: "12px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0
+                        }}>
+                          <img style={{width:"32px", height:"32px"}} src="/plant_light.svg" alt=""/>
+                        </div>
+                        <div style={{flex:1}}>
                           <p style={{fontSize:"18px", margin:0, lineHeight:"1.5", wordBreak:"break-word"}}>{comment.text}</p>
                         </div>
                         <button
@@ -1273,6 +1725,7 @@ function MyPlant() {
                         fontSize:"16px",
                         fontFamily:"inherit",
                         outline:"none",
+                        backgroundColor: "#FFFFFF"
                       }}
                       onKeyDown={e => {
                         if (e.key === "Enter" && !e.shiftKey) {
@@ -1293,6 +1746,7 @@ function MyPlant() {
                         fontSize:"16px",
                         cursor: newCommentText.trim() ? "pointer" : "default",
                         height:"48px",
+                        width: "20%",
                         flexShrink:0,
                         transition:"background-color 0.2s",
                       }}
