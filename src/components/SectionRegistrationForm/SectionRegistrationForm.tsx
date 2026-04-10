@@ -1,7 +1,6 @@
 import "./SectionRegistrationForm.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { useAuth } from "../../hooks/useAuth";
+import { useState } from "react";
 
 interface RegistrationFormData {
   username: string;
@@ -11,10 +10,11 @@ interface RegistrationFormData {
 }
 
 const RegistrationForm = () => {
-  console.log("RegistrationForm: Компонент монтируется");
-
   const navigate = useNavigate();
-  const { signUp, isLoading, error, clearError, isAuthenticated } = useAuth();
+
+
+  const isLoading = false;
+  const error = null;
 
   const [formData, setFormData] = useState<RegistrationFormData>({
     username: "",
@@ -23,74 +23,13 @@ const RegistrationForm = () => {
     confirmPassword: "",
   });
 
-  const [formErrors, setFormErrors] = useState<Partial<RegistrationFormData>>(
-    {}
-  );
+  const [formErrors, setFormErrors] = useState<Partial<RegistrationFormData>>({});
 
-  // Состояние для всплывающего сообщения
-  const [toastMessage, setToastMessage] = useState<{
-    show: boolean;
-    message: string;
-    type: "success" | "error";
-  }>({
-    show: false,
-    message: "",
-    type: "success",
-  });
-
-  console.log("RegistrationForm: Начальное состояние:", {
-    isLoading,
-    error,
-    isAuthenticated,
-    formData: {
-      ...formData,
-      password: "[СКРЫТО]",
-      confirmPassword: "[СКРЫТО]",
-    },
-    formErrors,
-  });
-
-  useEffect(() => {
-    console.log("RegistrationForm: useEffect запущен");
-    console.log(
-      "RegistrationForm: isAuthenticated изменился на:",
-      isAuthenticated
-    );
-
-    if (isAuthenticated) {
-      console.log(
-        "RegistrationForm: Пользователь аутентифицирован, перенаправляем на главную"
-      );
-      navigate("/");
-    }
-
-    // Проверяем localStorage
-    const token = localStorage.getItem("access_token");
-    const user = localStorage.getItem("user");
-    console.log("RegistrationForm: Проверка localStorage:", {
-      token: token ? "присутствует" : "отсутствует",
-      user: user ? "присутствует" : "отсутствует",
-    });
-  }, [isAuthenticated, navigate]);
-
-  // Автоматическое скрытие всплывающего сообщения через 5 секунд
-  useEffect(() => {
-    if (toastMessage.show) {
-      const timer = setTimeout(() => {
-        setToastMessage({ ...toastMessage, show: false });
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [toastMessage.show]);
+  const [showModal, setShowModal] = useState(false);
+  const [registeredUser, setRegisteredUser] = useState<{ username: string; email: string } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-
-    console.log(
-      `RegistrationForm: Изменение поля ${id}: "${
-        id === "password" || id === "confirmPassword" ? "[СКРЫТО]" : value
-      }"`
-    );
 
     setFormData((prev) => ({
       ...prev,
@@ -98,150 +37,56 @@ const RegistrationForm = () => {
     }));
 
     if (formErrors[id as keyof RegistrationFormData]) {
-      console.log(`RegistrationForm: Очистка ошибки для поля ${id}`);
       setFormErrors((prev) => ({
         ...prev,
         [id]: undefined,
       }));
     }
-
-    if (error) {
-      console.log("RegistrationForm: Очистка ошибки из useAuth");
-      clearError();
-    }
   };
 
   const validateForm = (): boolean => {
-    console.log("RegistrationForm: Начало валидации формы");
-    console.log("RegistrationForm: Данные для валидации:", {
-      username: formData.username,
-      email: formData.email,
-      passwordLength: formData.password.length,
-      confirmPasswordLength: formData.confirmPassword.length,
-    });
-
     const errors: Partial<RegistrationFormData> = {};
-
+    
     if (!formData.username.trim()) {
-      console.log("RegistrationForm: Валидация ошибка - имя обязательно");
       errors.username = "Имя обязательно";
-    } else if (formData.username.length < 2) {
-      console.log(
-        `RegistrationForm: Валидация ошибка - имя слишком короткое: ${formData.username.length} символов`
-      );
-      errors.username = "Имя должно содержать минимум 2 символа";
     }
-
     if (!formData.email.trim()) {
-      console.log("RegistrationForm: Валидация ошибка - email обязателен");
       errors.email = "Email обязателен";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      console.log(
-        `RegistrationForm: Валидация ошибка - некорректный email: ${formData.email}`
-      );
-      errors.email = "Введите корректный email";
     }
-
     if (!formData.password) {
-      console.log("RegistrationForm: Валидация ошибка - пароль обязателен");
       errors.password = "Пароль обязателен";
-    } else if (formData.password.length < 6) {
-      console.log(
-        `RegistrationForm: Валидация ошибка - пароль слишком короткий: ${formData.password.length} символов`
-      );
-      errors.password = "Пароль должен содержать минимум 6 символов";
     }
-
-    if (!formData.confirmPassword) {
-      console.log(
-        "RegistrationForm: Валидация ошибка - подтверждение пароля обязательно"
-      );
-      errors.confirmPassword = "Подтверждение пароля обязательно";
-    } else if (formData.password !== formData.confirmPassword) {
-      console.log("RegistrationForm: Валидация ошибка - пароли не совпадают");
+    if (formData.password !== formData.confirmPassword) {
       errors.confirmPassword = "Пароли не совпадают";
     }
-
-    console.log("RegistrationForm: Результат валидации:", {
-      isValid: Object.keys(errors).length === 0,
-      errorsCount: Object.keys(errors).length,
-      errors,
-    });
-
+    
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  const showToast = (message: string, type: "success" | "error" = "success") => {
-    setToastMessage({
-      show: true,
-      message,
-      type,
+  const closeModal = () => {
+    setShowModal(false);
+    setRegisteredUser(null);
+    setFormData({
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("RegistrationForm: Отправка формы");
-    console.log("RegistrationForm: Данные формы:", {
-      username: formData.username,
-      email: formData.email,
-      passwordLength: formData.password.length,
-      confirmPasswordLength: formData.confirmPassword.length,
-    });
-
     if (!validateForm()) {
-      console.log("RegistrationForm: Валидация не пройдена, отправка отменена");
       return;
     }
 
-    console.log("RegistrationForm: Валидация пройдена, вызываю signUp");
-    console.log("RegistrationForm: Вызов signUp с данными:", {
+    setRegisteredUser({
       username: formData.username,
       email: formData.email,
-      password: "[СКРЫТО]",
     });
-
-    try {
-      const result = await signUp({
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-      });
-
-      console.log("RegistrationForm: signUp успешно выполнен:", result);
-      console.log(
-        "RegistrationForm: Проверка localStorage после регистрации:",
-        {
-          access_token: localStorage.getItem("access_token")
-            ? "присутствует"
-            : "отсутствует",
-          user: localStorage.getItem("user") ? "присутствует" : "отсутствует",
-        }
-      );
-
-      showToast("Регистрация успешна! Проверьте email для подтверждения", "success");
-      
-      setFormData({
-        username: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-      
-    } catch (err: any) {
-      console.error("RegistrationForm: Ошибка при регистрации:", err);
-      console.error("RegistrationForm: Детали ошибки:", {
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status,
-        config: err.config,
-      });
-      
-      const errorMessage = err.response?.data?.message || err.message || "Ошибка при регистрации";
-      showToast(errorMessage, "error");
-    }
+    setShowModal(true);
   };
 
   const linkContainerStyle = {
@@ -252,218 +97,373 @@ const RegistrationForm = () => {
     fontSize: "1.7vh",
   };
 
-  const toastStyles = {
-    success: {
-      backgroundColor: "#4caf50",
-      color: "white",
-    },
-    error: {
-      backgroundColor: "#f44336",
-      color: "white",
-    },
-  };
-
-  console.log("RegistrationForm: Рендер компонента с состоянием:", {
-    isLoading,
-    error,
-    formErrors,
-    formData: {
-      ...formData,
-      password: "[СКРЫТО]",
-      confirmPassword: "[СКРЫТО]",
-    },
-  });
-
   return (
-    <section className="registration-container">
-      {/* Всплывающее сообщение */}
-      {toastMessage.show && (
-        <div
-          style={{
-            position: "fixed",
-            top: "20px",
-            right: "20px",
-            zIndex: 9999,
-            animation: "slideIn 0.3s ease-out",
-          }}
-        >
-          <div
-            style={{
-              ...toastStyles[toastMessage.type],
-              padding: "16px 24px",
-              borderRadius: "8px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-              fontSize: "14px",
-              fontWeight: "500",
-              minWidth: "300px",
-              maxWidth: "400px",
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-            }}
-          >
-            <span style={{ fontSize: "20px" }}>
-              {toastMessage.type === "success" ? "✓" : "✗"}
-            </span>
-            <span style={{ flex: 1 }}>{toastMessage.message}</span>
-            <button
-              onClick={() => setToastMessage({ ...toastMessage, show: false })}
-              style={{
-                background: "none",
-                border: "none",
-                color: "white",
-                fontSize: "18px",
-                cursor: "pointer",
-                padding: "0",
-                marginLeft: "8px",
-              }}
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div className="form-section">
-        <div className="registration-card">
-          <h2>Регистрация</h2>
-
-          {error && (
-            <div
-              className="error-message"
-              style={{
-                color: "red",
-                marginBottom: "1rem",
-                textAlign: "center",
-                fontSize: "0.9rem",
-              }}
-            >
-              {error}
-            </div>
-          )}
-
-          <form className="registration-form" onSubmit={handleSubmit}>
-            <div className="form-field">
-              <label htmlFor="username" className="visually-hidden">
-                Полное имя
-              </label>
-              <input
-                type="text"
-                id="username"
-                placeholder="Имя"
-                value={formData.username}
-                onChange={handleChange}
-                required
-                disabled={isLoading}
-                className={formErrors.username ? "input-error" : ""}
-              />
-              {formErrors.username && (
-                <div className="error-text">{formErrors.username}</div>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="email" className="visually-hidden">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                placeholder="Почта"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                disabled={isLoading}
-                className={formErrors.email ? "input-error" : ""}
-              />
-              {formErrors.email && (
-                <div className="error-text">{formErrors.email}</div>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="password" className="visually-hidden">
-                Пароль
-              </label>
-              <input
-                type="password"
-                id="password"
-                placeholder="Пароль"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                disabled={isLoading}
-                className={formErrors.password ? "input-error" : ""}
-              />
-              {formErrors.password && (
-                <div className="error-text">{formErrors.password}</div>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="confirmPassword" className="visually-hidden">
-                Повторите пароль
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                placeholder="Повторите пароль"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                disabled={isLoading}
-                className={formErrors.confirmPassword ? "input-error" : ""}
-              />
-              {formErrors.confirmPassword && (
-                <div className="error-text">{formErrors.confirmPassword}</div>
-              )}
-            </div>
-
-            <div className="buttonContainerStyle">
-              <button
-                type="submit"
-                className="registration-buttom"
-                style={{ margin: "0 auto" }}
-                disabled={isLoading}
-              >
-                {isLoading ? "Регистрация..." : "Зарегистрироваться"}
-              </button>
-            </div>
-
-            <div style={linkContainerStyle}>
-              <span style={linkTextStyle} className="login-link">
-                Есть аккаунт? <Link to="/auth/signin" className="LinkSelect">Войти</Link>
-              </span>
-            </div>
-          </form>
-
-          <img className="logoStyle mobileVersion" src="/logo.svg" alt="logo" />
-        </div>
-      </div>
-
-      <div className="image-section">
-        <img
-          src="/back-img.svg"
-          alt="Девушка поливает цветок в горшке"
-          className="background-image"
-        />
-      </div>
-
+    <>
+      {/* Стили из SectionRegistrationForm.css (потому что не импортировалось нормально)  */}
       <style>
         {`
-          @keyframes slideIn {
+          
+
+          @keyframes modalSlideIn {
             from {
-              transform: translateX(100%);
+              transform: translateY(-50px);
               opacity: 0;
             }
             to {
-              transform: translateX(0);
+              transform: translateY(0);
               opacity: 1;
             }
           }
+
+          /* Стили для модального окна */
+          .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            backdrop-filter: blur(3px);
+            background:none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            
+          }
+
+          .modal-content {
+            background-color: white;
+            border-radius: 20px;
+            width: 100%;
+            padding: 20px;
+            max-width: 400px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.3s ease-out;
+            overflow: hidden;
+            height:80svh;
+          }
+
+          .text_1{
+          margin:auto;
+          height: calc(50svh - 20px);
+          display:flex;
+          justify-content:center;
+          align-items:center;
+          }
+
+          .text_1>span{
+          margin:auto;
+          font-size: 40px;
+          font-weight: 500;
+          text-align:center;
+          }
+
+          .text_2{
+          height: 15svh;
+          display:flex;
+          justify-content:center;
+          align-items:flex-end;
+          }
+
+          .text_2>span{
+          margin-bottom:5px;
+          }
+
+          .box_button{
+            height: 15svh;
+            display:flex;
+            justify-content:flex-end;
+            
+          }
+
+          .modal-close-btn {
+            position: absolute;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            background-color: #A8C686;
+            width: 7.5svh;
+            height: 7.5svh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            z-index: 100;
+          }
+
+          .modal-close-btn:hover {
+            background-color: #f0f0f0;
+            color: #333;
+            border: none;
+          }
+
+          
+          
+          @media (max-width: 620px) {
+            .modal-content {
+              width: 85%;
+              max-width: 350px;
+            }
+            
+            
+            
+            .modal-close-btn {
+              top: 10px;
+              right: 10px;
+              font-size: 20px;
+            }
+          }
+
+          @media (max-height: 500px) and (max-width: 620px) {
+            .modal-content {
+              max-height: 80vh;
+              overflow-y: auto;
+            }
+            
+          }
+
+           @media (max-width: 800px) and (max-height: 500px) {
+            .modal-content {
+              height: 85svh;
+              padding: 12px;
+              max-width: 85%;
+            }
+
+            .text_1 {
+              height: calc(45svh - 10px);
+            }
+
+            .text_1 > span {
+              font-size: 18px;
+            }
+
+            .text_2 {
+              height: 12svh;
+            }
+
+            .text_2 > span {
+              font-size: 12px;
+            }
+
+            .box_button {
+              height: 10svh;
+            }
+
+            .modal-close-btn {
+              font-size: 16px;
+              top: 5px;
+              right: 5px;
+            }
+          }
+
+          
+          @media (max-width: 800px) {
+            .text_1 > span {
+              font-size: 24px;
+            }
+
+            .text_2 > span {
+              font-size: 14px;
+            }
+          }
+
+          
+          @media (max-height: 500px) {
+            .modal-content {
+              height: 90svh;
+              padding: 10px;
+            }
+
+            .text_1 {
+              height: calc(40svh - 10px);
+            }
+
+            .text_1 > span {
+              font-size: 20px;
+            }
+
+            .text_2 {
+              height: 10svh;
+            }
+
+            .text_2 > span {
+              font-size: 15px;
+            }
+
+            .box_button {
+              height: 8svh;
+            }
+
+            .modal-close-btn {
+              
+              font-size: 14px;
+            }
+          }
+
+          
+          @media (max-width: 480px) and (max-height: 400px) {
+            .modal-content {
+              padding: 8px;
+              border-radius: 12px;
+            }
+
+            .text_1 > span {
+              font-size: 14px;
+            }
+
+            .text_2 > span {
+              font-size: 10px;
+            }
+
+            .modal-close-btn {
+              font-size: 12px;
+            }
+            
+            
         `}
       </style>
-    </section>
+
+      <section className="registration-container">
+        <div className="form-section">
+          <div className="registration-card">
+            <h2>Регистрация</h2>
+
+            {error && (
+              <div
+                className="error-message"
+                style={{
+                  color: "red",
+                  marginBottom: "1rem",
+                  textAlign: "center",
+                  fontSize: "0.9rem",
+                }}
+              >
+                {error}
+              </div>
+            )}
+
+            <form className="registration-form" onSubmit={handleSubmit}>
+              <div className="form-field">
+                <label htmlFor="username" className="visually-hidden">
+                  Полное имя
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  placeholder="Имя"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                  disabled={isLoading}
+                  className={formErrors.username ? "input-error" : ""}
+                />
+                {formErrors.username && (
+                  <div className="error-text">{formErrors.username}</div>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="email" className="visually-hidden">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="Почта"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  disabled={isLoading}
+                  className={formErrors.email ? "input-error" : ""}
+                />
+                {formErrors.email && (
+                  <div className="error-text">{formErrors.email}</div>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="password" className="visually-hidden">
+                  Пароль
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  placeholder="Пароль"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  disabled={isLoading}
+                  className={formErrors.password ? "input-error" : ""}
+                />
+                {formErrors.password && (
+                  <div className="error-text">{formErrors.password}</div>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="confirmPassword" className="visually-hidden">
+                  Повторите пароль
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  placeholder="Повторите пароль"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  disabled={isLoading}
+                  className={formErrors.confirmPassword ? "input-error" : ""}
+                />
+                {formErrors.confirmPassword && (
+                  <div className="error-text">{formErrors.confirmPassword}</div>
+                )}
+              </div>
+
+              <div className="buttonContainerStyle">
+                <button
+                  type="submit"
+                  className="registration-buttom"
+                  style={{ margin: "0 auto" }}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Регистрация..." : "Зарегистрироваться"}
+                </button>
+              </div>
+
+              <div style={linkContainerStyle}>
+                <span style={linkTextStyle} className="login-link">
+                  Есть аккаунт? <Link to="/auth/signin" className="LinkSelect">Войти</Link>
+                </span>
+              </div>
+
+              <img className="LogotypeStyle" src="/logo.svg" alt="logo" />
+            </form>
+          </div>
+        </div>
+
+        <div className="image-section">
+          <img
+            src="/back-img.svg"
+            alt="Девушка поливает цветок в горшке"
+            className="background-image"
+          />
+        </div>
+
+        {/* Модальное окно с классами из CSS */}
+        {showModal && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="box_button"><button className="modal-close-btn" onClick={closeModal}>✕</button></div>
+              <div className="text_1"><span>Вам на почту выслано письмо для подтверждения</span></div>
+              <div className="text_2"><span>при неверно введенных данных никнейм будет доступен через 1 час</span></div>
+            </div>
+          </div>
+        )}
+      </section>
+    </>
   );
 };
 
