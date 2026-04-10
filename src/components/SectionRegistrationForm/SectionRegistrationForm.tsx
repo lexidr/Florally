@@ -114,6 +114,93 @@ const RegistrationForm = () => {
             }
           }
 
+          /* Стили для модального окна */
+          .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            backdrop-filter: blur(3px);
+            background:none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            
+          }
+
+          .modal-content {
+            background-color: white;
+            border-radius: 20px;
+            width: 100%;
+            padding: 20px;
+            max-width: 400px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.3s ease-out;
+            overflow: hidden;
+            height:80svh;
+          }
+
+          .text_1{
+          margin:auto;
+          height: calc(50svh - 20px);
+          display:flex;
+          justify-content:center;
+          align-items:center;
+          }
+
+          .text_1>span{
+          margin:auto;
+          font-size: 40px;
+          font-weight: 500;
+          text-align:center;
+          }
+
+          .text_2{
+          height: 15svh;
+          display:flex;
+          justify-content:center;
+          align-items:flex-end;
+          }
+
+          .text_2>span{
+          margin-bottom:5px;
+          }
+
+          .box_button{
+            height: 15svh;
+            display:flex;
+            justify-content:flex-end;
+            
+          }
+
+          .modal-close-btn {
+            position: absolute;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            background-color: #A8C686;
+            width: 7.5svh;
+            height: 7.5svh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            z-index: 100;
+          }
+
+          .modal-close-btn:hover {
+            background-color: #f0f0f0;
+            color: #333;
+            border: none;
+          }
+
+          
+          
           
         `}
       </style>
