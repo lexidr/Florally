@@ -14,11 +14,42 @@ interface Comment {
   updated_at?: string;
 }
 
-const PlantImage: React.FC<{ src: string | null | undefined; alt: string; style?: React.CSSProperties }> = ({ src, alt, style }) => {
+const PlantImage: React.FC<{ 
+  src: string | null | undefined; 
+  alt: string; 
+  style?: React.CSSProperties;
+  plantId?: string | number;
+}> = ({ src, alt, style, plantId }) => {
   const [hasError, setHasError] = useState(false);
-  const plugImage = "/plug-image-plant.png";
-  const imageSrc = (hasError || !src || src.trim() === "") ? plugImage : src;
-  return <img src={imageSrc} alt={alt} style={{ ...style, objectFit: 'cover', display: 'block' }} onError={() => { if (!hasError) setHasError(true); }} />;
+  
+  const getPlaceholderIndex = () => {
+    if (plantId) {
+      const key = `plant_placeholder_${plantId}`;
+      const saved = localStorage.getItem(key);
+      if (saved) return parseInt(saved, 10);
+      const newIndex = Math.floor(Math.random() * 10) + 1;
+      localStorage.setItem(key, newIndex.toString());
+      return newIndex;
+    }
+    return Math.floor(Math.random() * 10) + 1;
+  };
+  
+  const [placeholderIndex] = useState(() => getPlaceholderIndex());
+
+  const imageSrc = (hasError || !src || src.trim() === "") 
+    ? `/plug-image-plant${placeholderIndex}.png` 
+    : src;
+
+  return (
+    <img
+      src={imageSrc}
+      alt={alt}
+      style={{ ...style, objectFit: 'cover', display: 'block' }}
+      onError={() => {
+        if (!hasError) setHasError(true);
+      }}
+    />
+  );
 };
 
 async function fetchComments(userPlantId: string): Promise<Comment[]> {
@@ -314,7 +345,7 @@ function User() {
         }}
       >
         <div style={{ width: '196px', height: '148px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F5F5', borderRadius: '20px', marginTop: '8px', overflow: 'hidden' }}>
-          <PlantImage src={plant.plant.photo} alt={plant.plant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <PlantImage src={plant.plant.photo} alt={plant.plant.name} plantId={plant.id} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <p style={{ fontWeight: '500', margin: '8px 0 0 0', fontSize: '14px', textAlign: 'center' }}>{plant.plant.name}</p>
         <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0 0' }}>Комната: {roomName}</p>
@@ -408,7 +439,7 @@ function User() {
             <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px' }}>
               <div style={{ display: "flex", gap: "16px", alignItems: "flex-start", flexWrap: "wrap" }}>
                 <div style={{ width: '120px', height: '120px', backgroundColor: '#F5F5F5', borderRadius: '16px', overflow: 'hidden', flexShrink: 0 }}>
-                  <PlantImage src={selectedPlant.plant.photo} alt={selectedPlant.plant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <PlantImage src={selectedPlant.plant.photo} alt={selectedPlant.plant.name} plantId={selectedPlant.id} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: '150px' }}>
                   <h2 style={{ fontSize: '20px', margin: '0 0 8px 0', fontWeight: '600', wordBreak: "break-word" }}>{selectedPlant.plant.name}</h2>
@@ -526,7 +557,7 @@ function User() {
           <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '24px' }}>
             <div style={{ display: "flex", gap: "33px", alignItems: "flex-start", flexWrap: "wrap" }}>
               <div style={{ width: '220px', height: '220px', backgroundColor: '#F5F5F5', borderRadius: '20px', overflow: 'hidden', flexShrink: 0 }}>
-                <PlantImage src={selectedPlant.plant.photo} alt={selectedPlant.plant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <PlantImage src={selectedPlant.plant.photo} alt={selectedPlant.plant.name} plantId={selectedPlant.id} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div style={{ flex: 1, minWidth: '250px' }}>
                 <h1 style={{ fontSize: "36px", fontWeight: "500", color: "#2E2E2E", margin: "0 0 12px 0", wordBreak: "break-word" }}>{selectedPlant.plant.name}</h1>

@@ -3,41 +3,54 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { checkAuth, SignOut } from "../../api/authApi";
 import "./HomePage.css";
 
-function HomePage() {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [calendarDays, setCalendarDays] = useState([]);
-  const [currentMonth, setCurrentMonth] = useState("");
-  const [currentYear, setCurrentYear] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [screenSize, setScreenSize] = useState('desktop');
+// Типы для пользователя и ответа аутентификации
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+interface AuthData {
+  isAuthenticated: boolean;
+  user: User | null;
+}
+
+// Тип для элемента календаря (число или пустая строка)
+type CalendarDay = number | string;
+
+const HomePage: React.FC = () => {
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [calendarDays, setCalendarDays] = useState<CalendarDay[][]>([]);
+  const [currentMonth, setCurrentMonth] = useState<string>("");
+  const [currentYear, setCurrentYear] = useState<string>("");
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [screenSize, setScreenSize] = useState<"desktop" | "mobile">("desktop");
 
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Определение размера экрана
   useEffect(() => {
-    const checkScreenSize = () => {
+    const checkScreenSize = (): void => {
       const width = window.innerWidth;
-      if (width <= 810) {
-        setScreenSize('mobile');
-      } else {
-        setScreenSize('desktop');
-      }
+      setScreenSize(width <= 810 ? "mobile" : "desktop");
     };
-    
+
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    
-    return () => window.removeEventListener('resize', checkScreenSize);
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
+  // Проверка аутентификации
   useEffect(() => {
-    const authCheck = async () => {
+    const authCheck = async (): Promise<void> => {
       try {
         console.log("HomePage: Проверка аутентификации...");
-        const authData = checkAuth();
+        const authData: AuthData = checkAuth();
         console.log("HomePage: Результат проверки:", authData);
 
         setIsLoggedIn(authData.isAuthenticated);
@@ -60,7 +73,8 @@ function HomePage() {
     authCheck();
   }, []);
 
-  const getDaysInMonth = (date) => {
+  // Получение дней месяца с выравниванием по неделям
+  const getDaysInMonth = (date: Date): CalendarDay[][] => {
     const year = date.getFullYear();
     const month = date.getMonth();
 
@@ -68,10 +82,11 @@ function HomePage() {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
 
+    // Понедельник = 0, Воскресенье = 6
     const startDayOfWeek = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
 
-    const days = [];
-    let currentWeek = [];
+    const days: CalendarDay[][] = [];
+    let currentWeek: CalendarDay[] = [];
 
     for (let i = 0; i < startDayOfWeek; i++) {
       currentWeek.push("");
@@ -96,37 +111,23 @@ function HomePage() {
     return days;
   };
 
-  const getMonthName = (date) => {
+  const getMonthName = (date: Date): string => {
     const months = [
-      "Январь",
-      "Февраль",
-      "Март",
-      "Апрель",
-      "Май",
-      "Июнь",
-      "Июль",
-      "Август",
-      "Сентябрь",
-      "Октябрь",
-      "Ноябрь",
-      "Декабрь",
+      "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+      "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь",
     ];
     return months[date.getMonth()];
   };
 
-  const prevMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
-    );
+  const prevMonth = (): void => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
   };
 
-  const nextMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
-    );
+  const nextMonth = (): void => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
-  const isToday = (day) => {
+  const isToday = (day: CalendarDay): boolean => {
     const today = new Date();
     return (
       day !== "" &&
@@ -136,7 +137,7 @@ function HomePage() {
     );
   };
 
-  const isSelected = (day) => {
+  const isSelected = (day: CalendarDay): boolean => {
     return (
       day !== "" &&
       day === selectedDate.getDate() &&
@@ -145,20 +146,19 @@ function HomePage() {
     );
   };
 
-  const handleDayClick = (day) => {
+  const handleDayClick = (day: CalendarDay): void => {
     if (day !== "") {
-      setSelectedDate(
-        new Date(currentDate.getFullYear(), currentDate.getMonth(), day)
-      );
+      const dayNum = typeof day === "string" ? parseInt(day, 10) : day;
+      setSelectedDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum));
     }
   };
 
-  const handleLoginClick = () => {
+  const handleLoginClick = (): void => {
     console.log("HomePage: Перенаправление на страницу входа");
     navigate("/auth/signin");
   };
 
-  const handleLogoutClick = async () => {
+  const handleLogoutClick = async (): Promise<void> => {
     console.log("HomePage: Начало выхода из системы");
 
     try {
@@ -181,18 +181,20 @@ function HomePage() {
     }
   };
 
+  // Обновление календаря при изменении месяца
   useEffect(() => {
     const days = getDaysInMonth(currentDate);
     setCalendarDays(days);
     setCurrentMonth(getMonthName(currentDate));
-    setCurrentYear(currentDate.getFullYear());
+    setCurrentYear(currentDate.getFullYear().toString());
   }, [currentDate]);
 
+  // Инициализация календаря при монтировании
   useEffect(() => {
     const days = getDaysInMonth(currentDate);
     setCalendarDays(days);
     setCurrentMonth(getMonthName(currentDate));
-    setCurrentYear(currentDate.getFullYear());
+    setCurrentYear(currentDate.getFullYear().toString());
     setSelectedDate(new Date());
   }, []);
 
@@ -205,7 +207,7 @@ function HomePage() {
       <div className="app">
         <header className="header">
           <div className="header-content">
-            <img src={"/logo.svg"} alt="Florally" className="logo" />
+            <img src="/logo.svg" alt="Florally" className="logo" />
             <div className="loading-auth">Загрузка...</div>
           </div>
         </header>
@@ -219,12 +221,13 @@ function HomePage() {
     );
   }
 
-  if (screenSize === 'mobile') {
+  // Мобильная верстка
+  if (screenSize === "mobile") {
     return (
       <div className="mobile-app">
         <header className="mobile-header">
           <div className="mobile-header-content">
-            <img src={"/logo.svg"} alt="Florally" className="mobile-logo" />
+            <img src="/logo.svg" alt="Florally" className="mobile-logo" />
           </div>
         </header>
 
@@ -240,7 +243,7 @@ function HomePage() {
                     <br />
                     о своих растениях!
                   </h2>
-                  
+
                   <div className="mobile-button-container">
                     <Link to="/auth/signup" className="mobile-registration-link">
                       <button className="mobile-registration-button">
@@ -261,7 +264,7 @@ function HomePage() {
               ) : (
                 <div className="mobile-calendar-wrapper">
                   <h2 className="mobile-calendar-title">Календарь</h2>
-                  
+
                   <div className="mobile-calendar-container">
                     <div className="mobile-calendar-nav">
                       <button className="mobile-calendar-nav-button" onClick={prevMonth}>
@@ -274,7 +277,7 @@ function HomePage() {
                         &gt;
                       </button>
                     </div>
-                    
+
                     <div className="mobile-calendar">
                       <ul className="mobile-weekdays">
                         <li>Пн</li>
@@ -295,9 +298,11 @@ function HomePage() {
                               return (
                                 <div
                                   key={`${weekIndex}-${dayIndex}`}
-                                  className={`mobile-calendar-day ${day === "" ? "mobile-empty" : ""} ${
-                                    today ? "mobile-today" : ""
-                                  } ${selected ? "mobile-selected" : ""}`}
+                                  className={`mobile-calendar-day ${
+                                    day === "" ? "mobile-empty" : ""
+                                  } ${today ? "mobile-today" : ""} ${
+                                    selected ? "mobile-selected" : ""
+                                  }`}
                                   onClick={() => handleDayClick(day)}
                                 >
                                   {day}
@@ -311,7 +316,7 @@ function HomePage() {
                   </div>
 
                   <h2 className="mobile-tasks-title">Задачи на день</h2>
-                  
+
                   <div className="mobile-tasks-container">
                     <div className="mobile-tasks-list">
                       <div className="mobile-task-item">
@@ -345,26 +350,26 @@ function HomePage() {
 
         <div className="mobile-bottom-menu">
           <Link to="/plants/my_plants" className="mobile-menu-item">
-            <img 
-              src="/ph_plant-light.svg" 
-              alt="Мои растения" 
-              className={`mobile-menu-icon ${isMyPlantsActive ? 'active-icon' : ''}`}
+            <img
+              src="/ph_plant-light.svg"
+              alt="Мои растения"
+              className={`mobile-menu-icon ${isMyPlantsActive ? "active-icon" : ""}`}
             />
           </Link>
-          
+
           <Link to="/" className="mobile-menu-item">
-            <img 
-              src="/proicons_calendar.svg" 
-              alt="Календарь" 
-              className={`mobile-menu-icon ${isCalendarActive ? 'active-icon' : ''}`}
+            <img
+              src="/proicons_calendar.svg"
+              alt="Календарь"
+              className={`mobile-menu-icon ${isCalendarActive ? "active-icon" : ""}`}
             />
           </Link>
-          
+
           <Link to="/user" className="mobile-menu-item">
-            <img 
-              src="/ion_person-outline.svg" 
-              alt="Профиль" 
-              className={`mobile-menu-icon ${isUserActive ? 'active-icon' : ''}`}
+            <img
+              src="/ion_person-outline.svg"
+              alt="Профиль"
+              className={`mobile-menu-icon ${isUserActive ? "active-icon" : ""}`}
             />
           </Link>
         </div>
@@ -372,25 +377,22 @@ function HomePage() {
     );
   }
 
+  // Десктопная верстка
   return (
     <div className="app">
       <header className="header">
         <div className="header-content">
-          <img src={"/logo.svg"} alt="Florally" className="logo" />
+          <img src="/logo.svg" alt="Florally" className="logo" />
           <nav className="navigation">
             <Link
               to="/plants/my_plants"
-              className={`nav-link ${
-                isMyPlantsActive ? "calendar-active" : ""
-              }`}
+              className={`nav-link ${isMyPlantsActive ? "calendar-active" : ""}`}
             >
               Мои растения
             </Link>
             <Link
               to="/"
-              className={`nav-link ${
-                isCalendarActive ? "calendar-active" : ""
-              }`}
+              className={`nav-link ${isCalendarActive ? "calendar-active" : ""}`}
             >
               Календарь
             </Link>
@@ -403,17 +405,11 @@ function HomePage() {
           </nav>
           <div className="auth-section">
             {isLoggedIn ? (
-              <button
-                className="auth-button logout-button"
-                onClick={handleLogoutClick}
-              >
+              <button className="auth-button logout-button" onClick={handleLogoutClick}>
                 Выйти
               </button>
             ) : (
-              <button
-                className="auth-button login-button"
-                onClick={handleLoginClick}
-              >
+              <button className="auth-button login-button" onClick={handleLoginClick}>
                 Войти
               </button>
             )}
@@ -427,8 +423,11 @@ function HomePage() {
             <div className="not-authorized-container">
               <div className="not-authorized-message">
                 <p>
-                  Зарегистрируйся,<br></br>
-                  чтобы знать больше<br></br>о своих растениях!
+                  Зарегистрируйся,
+                  <br />
+                  чтобы знать больше
+                  <br />
+                  о своих растениях!
                 </p>
               </div>
               <div className="registration-form-section">
@@ -492,9 +491,9 @@ function HomePage() {
                       return (
                         <div
                           key={`${weekIndex}-${dayIndex}`}
-                          className={`calendar-day ${day === "" ? "empty" : ""} ${
-                            today ? "today" : ""
-                          } ${selected ? "selected" : ""}`}
+                          className={`calendar-day ${
+                            day === "" ? "empty" : ""
+                          } ${today ? "today" : ""} ${selected ? "selected" : ""}`}
                           onClick={() => handleDayClick(day)}
                         >
                           {day}
@@ -514,6 +513,6 @@ function HomePage() {
       </main>
     </div>
   );
-}
+};
 
 export default HomePage;
