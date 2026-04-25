@@ -173,14 +173,11 @@ function HomePage() {
 
       console.log("HomePage: Выход успешно выполнен");
 
-      alert("Вы успешно вышли из системы");
-
       if (location.pathname === "/user") {
         navigate("/");
       }
     } catch (error) {
       console.error("HomePage: Ошибка при выходе:", error);
-      alert("Произошла ошибка при выходе из системы");
     }
   };
 

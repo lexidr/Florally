@@ -74,7 +74,6 @@ function EMailVerification() {
       }
     } catch (error) {
       console.error("Ошибка при выходе:", error);
-      alert("Произошла ошибка при выходе из системы");
     }
   };
 

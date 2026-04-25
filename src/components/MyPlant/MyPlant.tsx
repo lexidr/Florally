@@ -7,10 +7,18 @@ import {
   addUserPlant, 
   deleteUserPlant, 
   updateUserPlant,
-  Plant,
-  UserPlant 
 } from "../../api/plantsApi";
 import { API } from "../../constants/api";
+import {
+  getUserRooms,
+  createRoom,
+  deleteRoom,
+  addPlantToRoom,
+  removePlantFromRoom,
+  type Room,
+  type UserPlant,
+  type Plant,
+} from "../../api/roomsApi";
 import "./MyPlant.css";
 
 interface Comment {
@@ -69,14 +77,7 @@ async function deleteComment(commentId: string): Promise<void> {
     throw new Error("Failed to delete comment");
   }
 }
-interface Room {
-  id: string;
-  name: string;
-  user_id: string;
-  userPlants: UserPlant[];
-}
 
-// Тип для выбранного растения в модальном окне
 interface SelectedPlant {
   id: string;
   name: string;
@@ -88,82 +89,6 @@ interface SelectedPlant {
   customCare?: any[];
 }
 
-async function getUserRooms(): Promise<Room[]> {
-  const token = localStorage.getItem("access_token");
-  const response = await fetch(`${API}/user_rooms`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
-  if (!response.ok) {
-    throw new Error("Failed to fetch rooms");
-  }
-  return response.json();
-}
-
-async function createRoom(name: string): Promise<Room> {
-  const token = localStorage.getItem("access_token");
-  const response = await fetch(`${API}/user_rooms`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-    body: JSON.stringify({ name }),
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to create room");
-  }
-  return response.json();
-}
-
-async function deleteRoom(roomId: string): Promise<void> {
-  const token = localStorage.getItem("access_token");
-  const response = await fetch(`${API}/user_rooms/${roomId}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
-  if (!response.ok) {
-    throw new Error("Failed to delete room");
-  }
-}
-
-async function addPlantToRoom(roomId: string, userPlantId: string): Promise<Room> {
-  const token = localStorage.getItem("access_token");
-  const response = await fetch(`${API}/user_rooms/${roomId}/plants/${userPlantId}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
-  if (!response.ok) {
-    throw new Error("Failed to add plant to room");
-  }
-  return response.json();
-}
-
-async function removePlantFromRoom(roomId: string, userPlantId: string): Promise<Room> {
-  const token = localStorage.getItem("access_token");
-  const response = await fetch(`${API}/user_rooms/${roomId}/plants/${userPlantId}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
-  if (!response.ok) {
-    throw new Error("Failed to remove plant from room");
-  }
-  return response.json();
-}
-
-// Компонент для отображения фото с обработкой ошибок
 const PlantImage: React.FC<{ 
   src: string | null | undefined; 
   alt: string; 
@@ -192,7 +117,6 @@ const PlantImage: React.FC<{
   );
 };
 
-// Хук для определения размера экрана
 function useScreenSize() {
   const [screenSize, setScreenSize] = useState<'mobile' | 'desktop'>('desktop');
 
@@ -223,13 +147,11 @@ function MyPlant() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // Состояния для данных
   const [userPlants, setUserPlants] = useState<UserPlant[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [allPlants, setAllPlants] = useState<Plant[]>([]);
   const [searchResults, setSearchResults] = useState<Plant[]>([]);
   
-  // Состояния для модальных окон
   const [modalOpen, setModalOpen] = useState(false);
   const [roomModalOpen, setRoomModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
@@ -263,43 +185,24 @@ function MyPlant() {
       setLoading(true);
       console.log("🌱 MyPlant: Начинаем загрузку данных...");
       
-      console.log("🌱 MyPlant: Загружаем список всех растений...");
       const plants = await getAllPlants();
-      console.log("🌱 MyPlant: Получены растения:", plants);
-      console.log("🌱 MyPlant: Количество растений в базе:", plants?.length || 0);
-      
-      if (!plants || plants.length === 0) {
-        console.warn("🌱 MyPlant: ВНИМАНИЕ! База растений пуста!");
-        setSearchError("База растений пуста. Обратитесь к администратору.");
-      }
-      
       setAllPlants(plants || []);
       
-      console.log("🌱 MyPlant: Загружаем растения пользователя...");
       const userPlantsData = await getUserPlants();
-      console.log("🌱 MyPlant: Получены растения пользователя:", userPlantsData);
-      console.log("🌱 MyPlant: Количество растений пользователя:", userPlantsData?.length || 0);
-      setUserPlants(userPlantsData || []);
+      setUserPlants(userPlantsData as unknown as UserPlant[]);
       
-      console.log("🌱 MyPlant: Загружаем комнаты пользователя...");
       const roomsData = await getUserRooms();
-      console.log("🌱 MyPlant: Получены комнаты:", roomsData);
       setRooms(roomsData || []);
       
     } catch (error: any) {
-      console.error("❌ MyPlant: Ошибка при загрузке данных:", error);
-      console.error("❌ MyPlant: Детали ошибки:", error.response?.data || error.message);
+      console.error(" MyPlant: Ошибка при загрузке данных:", error);
       setSearchError("Ошибка загрузки данных. Проверьте подключение к серверу.");
-      alert("Ошибка при загрузке данных. Проверьте подключение к серверу.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleSearchPlants = (query: string) => {
-    console.log("🔍 MyPlant: Поиск растений, запрос:", query);
-    console.log("🔍 MyPlant: Всего растений в базе:", allPlants.length);
-    
     if (!query.trim()) {
       setSearchResults([]);
       setSearchError("");
@@ -307,7 +210,6 @@ function MyPlant() {
     }
     
     if (allPlants.length === 0) {
-      console.warn("🔍 MyPlant: База растений пуста, поиск невозможен");
       setSearchError("База растений пуста. Нет данных для поиска.");
       setSearchResults([]);
       return;
@@ -316,9 +218,6 @@ function MyPlant() {
     const results = allPlants.filter(plant =>
       plant.name.toLowerCase().includes(query.toLowerCase())
     );
-    
-    console.log("🔍 MyPlant: Найдено результатов:", results.length);
-    console.log("🔍 MyPlant: Результаты поиска:", results);
     
     if (results.length === 0) {
       setSearchError("Растения не найдены. Попробуйте другой запрос.");
@@ -332,16 +231,12 @@ function MyPlant() {
   const handleAddUserPlant = async () => {
     if (selectedPlantToAdd) {
       try {
-        console.log("🌱 MyPlant: Добавляем растение:", selectedPlantToAdd.name);
         const newPlant = await addUserPlant(selectedPlantToAdd.id, selectedColor);
-        console.log("🌱 MyPlant: Растение успешно добавлено");
         
-        // Если выбрана комната, добавляем растение в комнату
         if (selectedRoomForAdd) {
           const room = rooms.find(r => r.name === selectedRoomForAdd);
           if (room) {
             await addPlantToRoom(room.id, newPlant.id);
-            console.log("🌱 MyPlant: Растение добавлено в комнату:", selectedRoomForAdd);
           }
         }
         
@@ -352,10 +247,8 @@ function MyPlant() {
         setSearchResults([]);
         setSelectedRoomForAdd("");
         setSearchError("");
-        alert("Растение успешно добавлено!");
       } catch (error) {
-        console.error("❌ MyPlant: Ошибка при добавлении растения:", error);
-        alert("Ошибка при добавлении растения");
+        console.error(" MyPlant: Ошибка при добавлении растения:", error);
       }
     }
   };
@@ -363,8 +256,6 @@ function MyPlant() {
   const handleAddPlantToRoom = async () => {
     if (selectedPlantToAdd && selectedRoomForPlant) {
       try {
-        console.log("🌱 MyPlant: Добавляем растение в комнату:", selectedPlantToAdd.name, "в комнату", selectedRoomForPlant.name);
-        
         let userPlantId = userPlants.find(p => p.plant.id === selectedPlantToAdd.id)?.id;
         
         if (!userPlantId) {
@@ -380,7 +271,6 @@ function MyPlant() {
         setSearchQuery("");
         setSearchResults([]);
         setSearchError("");
-        alert(`Растение добавлено в комнату "${selectedRoomForPlant.name}"!`);
         
         if (roomModalOpen && selectedRoom && selectedRoom.id === selectedRoomForPlant.id) {
           const updatedRoom = rooms.find(r => r.id === selectedRoomForPlant.id);
@@ -389,8 +279,7 @@ function MyPlant() {
           }
         }
       } catch (error) {
-        console.error("❌ MyPlant: Ошибка при добавлении растения:", error);
-        alert("Ошибка при добавлении растения");
+        console.error(" MyPlant: Ошибка при добавлении растения:", error);
       }
     }
   };
@@ -408,10 +297,8 @@ function MyPlant() {
             setSelectedRoom(updatedRoom);
           }
         }
-        alert("Растение удалено из комнаты");
       } catch (error) {
         console.error("Ошибка при удалении растения из комнаты:", error);
-        alert("Ошибка при удалении растения из комнаты");
       }
     }
   };
@@ -420,26 +307,22 @@ function MyPlant() {
     const confirmDelete = window.confirm("Вы уверены, что хотите удалить это растение?");
     if (confirmDelete) {
       try {
-        console.log("🌱 MyPlant: Удаляем растение, ID:", userPlantId);
         await deleteUserPlant(userPlantId);
         await loadData();
         setModalOpen(false);
-        alert("Растение успешно удалено!");
       } catch (error) {
-        console.error("❌ MyPlant: Ошибка при удалении растения:", error);
-        alert("Ошибка при удалении растения");
+        console.error("MyPlant: Ошибка при удалении растения:", error);
       }
     }
   };
 
   const addNewRoom = async () => {
     if (!newRoomName.trim()) {
-      alert("Введите название комнаты");
       return;
     }
 
     if (rooms.some(room => room.name === newRoomName.trim())) {
-      alert("Комната с таким названием уже существует");
+      ("Комната с таким названием уже существует");
       return;
     }
 
@@ -448,10 +331,8 @@ function MyPlant() {
       await loadData();
       setAddRoomModalOpen(false);
       setNewRoomName("");
-      alert("Комната успешно добавлена!");
     } catch (error: any) {
       console.error("Ошибка при создании комнаты:", error);
-      alert(error.message || "Ошибка при создании комнаты");
     }
   };
 
@@ -466,10 +347,8 @@ function MyPlant() {
           setRoomModalOpen(false);
           setSelectedRoom(null);
         }
-        alert("Комната успешно удалена!");
       } catch (error) {
         console.error("Ошибка при удалении комнаты:", error);
-        alert("Ошибка при удалении комнаты");
       } finally {
         setDeletingRoomId(null);
       }
@@ -480,10 +359,8 @@ function MyPlant() {
     try {
       await updateUserPlant(userPlantId, { color });
       await loadData();
-      alert("Цвет успешно обновлен!");
     } catch (error) {
       console.error("Ошибка при обновлении цвета:", error);
-      alert("Ошибка при обновлении цвета");
     }
   };
 
@@ -497,7 +374,7 @@ function MyPlant() {
     setSelectedPlant({
       id: plant.id,
       name: plant.plant.name,
-      room: plant.room || "Без комнаты",
+      room: plant.room?.name || "Без комнаты",
       roomId: roomObj?.id,
       image: plant.plant.photo || "",
       description: plant.plant.description,
@@ -527,7 +404,6 @@ function MyPlant() {
       setNewCommentText("");
     } catch (e) {
       console.error("Ошибка при добавлении комментария:", e);
-      alert("Ошибка при добавлении комментария");
     } finally {
       setCommentSubmitting(false);
     }
@@ -539,7 +415,6 @@ function MyPlant() {
       setComments(prev => prev.filter(c => c.id !== commentId));
     } catch (e) {
       console.error("Ошибка при удалении комментария:", e);
-      alert("Ошибка при удалении комментария");
     }
   };
 
@@ -582,13 +457,6 @@ function MyPlant() {
     return () => clearTimeout(timeoutId);
   }, [searchQuery, addPlantModalOpen, addToRoomModalOpen, allPlants]);
 
-  useEffect(() => {
-    console.log("📊 MyPlant: allPlants изменился, теперь в базе:", allPlants.length);
-    if (allPlants.length === 0 && !loading) {
-      console.warn("⚠️ MyPlant: ВНИМАНИЕ! База растений пуста. Проверьте API запрос.");
-    }
-  }, [allPlants, loading]);
-
   const handleLoginClick = () => {
     navigate("/auth/signin");
   };
@@ -609,7 +477,6 @@ function MyPlant() {
       }
     } catch (error) {
       console.error("Ошибка при выходе:", error);
-      alert("Произошла ошибка при выходе из системы");
     }
   };
 
@@ -696,7 +563,7 @@ function MyPlant() {
                             />
                           </div>
                           <p className="mobile-plant-name">{plant.plant.name}</p>
-                          <p className="mobile-plant-room">Комната: {plant.room || "Без комнаты"}</p>
+                          <p className="mobile-plant-room">Комната: {plant.room?.name || "Без комнаты"}</p>
                         </div>
                       ))
                     )}
@@ -736,23 +603,7 @@ function MyPlant() {
                         </div>
                         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px'}}>
                           <p className="mobile-room-name">{room.name}</p>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteRoom(room.id, room.name);
-                            }}
-                            disabled={deletingRoomId === room.id}
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              color: '#DF7171',
-                              fontSize: '18px',
-                              cursor: 'pointer',
-                              padding: '4px 8px'
-                            }}
-                          >
-                            {deletingRoomId === room.id ? '...' : '🗑️'}
-                          </button>
+                          {/* Кнопка удаления комнаты удалена с основной страницы */}
                         </div>
                       </div>
                     ))}
@@ -800,7 +651,30 @@ function MyPlant() {
                 <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto'}}>
                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
                     <h2 style={{margin: 0, fontSize: '24px'}}>{selectedRoom.name}</h2>
-                    <button onClick={() => setRoomModalOpen(false)} style={{background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer'}}>×</button>
+                    <div style={{display: 'flex', gap: '12px'}}>
+                      {/* Кнопка удаления комнаты - красный квадрат с белым крестиком */}
+                      <button
+                        onClick={() => handleDeleteRoom(selectedRoom.id, selectedRoom.name)}
+                        disabled={deletingRoomId === selectedRoom.id}
+                        style={{
+                          background: '#DF7171',
+                          border: 'none',
+                          borderRadius: '8px',
+                          width: '32px',
+                          height: '32px',
+                          cursor: deletingRoomId === selectedRoom.id ? 'default' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                          fontSize: '20px',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        {deletingRoomId === selectedRoom.id ? '...' : '×'}
+                      </button>
+                      <button onClick={() => setRoomModalOpen(false)} style={{background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer'}}>×</button>
+                    </div>
                   </div>
                   <div style={{display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center'}}>
                     {selectedRoom.userPlants.map((plant) => (
@@ -1365,7 +1239,7 @@ function MyPlant() {
                         />
                       </div>
                       <p className="plant_name">{plant.plant.name}</p>
-                      <p className="place_of_plant">Комната: {plant.room || "Без комнаты"}</p>
+                      <p className="place_of_plant">Комната: {plant.room?.name || "Без комнаты"}</p>
                     </div>
                   ))
                 )}
@@ -1384,29 +1258,41 @@ function MyPlant() {
               <p className="p_center">Мои комнаты</p>
               <div className="side_elements">
                 {rooms.map((room) => (
-                  <div key={room.id} style={{cursor: 'pointer', position: 'relative'}}>   
+                  <div key={room.id} style={{ cursor: 'pointer', position: 'relative' }}>
                     <div onClick={() => openRoomModal(room)}>
-                      <div className="element" style={{display:'flex', flexWrap:'wrap', justifyContent: 'center', alignItems: 'center', padding: '8px'}}>
+                      <div
+                        className="element"
+                        style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: '8px',
+                        }}
+                      >
                         {room.userPlants.slice(0, 4).map((plant) => (
-                          <div key={plant.id} style={{
-                            width: '92px', 
-                            height: '92px', 
-                            margin: '4px',
-                            backgroundColor: plant.color || "#FFFFFF",
-                            borderRadius: '12px',
-                            padding: '4px'
-                          }}>
-                            <PlantImage 
-                              src={plant.plant.photo} 
-                              alt={plant.plant.name} 
-                              style={{width: '100%', height: '100%', borderRadius: '8px'}}
+                          <div
+                            key={plant.id}
+                            style={{
+                              width: '92px',
+                              height: '92px',
+                              margin: '4px',
+                              backgroundColor: plant.color || '#FFFFFF',
+                              borderRadius: '12px',
+                              padding: '4px',
+                            }}
+                          >
+                            <PlantImage
+                              src={plant.plant.photo}
+                              alt={plant.plant.name}
+                              style={{ width: '100%', height: '100%', borderRadius: '8px' }}
                             />
                           </div>
                         ))}
                         {room.userPlants.length < 4 && (
-                          <button 
-                            className="button_room" 
-                            style={{margin: '4px'}} 
+                          <button
+                            className="button_room"
+                            style={{ margin: '4px' }}
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedRoomForPlant(room);
@@ -1417,39 +1303,38 @@ function MyPlant() {
                           </button>
                         )}
                       </div>
-                      <p style={{fontWeight:'500', textAlign: 'center', marginTop: '8px'}}>{room.name}</p>
+                      <p style={{ fontWeight: '500', textAlign: 'center', marginTop: '8px' }}>
+                        {room.name}
+                      </p>
                     </div>
-                    <button
-                      onClick={() => handleDeleteRoom(room.id, room.name)}
-                      disabled={deletingRoomId === room.id}
-                      style={{
-                        position: 'absolute',
-                        top: '8px',
-                        right: '8px',
-                        background: 'rgba(223, 113, 113, 0.8)',
-                        border: 'none',
-                        borderRadius: '50%',
-                        width: '28px',
-                        height: '28px',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#DF7171'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(223, 113, 113, 0.8)'}
-                    >
-                      {deletingRoomId === room.id ? '...' : '🗑️'}
-                    </button>
-                  </div> 
+                    {/* Кнопка удаления комнаты удалена с основной страницы */}
+                  </div>
                 ))}
-                <div className="element" onClick={() => setAddRoomModalOpen(true)}>
-                  <button className="button_add">+</button>
+
+                <div
+                  className="element"
+                  onClick={() => setAddRoomModalOpen(true)}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'flex-end',
+                      height: '148px',
+                      width: '196px',
+                    }}
+                  >
+                    <button className="button_add">+</button>
+                  </div>
                   <p className="add_new_plant_new_place">Добавить комнату</p>
-                </div>                
-              </div>          
+                </div>
+              </div>
             </section>
           </>
         )}
@@ -1462,7 +1347,30 @@ function MyPlant() {
               <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '70%', maxWidth: '900px', maxHeight: '85vh', overflowY: 'auto'}}>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
                   <h2 style={{margin: 0, fontSize: '28px'}}>{selectedRoom.name}</h2>
-                  <button onClick={() => setRoomModalOpen(false)} style={{background: 'none', border: 'none', fontSize: '28px', cursor: 'pointer'}}>×</button>
+                  <div style={{display: 'flex', gap: '12px'}}>
+                    {/* Кнопка удаления комнаты - красный квадрат с белым крестиком */}
+                    <button
+                      onClick={() => handleDeleteRoom(selectedRoom.id, selectedRoom.name)}
+                      disabled={deletingRoomId === selectedRoom.id}
+                      style={{
+                        background: '#DF7171',
+                        border: 'none',
+                        borderRadius: '8px',
+                        width: '36px',
+                        height: '36px',
+                        cursor: deletingRoomId === selectedRoom.id ? 'default' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        fontSize: '24px',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      {deletingRoomId === selectedRoom.id ? '...' : '×'}
+                    </button>
+                    <button onClick={() => setRoomModalOpen(false)} style={{background: 'none', border: 'none', fontSize: '28px', cursor: 'pointer'}}>×</button>
+                  </div>
                 </div>
                 <div style={{display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'flex-start'}}>
                   {selectedRoom.userPlants.map((plant) => (
