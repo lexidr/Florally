@@ -94,11 +94,27 @@ const PlantImage: React.FC<{
   alt: string; 
   className?: string; 
   style?: React.CSSProperties;
-}> = ({ src, alt, className, style }) => {
+  plantId?: string | number;
+}> = ({ src, alt, className, style, plantId }) => {
   const [hasError, setHasError] = useState(false);
-  const plugImage = "/plug-image-plant.png"; 
+  
+  const getPlaceholderIndex = () => {
+    if (plantId) {
+      const key = `plant_placeholder_${plantId}`;
+      const saved = localStorage.getItem(key);
+      if (saved) return parseInt(saved, 10);
+      const newIndex = Math.floor(Math.random() * 10) + 1;
+      localStorage.setItem(key, newIndex.toString());
+      return newIndex;
+    }
+    return Math.floor(Math.random() * 10) + 1;
+  };
+  
+  const [placeholderIndex] = useState(() => getPlaceholderIndex());
 
-  const imageSrc = (hasError || !src || src.trim() === "") ? plugImage : src;
+  const imageSrc = (hasError || !src || src.trim() === "") 
+    ? `/plug-image-plant${placeholderIndex}.png` 
+    : src;
 
   return (
     <img
@@ -551,6 +567,7 @@ function MyPlant() {
                             <PlantImage
                               src={plant.plant.photo}
                               alt={plant.plant.name}
+                              plantId={plant.id}
                               style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px'}}
                             />
                           </div>
@@ -582,7 +599,12 @@ function MyPlant() {
                               borderRadius: '12px',
                               padding: '2px'
                             }}>
-                              <PlantImage src={plant.plant.photo} alt={plant.plant.name} style={{width:'100%', height:'100%', borderRadius: '10px'}}/>
+                              <PlantImage 
+                                src={plant.plant.photo} 
+                                alt={plant.plant.name} 
+                                plantId={plant.id}
+                                style={{width:'100%', height:'100%', borderRadius: '10px'}}
+                              />
                             </div>
                           ))}
                           {room.userPlants.length <= 3 && (
@@ -687,6 +709,7 @@ function MyPlant() {
                           <PlantImage
                             src={plant.plant.photo}
                             alt={plant.plant.name}
+                            plantId={plant.id}
                             style={{width: '100%', height: '100%', objectFit: 'cover'}}
                           />
                         </div>
@@ -750,6 +773,7 @@ function MyPlant() {
                       <PlantImage
                         src={selectedPlant.image}
                         alt={selectedPlant.name}
+                        plantId={selectedPlant.id}
                         style={{width: '100%', height: '100%', objectFit: 'cover'}}
                       />
                     </div>
@@ -986,6 +1010,7 @@ function MyPlant() {
                           <PlantImage
                             src={plant.photo}
                             alt={plant.name}
+                            plantId={plant.id}
                             style={{width: '100%', height: '100%', objectFit: 'cover'}}
                           />
                         </div>
@@ -1101,6 +1126,7 @@ function MyPlant() {
                               <PlantImage
                                 src={userPlant.plant.photo}
                                 alt={userPlant.plant.name}
+                                plantId={userPlant.id}
                                 style={{width: '100%', height: '100%', objectFit: 'cover'}}
                               />
                             </div>
@@ -1236,6 +1262,7 @@ function MyPlant() {
                         <PlantImage
                           src={plant.plant.photo}
                           alt={plant.plant.name}
+                          plantId={plant.id}
                           style={{width: '100%', height: '100%', objectFit: 'cover'}}
                         />
                       </div>
@@ -1286,6 +1313,7 @@ function MyPlant() {
                             <PlantImage
                               src={plant.plant.photo}
                               alt={plant.plant.name}
+                              plantId={plant.id}
                               style={{ width: '100%', height: '100%', borderRadius: '8px' }}
                             />
                           </div>
@@ -1392,6 +1420,7 @@ function MyPlant() {
                         <PlantImage
                           src={plant.plant.photo}
                           alt={plant.plant.name}
+                          plantId={plant.id}
                           style={{width: '100%', height: '100%', objectFit: 'cover'}}
                         />
                       </div>
@@ -1460,6 +1489,7 @@ function MyPlant() {
                     <PlantImage
                       src={selectedPlant.image}
                       alt={selectedPlant.name}
+                      plantId={selectedPlant.id}
                       style={{width: '100%', height: '100%', objectFit: 'cover'}}
                     />
                   </div>
@@ -1727,6 +1757,7 @@ function MyPlant() {
                         <PlantImage
                           src={plant.photo}
                           alt={plant.name}
+                          plantId={plant.id}
                           style={{width: "100%", height: "100%", objectFit: "cover"}}
                         />
                       </div>
@@ -1819,6 +1850,7 @@ function MyPlant() {
                             <PlantImage
                               src={userPlant.plant.photo}
                               alt={userPlant.plant.name}
+                              plantId={userPlant.id}
                               style={{width: "100%", height: "100%", objectFit: "cover"}}
                             />
                           </div>
