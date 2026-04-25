@@ -131,199 +131,119 @@ const RegistrationForm = () => {
             
           }
 
-          .modal-content {
+          .modal-contentMail {
             background-color: white;
             border-radius: 20px;
             width: 100%;
-            padding: 20px;
-            max-width: 400px;
+            padding: 34px;
+            max-width: 788px;
             position: relative;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
             animation: modalSlideIn 0.3s ease-out;
             overflow: hidden;
-            height:80svh;
+            height: 461px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;  
+            align-items: center;      
+            text-align: center;
           }
 
           .text_1{
-          margin:auto;
-          height: calc(50svh - 20px);
-          display:flex;
-          justify-content:center;
-          align-items:center;
+            margin:auto;
+            margin-top: 150px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            max-height: 68px;
+            max-width: 632px;
+            line-height: 1.0;
           }
 
           .text_1>span{
-          margin:auto;
-          font-size: 40px;
-          font-weight: 500;
-          text-align:center;
+            margin:auto;
+            font-size: 40px;
+            font-weight: 500;
+            text-align:center;
           }
 
           .text_2{
-          height: 15svh;
-          display:flex;
-          justify-content:center;
-          align-items:flex-end;
+            height: 15svh;
+            display:flex;
+            justify-content:center;
+            align-items:flex-end;
           }
 
           .text_2>span{
-          margin-bottom:5px;
+            margin-bottom:5px;
           }
 
           .box_button{
             height: 15svh;
             display:flex;
             justify-content:flex-end;
-            
           }
 
-          .modal-close-btn {
+          .modal-close-btnMail {
             position: absolute;
             background: none;
             border: none;
             font-size: 24px;
             cursor: pointer;
-            background-color: #A8C686;
-            width: 7.5svh;
-            height: 7.5svh;
+            color: #68863F;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 10px;
             transition: all 0.2s ease;
             z-index: 100;
+            padding: 0;
+            margin-bottom: 131px;
+            position: absolute;
+            right: 32px;
+            top: 32px;
           }
 
-          .modal-close-btn:hover {
+          .modal-close-btnMail:hover {
             background-color: #f0f0f0;
             color: #333;
             border: none;
           }
-
           
-          
-          @media (max-width: 620px) {
-            .modal-content {
-              width: 85%;
-              max-width: 350px;
-            }
-            
-            
-            
-            .modal-close-btn {
-              top: 10px;
-              right: 10px;
-              font-size: 20px;
-            }
-          }
-
-          @media (max-height: 500px) and (max-width: 620px) {
-            .modal-content {
-              max-height: 80vh;
-              overflow-y: auto;
-            }
-            
-          }
-
-           @media (max-width: 800px) and (max-height: 500px) {
-            .modal-content {
-              height: 85svh;
-              padding: 12px;
-              max-width: 85%;
+          @media (width <= 376px) and (height <= 813px) {
+            .modal-contentMail {
+              width: 100%;
+              padding: 32px 32px 24px;
+              max-width: 342px;
+              height: 320px;
             }
 
-            .text_1 {
-              height: calc(45svh - 10px);
+            .modal-close-btnMail {
+              width: 20px;
+              height: 20px;
+              right: 32px;
+              top: 32px;
             }
 
-            .text_1 > span {
-              font-size: 18px;
+            .text_1{
+              margin-top: 90px;
+              max-height: 65px;
+              max-width: 256px;
             }
 
-            .text_2 {
-              height: 12svh;
-            }
-
-            .text_2 > span {
-              font-size: 12px;
-            }
-
-            .box_button {
-              height: 10svh;
-            }
-
-            .modal-close-btn {
-              font-size: 16px;
-              top: 5px;
-              right: 5px;
-            }
-          }
-
-          
-          @media (max-width: 800px) {
-            .text_1 > span {
+            .text_1>span{
               font-size: 24px;
             }
-
-            .text_2 > span {
-              font-size: 14px;
+            
+            .text_2{
+              height: 15svh;
+              line-height: 1.0;
             }
           }
-
-          
-          @media (max-height: 500px) {
-            .modal-content {
-              height: 90svh;
-              padding: 10px;
-            }
-
-            .text_1 {
-              height: calc(40svh - 10px);
-            }
-
-            .text_1 > span {
-              font-size: 20px;
-            }
-
-            .text_2 {
-              height: 10svh;
-            }
-
-            .text_2 > span {
-              font-size: 15px;
-            }
-
-            .box_button {
-              height: 8svh;
-            }
-
-            .modal-close-btn {
-              
-              font-size: 14px;
-            }
-          }
-
-          
-          @media (max-width: 480px) and (max-height: 400px) {
-            .modal-content {
-              padding: 8px;
-              border-radius: 12px;
-            }
-
-            .text_1 > span {
-              font-size: 14px;
-            }
-
-            .text_2 > span {
-              font-size: 10px;
-            }
-
-            .modal-close-btn {
-              font-size: 12px;
-            }
-            
-            
         `}
+
       </style>
 
       <section className="registration-container">
@@ -455,10 +375,10 @@ const RegistrationForm = () => {
         {/* Модальное окно с классами из CSS */}
         {showModal && (
           <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="box_button"><button className="modal-close-btn" onClick={closeModal}>✕</button></div>
-              <div className="text_1"><span>Вам на почту выслано письмо для подтверждения</span></div>
-              <div className="text_2"><span>при неверно введенных данных никнейм будет доступен через 1 час</span></div>
+            <div className="modal-contentMail">
+              <button className="modal-close-btnMail" onClick={closeModal}>✕</button>
+              <div className="text_1"><span className="text_1">На почту выслано письмо для подтверждения</span></div>
+              <div className="text_2"><span className="text_2">*при неверно введенных данных никнейм будет доступен через 1 час</span></div>
             </div>
           </div>
         )}
