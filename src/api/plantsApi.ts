@@ -12,11 +12,21 @@ export interface Plant {
   updated_at?: string;
 }
 
+export interface Room {
+  id: string;
+  name: string;
+  user_id: string;
+  userPlants?: UserPlant[];
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface UserPlant {
   id: string;
   color: string;
   plant: Plant;
-  room?: string;
+  room?: Room;
+  room_id?: string;
   customCare?: any[];
   plant_id?: string;
   user_id?: string;
@@ -82,7 +92,10 @@ export const getUserPlants = async (): Promise<UserPlant[]> => {
   }
 };
 
-export const addUserPlant = async (plantId: string, color: string = '#FFFFFF'): Promise<UserPlant> => {
+export const addUserPlant = async (
+  plantId: string,
+  color: string = '#FFFFFF'
+): Promise<UserPlant> => {
   try {
     const response = await Http.post('/users_plants', {
       plantId,
@@ -95,7 +108,10 @@ export const addUserPlant = async (plantId: string, color: string = '#FFFFFF'): 
   }
 };
 
-export const updateUserPlant = async (userPlantId: string, data: { color?: string; room?: string }): Promise<UserPlant> => {
+export const updateUserPlant = async (
+  userPlantId: string,
+  data: { color?: string; room?: string }
+): Promise<UserPlant> => {
   try {
     const response = await Http.patch(`/users_plants/${userPlantId}`, data);
     return response.data;
@@ -124,7 +140,10 @@ export const getCommentsByUserPlant = async (userPlantId: string): Promise<Comme
   }
 };
 
-export const createComment = async (userPlantId: string, text: string): Promise<Comment> => {
+export const createComment = async (
+  userPlantId: string,
+  text: string
+): Promise<Comment> => {
   try {
     const response = await Http.post('/comments', {
       user_plant_id: userPlantId,
@@ -137,7 +156,10 @@ export const createComment = async (userPlantId: string, text: string): Promise<
   }
 };
 
-export const updateComment = async (commentId: string, text: string): Promise<Comment> => {
+export const updateComment = async (
+  commentId: string,
+  text: string
+): Promise<Comment> => {
   try {
     const response = await Http.patch(`/comments/${commentId}`, { text });
     return response.data;
