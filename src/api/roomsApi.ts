@@ -31,9 +31,6 @@ export interface Plant {
   fertilizing_frequency?: number;
 }
 
-/**
- * Получить все комнаты пользователя
- */
 export const getUserRooms = async (): Promise<Room[]> => {
   try {
     const response = await Http.get('/user_rooms');
@@ -44,9 +41,6 @@ export const getUserRooms = async (): Promise<Room[]> => {
   }
 };
 
-/**
- * Получить комнату по ID
- */
 export const getRoomById = async (roomId: string): Promise<Room> => {
   try {
     const response = await Http.get(`/user_rooms/${roomId}`);
@@ -57,9 +51,6 @@ export const getRoomById = async (roomId: string): Promise<Room> => {
   }
 };
 
-/**
- * Создать новую комнату
- */
 export const createRoom = async (name: string, userPlantIds?: string[]): Promise<Room> => {
   try {
     const response = await Http.post('/user_rooms', {
@@ -73,9 +64,6 @@ export const createRoom = async (name: string, userPlantIds?: string[]): Promise
   }
 };
 
-/**
- * Обновить комнату (название и/или список растений)
- */
 export const updateRoom = async (
   roomId: string, 
   data: { name?: string; userPlantIds?: string[] }
@@ -89,9 +77,6 @@ export const updateRoom = async (
   }
 };
 
-/**
- * Удалить комнату
- */
 export const deleteRoom = async (roomId: string): Promise<{ message: string }> => {
   try {
     const response = await Http.delete(`/user_rooms/${roomId}`);
@@ -102,9 +87,6 @@ export const deleteRoom = async (roomId: string): Promise<{ message: string }> =
   }
 };
 
-/**
- * Добавить растение в комнату
- */
 export const addPlantToRoom = async (
   roomId: string, 
   userPlantId: string
@@ -118,9 +100,6 @@ export const addPlantToRoom = async (
   }
 };
 
-/**
- * Удалить растение из комнаты
- */
 export const removePlantFromRoom = async (
   roomId: string, 
   userPlantId: string
@@ -134,7 +113,6 @@ export const removePlantFromRoom = async (
   }
 };
 
-// Экспорт всех функций как дефолт объекта
 export default {
   getUserRooms,
   getRoomById,
