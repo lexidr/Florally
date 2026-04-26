@@ -102,8 +102,6 @@ const RegistrationForm = () => {
       {/* Стили из SectionRegistrationForm.css (потому что не импортировалось нормально)  */}
       <style>
         {`
-          
-
           @keyframes modalSlideIn {
             from {
               transform: translateY(-50px);
@@ -115,7 +113,6 @@ const RegistrationForm = () => {
             }
           }
 
-          /* Стили для модального окна */
           .modal-overlay {
             position: fixed;
             top: 0;
@@ -128,7 +125,6 @@ const RegistrationForm = () => {
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            
           }
 
           .modal-contentMail {
@@ -212,6 +208,85 @@ const RegistrationForm = () => {
             border: none;
           }
           
+           @media (width <= 788px) {
+            .modal-contentMail {
+              max-width: 75%;
+              padding: 28px;
+              height: 400px;
+            }
+
+            .text_1 {
+              margin-top: 100px;
+              max-width: 80%;
+            }
+
+            .text_1 > span {
+              font-size: 30px;
+            }
+
+            .modal-close-btnMail {
+              right: 28px;
+              top: 28px;
+            }
+          }
+
+          @media (width <= 376px) {
+            .modal-overlay {
+              padding: 16px;
+            }
+
+            .modal-contentMail {
+              max-width: 342px;
+              padding: 32px 24px 24px;
+              min-height: 320px;
+            }
+
+            .modal-close-btnMail {
+              width: 24px;
+              height: 24px;
+              font-size: 20px;
+              right: 20px;
+              top: 20px;
+            }
+
+            .text_1 {
+              margin-top: 70px;
+              max-height: auto;
+              max-width: 100%;
+            }
+
+            .text_1 > span {
+              font-size: 24px;
+            }
+
+            .text_2 {
+              height: auto;
+              margin-top: 16px;
+              align-items: center;
+            }
+
+            .box_button {
+              height: auto;
+              margin-top: 20px;
+              justify-content: center;
+            }
+          }
+
+          @media (width <= 320px) {
+            .modal-contentMail {
+              padding: 24px 16px;
+            }
+
+            .text_1 > span {
+              font-size: 20px;
+            }
+
+            .modal-close-btnMail {
+              right: 16px;
+              top: 16px;
+            }
+          }
+
           @media (width <= 376px) and (height <= 813px) {
             .modal-contentMail {
               width: 100%;
