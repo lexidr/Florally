@@ -398,8 +398,8 @@ function User() {
                     <h2 className="mobile-section-title">Мои растения</h2>
                     {plants && plants.length > 0 ? (
                       <>
-                        <div style={{ backgroundColor: '#f0f0f0', borderRadius: '16px', padding: '16px' }}>
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>
+                        <div className="scroll-container" style={{ backgroundColor: '#f0f0f0', borderRadius: '16px', padding: '16px' }}>
+                          <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '16px', justifyContent: 'center', width: 'max-content', maxHeight: '244px' }}>
                             {plants.slice(0, 3).map(plant => renderPlantCard(plant))}
                           </div>
                         </div>
@@ -526,8 +526,8 @@ function User() {
                   <h2>Мои растения</h2>
                   {plants && plants.length > 0 ? (
                     <>
-                      <div style={{ backgroundColor: '#f0f0f0', borderRadius: '16px', padding: '16px' }}>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+                      <div className="scroll-container" style={{ backgroundColor: '#f0f0f0', borderRadius: '16px', padding: '16px' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'flex-start', alignItems: 'flex-start', width: 'max-content', maxHeight: '244px' }}>
                           {plants.slice(0, 3).map(plant => renderPlantCard(plant))}
                         </div>
                       </div>
@@ -549,7 +549,7 @@ function User() {
               </div>
             )}
           </div>
-          <div className="user-image-section"><img src="/back-img.svg" alt="Девушка поливает цветок в горшке" className="user-background-image" /></div>
+          <div className="user-image-section"><img src="/user-back-img.svg" alt="Парень и девушка сажают цветы" className="user-background-image" /></div>
         </section>
       </main>
       {modalOpen && selectedPlant && (

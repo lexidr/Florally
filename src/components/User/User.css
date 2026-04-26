@@ -50,7 +50,7 @@
   border-radius: 4vh;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   margin-right: 50px;
-  width: 655px;
+  width: 788px;
   height: 100%;
   padding: 40px;
   overflow-y: auto;
@@ -206,6 +206,7 @@
   background-color: #a8c686;
   color: white;
   margin-bottom: 30px;
+  margin-top: 15px;
 }
 
 .view-more-btn:hover {
@@ -695,6 +696,19 @@ button:hover {
   -ms-overflow-style: none; 
   scrollbar-width: none;     
   overflow-y: auto;          
+}
+
+.scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  max-height: 244px;
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none;
 }
 
 @media (width <= 1055px) {
