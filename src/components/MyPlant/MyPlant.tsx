@@ -184,14 +184,13 @@ function MyPlant() {
   const [searchError, setSearchError] = useState<string>("");
   const [deletingRoomId, setDeletingRoomId] = useState<string | null>(null);
 
-  // НОВОЕ: состояния для модалки создания растения
   const [showCreatePlantModal, setShowCreatePlantModal] = useState(false);
   const [newPlantData, setNewPlantData] = useState({
     name: "",
     description: "",
     season: "",
     notes: "",
-    photoIndex: 1,
+    photoIndex: 0,
   });
   const [showImageGrid, setShowImageGrid] = useState(false);
 
@@ -224,7 +223,6 @@ function MyPlant() {
     }
   };
 
-  // Поиск по имени + сезону
   const handleSearchPlants = (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -257,7 +255,7 @@ function MyPlant() {
           const room = rooms.find(r => r.name === selectedRoomForAdd);
           if (room) await addPlantToRoom(room.id, newPlant.id);
         }
-        await loadData(); // обновляем данные после добавления
+        await loadData();
         setAddPlantModalOpen(false);
         setSelectedPlantToAdd(null);
         setSearchQuery("");
@@ -279,7 +277,7 @@ function MyPlant() {
           userPlantId = newPlant.id;
         }
         await addPlantToRoom(selectedRoomForPlant.id, userPlantId);
-        await loadData(); // обновляем данные
+        await loadData();
         setAddToRoomModalOpen(false);
         setSelectedPlantToAdd(null);
         setSearchQuery("");
@@ -295,7 +293,6 @@ function MyPlant() {
     }
   };
 
-  // ИСПРАВЛЕНО: мгновенное удаление из комнаты
   const handleRemovePlantFromRoom = async (userPlantId: string, roomId: string) => {
     try {
       await removePlantFromRoom(roomId, userPlantId);
@@ -315,7 +312,6 @@ function MyPlant() {
     }
   };
 
-  // ИСПРАВЛЕНО: мгновенное удаление растения пользователя
   const handleDeleteUserPlant = async (userPlantId: string) => {
     try {
       await deleteUserPlant(userPlantId);
@@ -337,7 +333,6 @@ function MyPlant() {
     }
   };
 
-  // ИСПРАВЛЕНО: мгновенное удаление комнаты
   const handleDeleteRoom = async (roomId: string, roomName: string) => {
     setDeletingRoomId(roomId);
     try {
@@ -961,11 +956,17 @@ function MyPlant() {
                     </div>
                   )}
 
-                  {/* Кнопка "Добавить растение" */}
                   <div
                     onClick={() => {
                       setAddPlantModalOpen(false);
                       setShowCreatePlantModal(true);
+                      setNewPlantData({
+                        name: "",
+                        description: "",
+                        season: "",
+                        notes: "",
+                        photoIndex: 0,
+                      });
                     }}
                     style={{
                       padding: "10px",
@@ -1180,7 +1181,6 @@ function MyPlant() {
               </div>
             )}
 
-            {/* НОВОЕ: модалка создания растения */}
             {showCreatePlantModal && (
               <div className="modal-overlay" onClick={() => setShowCreatePlantModal(false)}>
                 <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '24px'}}>
@@ -1203,7 +1203,10 @@ function MyPlant() {
                       }}
                     >
                       <img
-                        src={`/plug-image-plant${newPlantData.photoIndex}.png`}
+                        src={newPlantData.photoIndex === 0
+                          ? "/plug-image-plant.png"
+                          : `/plug-image-plant${newPlantData.photoIndex}.png`
+                        }
                         alt="preview"
                         style={{width: '100%', height: '100%', objectFit: 'cover'}}
                       />
@@ -1297,7 +1300,6 @@ function MyPlant() {
                       Отмена
                     </button>
                     <button
-                     
                       disabled={!newPlantData.name.trim()}
                       style={{
                         padding: '10px 20px',
@@ -1320,7 +1322,6 @@ function MyPlant() {
     );
   }
 
-  // DESKTOP VERSION
   return (
     <div className="app">
       <header className="header">
@@ -1885,6 +1886,13 @@ function MyPlant() {
                   onClick={() => {
                     setAddPlantModalOpen(false);
                     setShowCreatePlantModal(true);
+                    setNewPlantData({
+                      name: "",
+                      description: "",
+                      season: "",
+                      notes: "",
+                      photoIndex: 0,
+                    });
                   }}
                   style={{
                     padding: "10px",
@@ -2105,7 +2113,11 @@ function MyPlant() {
                 <h2>Новое растение</h2>
                 <div style={{display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '24px'}}>
                   <div onClick={() => setShowImageGrid(true)} style={{width: '200px', height: '200px', backgroundColor: '#f0f0f0', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
-                    <img src={`/plug-image-plant${newPlantData.photoIndex}.png`} alt="preview" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                    <img
+                      src={newPlantData.photoIndex === 0 ? "/plug-image-plant.png" : `/plug-image-plant${newPlantData.photoIndex}.png`}
+                      alt="preview"
+                      style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                    />
                   </div>
                   <div style={{flex: 1}}>
                     <label>Название растения *</label>

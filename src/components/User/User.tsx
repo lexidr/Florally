@@ -107,6 +107,7 @@ function User() {
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [newCommentText, setNewCommentText] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
+  const [registrationDate, setRegistrationDate] = useState<string | null>(null);
 
   const isCalendarActive = location.pathname === "/";
   const isMyPlantsActive = location.pathname === "/plants/my_plants";
@@ -141,6 +142,11 @@ function User() {
         const authData = checkAuth();
         setIsLoggedIn(authData.isAuthenticated);
         setUser(authData.user);
+        
+        if (authData.user && authData.user.createdAt && !registrationDate) {
+          setRegistrationDate(authData.user.createdAt);
+        }
+
         if (authData.user) {
           setFormData({
             username: authData.user.username || "",
@@ -159,7 +165,7 @@ function User() {
       }
     };
     authCheck();
-  }, []);
+  }, []); 
 
   const handleLoginClick = () => navigate("/auth/signin");
   const handleViewMoreClick = () => navigate("/plants/my_plants");
@@ -289,9 +295,10 @@ function User() {
   };
 
   const formatRegistrationDate = () => {
-    if (!user || !user.createdAt) return new Date().toLocaleDateString("ru-RU");
+    const dateStr = registrationDate || user?.createdAt;
+    if (!dateStr) return new Date().toLocaleDateString("ru-RU");
     try {
-      const date = new Date(user.createdAt);
+      const date = new Date(dateStr);
       return date.toLocaleDateString("ru-RU");
     } catch (e) {
       return new Date().toLocaleDateString("ru-RU");
