@@ -1293,9 +1293,10 @@ function MyPlant() {
                         style={{
                           display: 'flex',
                           flexWrap: 'wrap',
-                          justifyContent: 'center',
                           alignItems: 'center',
+                          justifyContent: 'center',
                           padding: '8px',
+                          width: '220px'
                         }}
                       >
                         {room.userPlants.slice(0, 4).map((plant) => (
