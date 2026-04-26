@@ -315,7 +315,7 @@ function User() {
       <div className="app">
         <header className="header">
           <div className="header-content">
-            <img src="/logo.svg" alt="Florally" className="logo" />
+            <Link to="/"><img src={"/logo.svg"} alt="Florally" className="logo" /></Link>
             <div className="loading-auth">Загрузка...</div>
           </div>
         </header>
@@ -365,7 +365,7 @@ function User() {
       <div className="mobile-app">
         <header className="mobile-header">
           <div className="mobile-header-content">
-            <img src="/logo.svg" alt="Florally" className="mobile-logo" />
+            <Link to="/"> <img src="/logo.svg" alt="Florally" className="mobile-logo" /> </Link>
           </div>
         </header>
         <main className="mobile-main-content">
@@ -497,7 +497,7 @@ function User() {
     <div className="app">
       <header className="header">
         <div className="header-content">
-          <img src="/logo.svg" alt="Florally" className="logo" />
+          <Link to="/"><img src="/logo.svg" alt="Florally" className="logo" /></Link>
           <nav className="navigation">
             <Link to="/plants/my_plants" className={`nav-link ${isMyPlantsActive ? "calendar-active" : ""}`}>Мои растения</Link>
             <Link to="/" className={`nav-link ${isCalendarActive ? "calendar-active" : ""}`}>Календарь</Link>

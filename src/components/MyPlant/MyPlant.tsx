@@ -480,7 +480,7 @@ function MyPlant() {
   if (loading) {
     return (
       <div className="app">
-        <header className="header"><div className="header-content"><img src="/logo.svg" alt="Florally" className="logo" /><div className="loading-auth">Загрузка...</div></div></header>
+        <header className="header"><div className="header-content"><Link to="/"><img src={"/logo.svg"} alt="Florally" className="logo" /></Link><div className="loading-auth">Загрузка...</div></div></header>
         <main className="my-plants-content"><div className="loading-container"><div className="loading-spinner"></div><p>Загрузка данных...</p></div></main>
       </div>
     );
@@ -491,7 +491,7 @@ function MyPlant() {
       <div className="mobile-app">
         <header className="mobile-header">
           <div className="mobile-header-content">
-            <img src={"/logo.svg"} alt="Florally" className="mobile-logo" />
+            <Link to="/"> <img src="/logo.svg" alt="Florally" className="mobile-logo" /> </Link>
           </div>
         </header>
 
@@ -1326,7 +1326,7 @@ function MyPlant() {
     <div className="app">
       <header className="header">
         <div className="header-content">
-          <img src={"/logo.svg"} alt="Florally" className="logo" />
+          <Link to="/"><img src="/logo.svg" alt="Florally" className="logo" /></Link>
           <nav className="navigation">
             <Link
               to="/plants/my_plants"

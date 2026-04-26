@@ -87,7 +87,7 @@ function EMailVerification() {
       <div className="app">
         <header className="header">
           <div className="header-content">
-            <img src={"/logo.svg"} alt="Florally" className="logo" />
+            <Link to="/"><img src={"/logo.svg"} alt="Florally" className="logo" /></Link>
             <nav className="navigation">
               <Link
                 to="/plants/my_plants"
@@ -146,7 +146,7 @@ function EMailVerification() {
       <div className="app">
         <header className="header">
           <div className="header-content">
-            <img src={"/logo.svg"} alt="Florally" className="logo" />
+            <Link to="/"><img src="/logo.svg" alt="Florally" className="logo" /></Link>
             <nav className="navigation">
               <Link
                 to="/plants/my_plants"
@@ -215,7 +215,7 @@ function EMailVerification() {
     <div className="app">
       <header className="header">
         <div className="header-content">
-          <img src={"/logo.svg"} alt="Florally" className="logo" />
+          <Link to="/"><img src="/logo.svg" alt="Florally" className="logo" /></Link>
           <nav className="navigation">
             <Link
               to="/plants/my_plants"
