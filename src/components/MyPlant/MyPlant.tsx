@@ -437,7 +437,7 @@ function MyPlant() {
 
 
   useEffect(() => {
-    const authCheck = async () => {
+  const authCheck = async () => {
       try {
         const authData = checkAuth();
         setIsLoggedIn(authData.isAuthenticated);
