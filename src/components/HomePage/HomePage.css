@@ -96,7 +96,7 @@ body {
   width: 572px;
   height: 630px;
   background: white;
-  border-radius: 32px;
+  border-radius: 28px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
   padding: 32px 34px;
 }
@@ -255,31 +255,13 @@ body {
   cursor: default;
 }
 
-.auth-button.login-button {
-  background: #577148;
-  border-color: #577148;
-  color: white;
-  border-radius: 8px;
-  padding: 8px 24px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.auth-button.login-button:hover {
-  border-color: #74885d;
-  background-color: #809568;
-  border: 2.5px solid #809568;
-}
-
 .info-card {
   width: 808px;
   height: 100%;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
   padding: 32px;
   background: #fff;
-  border-radius: 15px;
+  border-radius: 28px;
   padding: 25px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -306,6 +288,7 @@ body {
   flex-grow: 1;
   gap: 20px;
   padding: 20px 0;
+  height: 100%;
 }
 
 .not-authorized-message {
@@ -344,21 +327,33 @@ body {
   margin: 0 auto;
 }
 
+.registration-button-link {
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  max-width: 300px;
+}
+
 .registration-button {
   background-color: #a8c28a;
-  border: 2.5px solid #a8c28a;
-  border-radius: 20vh;
-  padding-top: 1.2vh;
-  padding-bottom: 1.2vh;
-  text-align: center;
-  font-size: 2vh;
-  text-decoration: none;
+  width: 100%;
+  height: 40px;
+  border-radius: 20px;
+  font-size: 16px;
   color: white;
   font-weight: 550;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center
 }
 
 .registration-button:hover {
-  background-color: #74885d;
+  border-color: #74885d;
+  cursor: pointer;
+  background-color: #809568;
+  border: 2.5px solid #809568;
 }
 
 .registration-button:disabled {
@@ -377,42 +372,28 @@ body {
   margin-right: 20px;
 }
 
-.auth-button {
-  background: #577148;
+.auth-section-button {
+  background: #68863F;
   color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 24px;
-  height: 36px;
   font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
+  font-weight: 550;
+  padding: 8px 24px;
+  border-radius: 30px;
+  border: 2.5px solid #68863F; 
   display: flex;
   align-items: center;
   justify-content: center;
-  white-space: nowrap;
+  height: 36px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.auth-button.login-button {
-  background: #577148;
-  border: 2px solid #577148;
-}
-
-.auth-button.logout-button {
-  background: #577148;
-  border: 2px solid #577148;
-}
-
-.auth-button.login-button:hover {
+.auth-section-button:hover {
   border-color: #74885d;
-  background-color: #809568;
-  border: 2px solid #809568;
-}
-
-.auth-button.logout-button:hover {
-  border-color: #74885d;
-  background-color: #809568;
-  border: 2px solid #809568;
+  background-color: #577148;
+  border: 2.5px solid #74885d; 
+  cursor: pointer;
 }
 
 .calendar-with-plants {
@@ -542,6 +523,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 .mobile-title {

@@ -405,11 +405,11 @@ const HomePage: React.FC = () => {
           </nav>
           <div className="auth-section">
             {isLoggedIn ? (
-              <button className="auth-button logout-button" onClick={handleLogoutClick}>
+              <button className="auth-section-button logout-button" onClick={handleLogoutClick}>
                 Выйти
               </button>
             ) : (
-              <button className="auth-button login-button" onClick={handleLoginClick}>
+              <button className="auth-section-button login-button" onClick={handleLoginClick}>
                 Войти
               </button>
             )}

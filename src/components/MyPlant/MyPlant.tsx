@@ -496,17 +496,35 @@ function MyPlant() {
         </header>
 
         <main className="mobile-myplants-content">
-          <div className="mobile-myplants-container">
             {!isLoggedIn ? (
-              <div className="mobile-login-required">
-                <h2>Войдите в систему</h2>
-                <p>Чтобы просматривать свои растения, пожалуйста, войдите в аккаунт</p>
-                <button className="mobile-login-button" onClick={handleLoginClick}>
-                  Войти
-                </button>
+              <div className="mobile-form-container full-height">
+                <h2 className="mobile-title">
+                  Зарегистрируйся,
+                  <br />
+                  чтобы знать больше
+                  <br />
+                  о своих растениях!
+                </h2>
+            
+                <div className="mobile-button-container">
+                  <Link to="/auth/signup" className="mobile-registration-link">
+                    <button className="mobile-registration-button">
+                      Зарегистрироваться
+                    </button>
+                  </Link>
+                </div>
+            
+                <div className="mobile-login-container">
+                 <span className="mobile-login-text">
+                    Есть аккаунт?{" "}
+                    <Link to="/auth/signin" className="mobile-login-link">
+                      Войти
+                    </Link>
+                  </span>
+                </div>
               </div>
             ) : (
-              <>
+              <div className="mobile-myplants-container">
                 <div className="mobile-plants-section">
                   <h2 className="mobile-section-title">Мои растения</h2>
                   <div className="mobile-plants-grid">
@@ -591,9 +609,8 @@ function MyPlant() {
                     </div>
                   </div>
                 </div>
-              </>
+              </div>
             )}
-          </div>
         </main>
 
         <div className="mobile-bottom-menu">
@@ -1350,12 +1367,12 @@ function MyPlant() {
           <div className="auth-section">
             {isLoggedIn ? (
               <div className="user-info">
-                <button className="auth-button logout-button" onClick={handleLogoutClick}>
+                <button className="auth-section-button logout-button" onClick={handleLogoutClick}>
                   Выйти
                 </button>
               </div>
             ) : (
-              <button className="auth-button login-button" onClick={handleLoginClick}>
+              <button className="auth-section-button login-button" onClick={handleLoginClick}>
                 Войти
               </button>
             )}
@@ -1364,13 +1381,40 @@ function MyPlant() {
       </header>
       <main className="my-plants-content">
         {!isLoggedIn ? (
-          <div className="login-required-container-desktop">
-            <h2>Войдите в систему</h2>
-            <p>Чтобы просматривать свои растения, пожалуйста, войдите в аккаунт</p>
-            <button className="auth-button login-button" onClick={handleLoginClick}>
-              Войти
-            </button>
-          </div>
+          <div className="not-authorized-container">
+                        <div className="not-authorized-message">
+                          <p>
+                            Зарегистрируйся,
+                            <br />
+                            чтобы знать больше
+                            <br />
+                            о своих растениях!
+                          </p>
+                        </div>
+                        <div className="registration-form-section">
+                          <div style={{ margin: "1.2vh 0" }}>
+                            <button
+                              className="registration-button"
+                              style={{ width: "100%", margin: "0 auto" }}
+                              onClick={() => navigate("/auth/signup")}
+                            >
+                              Зарегистрироваться
+                            </button>
+                          </div>
+          
+                          <div style={{ margin: "1vh 0", textAlign: "center" }}>
+                            <span style={{ fontSize: "1.7vh" }} className="login-link">
+                              Есть аккаунт?{" "}
+                              <Link
+                                to="/auth/signin"
+                                style={{ color: "#74885d", textDecoration: "none" }}
+                              >
+                                Войти
+                              </Link>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
         ) : (
           <>
             <section className="left_side_plants" style={{overflowY: 'auto', maxHeight: 'calc(100vh - 74px)'}}>

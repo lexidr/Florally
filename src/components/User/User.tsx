@@ -504,7 +504,7 @@ function User() {
             <Link to="/user" className={`nav-link ${isUserActive ? "calendar-active" : ""}`}>Профиль</Link>
           </nav>
           <div className="auth-section">
-            {isLoggedIn ? <div className="user-info"><button className="auth-button logout-button" onClick={handleLogoutClick}>Выйти</button></div> : <button className="auth-button login-button" onClick={handleLoginClick}>Войти</button>}
+            {isLoggedIn ? <div className="user-info"><button className="auth-section-button logout-button" onClick={handleLogoutClick}>Выйти</button></div> : <button className="auth-section-button login-button" onClick={handleLoginClick}>Войти</button>}
           </div>
         </div>
       </header>
@@ -547,12 +547,39 @@ function User() {
                 <div className="user-actions"><button className="logout-bottom-btn" onClick={handleLogoutClick}>Выйти из аккаунта</button></div>
               </div>
             ) : (
-              <div className="not-logged-in">
-                <h2>Зарегистрируйся,<br />чтобы знать больше<br />о своих растениях!</h2>
-                <div className="buttonContainerStyle">
-                  <button type="submit" className="registration-buttom" style={{ margin: "0 auto" }}><Link to="/auth/signup" className="LinkSelectR">Зарегистрироваться</Link></button>
+              <div className="not-authorized-container">
+                <div className="not-authorized-message">
+                  <p> Зарегистрируйся,
+                    <br />
+                    чтобы знать больше
+                    <br />
+                    о своих растениях!
+                  </p>
                 </div>
-                <div style={{ margin: "1vh" }}><span style={{ fontSize: "1.7vh" }} className="login-link">Есть аккаунт? <Link to="/auth/signin" className="LinkSelect">Войти</Link></span></div>
+
+                <div className="registration-form-section">
+                  <div style={{ margin: "1.2vh 0" }}>
+                    <button
+                      className="registration-button"
+                      style={{ width: "100%", margin: "0 auto" }}
+                      onClick={() => navigate("/auth/signup")}
+                      >
+                      Зарегистрироваться
+                    </button>
+                  </div>
+              
+                  <div style={{ margin: "1vh 0", textAlign: "center" }}>
+                    <span style={{ fontSize: "1.7vh" }} className="login-link">
+                      Есть аккаунт?{" "}
+                      <Link
+                        to="/auth/signin"
+                        style={{ color: "#74885d", textDecoration: "none" }}
+                      >
+                      Войти
+                      </Link>
+                    </span>
+                  </div>
+                </div>
               </div>
             )}
           </div>

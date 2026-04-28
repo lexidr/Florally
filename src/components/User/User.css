@@ -47,7 +47,7 @@
 
 .user-card {
   background-color: white;
-  border-radius: 4vh;
+  border-radius: 28px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   margin-right: 50px;
   width: 788px;
@@ -296,36 +296,6 @@ button:hover {
   margin: 2vh 0;
 }
 
-.registration-button-link {
-  text-decoration: none;
-  width: 100%;
-  max-width: 300px;
-}
-
-.registration-button {
-  width: 100%;
-  padding: 12px 24px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  letter-spacing: 0.5px;
-}
-
-.registration-button:hover {
-  background-color: #45a049;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
-}
-
-.registration-button:active {
-  transform: translateY(0);
-}
-
 .LinkSelectR {
   color: #f0f0f0;
   text-decoration: none;
@@ -359,36 +329,6 @@ button:hover {
   display: flex;
   justify-content: center;
   width: 100%;
-}
-
-.registration-button-link {
-  text-decoration: none;
-  display: block;
-  width: 100%;
-  max-width: 300px;
-}
-
-.registration-button {
-  background-color: #a8c28a;
-  border: 2.5px solid #a8c28a;
-  width: 100%;
-  border-radius: 20vh;
-  padding-top: 1.2vh;
-  padding-bottom: 1.2vh;
-  text-align: center;
-  font-size: 2vh;
-  text-decoration: none;
-  color: white;
-  font-weight: 550;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.registration-button:hover {
-  border-color: #74885d;
-  cursor: pointer;
-  background-color: #809568;
-  border: 2.5px solid #809568;
 }
 
 .not-logged-in-title {
@@ -427,12 +367,6 @@ button:hover {
 }
 
 @media (max-width: 810px) {
-  .registration-button {
-    width: 90%;
-    font-size: 90%;
-    padding-top: 1vh;
-    padding-bottom: 1vh;
-  }
   
   .not-logged-in-title {
     font-size: 4vh;
@@ -449,11 +383,6 @@ button:hover {
 }
 
 @media (max-height: 500px) and (max-width: 620px) {
-  .registration-button {
-    padding-bottom: 2.5vh;
-    padding-top: 2.5vh;
-    font-size: 85%;
-  }
   
   .not-logged-in-title {
     font-size: 170%;
@@ -516,21 +445,6 @@ button:hover {
   width: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.mobile-form-container {
-  width: 100%;
-  background-color: #E7E7E7;
-  border-radius: 24px 24px 0 0;
-  padding: 30px 20px 40px;
-  box-sizing: border-box; 
-}
-
-.mobile-form-container.full-height {
-  min-height: calc(100vh - 120px);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
 }
 
 .mobile-title {
