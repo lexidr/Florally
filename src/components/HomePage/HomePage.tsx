@@ -315,7 +315,7 @@ const HomePage: React.FC = () => {
                     </div>
                   </div>
 
-                  <h2 className="mobile-tasks-title">Задачи на день</h2>
+                  <h2 className="mobile-tasks-title">Задачи на {selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</h2>
 
                   <div className="mobile-tasks-container">
                     <div className="mobile-tasks-list">
@@ -418,7 +418,7 @@ const HomePage: React.FC = () => {
       </header>
       <main className="main-content">
         <section className="info-card">
-          <h2 className="card-title">Задачи на день</h2>
+          <h2 className="card-title">Задачи на {selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</h2>
           {!isLoggedIn && (
             <div className="not-authorized-container">
               <div className="not-authorized-message">

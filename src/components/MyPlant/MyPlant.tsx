@@ -643,8 +643,30 @@ function MyPlant() {
           <>
             {roomModalOpen && selectedRoom && (
               <div className="modal-overlay" onClick={() => setRoomModalOpen(false)}>
-                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto'}}>
-                  <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
+                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', position: 'relative'}}>
+                  <button 
+                    className="modal-close-btn" 
+                    onClick={() => setRoomModalOpen(false)}
+                    style={{
+                      position: 'absolute',
+                      top: '12px',
+                      right: '12px',
+                      background: '#FFFFFF',
+                      border: '1px solid #ddd',
+                      borderRadius: '50%',
+                      width: '32px',
+                      height: '32px',
+                      fontSize: '20px',
+                      cursor: 'pointer',
+                      color: '#000000',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      zIndex: 10
+                    }}
+                  >
+                    ✕
+                  </button>
                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
                     <h2 style={{margin: 0, fontSize: '24px'}}>{selectedRoom.name}</h2>                  
                   </div>
@@ -752,8 +774,13 @@ function MyPlant() {
 
             {modalOpen && selectedPlant && (
               <div className="modal-overlay" onClick={closePlantModal}>
-                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px'}}>
-                  <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
+                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px', position: 'relative'}}>
+                  <button 
+                    className="modal-close-btn" 
+                    onClick={closePlantModal}
+                  >
+                    ✕
+                  </button>
                   <div style={{display: "flex", gap: "16px", alignItems: "flex-start", flexWrap: "wrap"}}>
                     <div style={{width: '120px', height: '120px', backgroundColor: '#F5F5F5', borderRadius: '16px', overflow: 'hidden', flexShrink: 0}}>
                       <PlantImage
@@ -957,9 +984,14 @@ function MyPlant() {
 
             {addPlantModalOpen && (
               <div className="modal-overlay" onClick={() => setAddPlantModalOpen(false)}>
-                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
+                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto', position: 'relative'}}>
                   <h2>Добавить растение</h2>
-                  <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
+                  <button 
+                    className="modal-close-btn" 
+                    onClick={() => setAddPlantModalOpen(false)}
+                  >
+                    ✕
+                  </button>
                   <input
                     type="text"
                     placeholder="Поиск растения..."
@@ -1094,9 +1126,14 @@ function MyPlant() {
 
             {addRoomModalOpen && (
               <div className="modal-overlay" onClick={() => setAddRoomModalOpen(false)}>
-                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
+                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto', position: 'relative'}}>
                   <h2>Добавить комнату</h2>
-                  <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
+                  <button 
+                    className="modal-close-btn" 
+                    onClick={() => setAddRoomModalOpen(false)}
+                  >
+                    ✕
+                  </button>
                   <input
                     type="text"
                     placeholder="Название комнаты..."
@@ -1118,9 +1155,14 @@ function MyPlant() {
 
             {addToRoomModalOpen && selectedRoomForPlant && (
               <div className="modal-overlay" onClick={() => setAddToRoomModalOpen(false)}>
-                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
+                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto', position: 'relative'}}>
                   <h2>Добавить растение в "{selectedRoomForPlant.name}"</h2>
-                  <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
+                  <button 
+                    className="modal-close-btn" 
+                    onClick={() => setAddToRoomModalOpen(false)}
+                  >
+                    ✕
+                  </button>
                   <input
                     type="text"
                     placeholder="Поиск растения..."
@@ -1206,9 +1248,14 @@ function MyPlant() {
 
             {showCreatePlantModal && (
               <div className="modal-overlay" onClick={() => setShowCreatePlantModal(false)}>
-                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '24px'}}>
+                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative'}}>
                   <h2>Новое растение</h2>
-                  <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
+                  <button 
+                    className="modal-close-btn" 
+                    onClick={() => setShowCreatePlantModal(false)}                   
+                  >
+                    ✕
+                  </button>
                   <div style={{display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '24px'}}>
                     <div
                       onClick={() => setShowImageGrid(true)}
@@ -1561,8 +1608,14 @@ function MyPlant() {
         <>
           {roomModalOpen && selectedRoom && (
             <div className="modal-overlay" onClick={() => setRoomModalOpen(false)}>
-              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '70%', maxWidth: '900px', maxHeight: '85vh', overflowY: 'auto'}}>
-                <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
+              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '70%', maxWidth: '900px', maxHeight: '85vh', overflowY: 'auto', position: 'relative'}}>
+                <button 
+                  className="modal-close-btn" 
+                  onClick={() => setRoomModalOpen(false)}
+                  
+                >
+                  ✕
+                </button>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
                   <h2 style={{margin: 0, fontSize: '28px'}}>{selectedRoom.name}</h2>
                 </div>
@@ -1675,8 +1728,14 @@ function MyPlant() {
 
           {modalOpen && selectedPlant && (
             <div className="modal-overlay" onClick={closePlantModal}>
-              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '24px'}}>
-                <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
+              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative'}}>
+                <button 
+                  className="modal-close-btn" 
+                  onClick={closePlantModal}
+                  
+                >
+                  ✕
+                </button>
                 <div style={{display: "flex", gap: "33px", alignItems: "flex-start", flexWrap: "wrap"}}>
                   <div style={{width: '220px', height: '220px', backgroundColor: '#F5F5F5', borderRadius: '20px', overflow: 'hidden', flexShrink: 0}}>
                     <PlantImage
@@ -1911,9 +1970,15 @@ function MyPlant() {
 
           {addPlantModalOpen && (
             <div className="modal-overlay" onClick={() => setAddPlantModalOpen(false)}>
-              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto'}}>
+              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto', position: 'relative'}}>
                 <h2>Добавить растение</h2>
-                <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
+                <button 
+                  className="modal-close-btn" 
+                  onClick={() => setAddPlantModalOpen(false)}
+                  
+                >
+                  ✕
+                </button>
                 <input
                   type="text"
                   placeholder="Поиск растения..."
@@ -2048,9 +2113,14 @@ function MyPlant() {
 
           {addToRoomModalOpen && selectedRoomForPlant && (
             <div className="modal-overlay" onClick={() => setAddToRoomModalOpen(false)}>
-              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto'}}>
+              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto', position: 'relative'}}>
                 <h2>Добавить растение в "{selectedRoomForPlant.name}"</h2>
-                <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
+                <button 
+                  className="modal-close-btn" 
+                  onClick={() => setAddToRoomModalOpen(false)}                
+                >
+                  ✕
+                </button>
                 <input
                   type="text"
                   placeholder="Поиск растения..."
@@ -2136,9 +2206,15 @@ function MyPlant() {
 
           {addRoomModalOpen && (
             <div className="modal-overlay" onClick={() => setAddRoomModalOpen(false)}>
-              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto'}}>
+              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto', position: 'relative'}}>
                 <h2>Добавить комнату</h2>
-                <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
+                <button 
+                  className="modal-close-btn" 
+                  onClick={() => setAddRoomModalOpen(false)}
+                  
+                >
+                  ✕
+                </button>
                 <input
                   type="text"
                   placeholder="Название комнаты..."
@@ -2160,9 +2236,14 @@ function MyPlant() {
 
           {showCreatePlantModal && (
             <div className="modal-overlay" onClick={() => setShowCreatePlantModal(false)}>
-               <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '24px'}}>
+              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative'}}>
                 <h2>Новое растение</h2>
-                <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
+                <button 
+                  className="modal-close-btn" 
+                  onClick={() => setShowCreatePlantModal(false)}
+                >
+                  ✕
+                </button>
                 <div style={{display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '24px'}}>
                   <div onClick={() => setShowImageGrid(true)} style={{width: '200px', height: '200px', backgroundColor: '#f0f0f0', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
                     <img
