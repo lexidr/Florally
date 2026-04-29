@@ -136,7 +136,6 @@ function User() {
     }
   };
 
-  // Функция для получения полного профиля пользователя с бэка
   const fetchFullUserProfile = async () => {
     const token = localStorage.getItem("access_token");
     if (!token) return null;
@@ -165,10 +164,8 @@ function User() {
         setIsLoggedIn(authData.isAuthenticated);
         
         if (authData.user) {
-          // Сначала устанавливаем базовые данные
           setUser(authData.user);
           
-          // Затем получаем полный профиль с created_at
           const fullProfile = await fetchFullUserProfile();
           if (fullProfile) {
             setUser((prev:any) => ({ ...prev, ...fullProfile }));
@@ -324,7 +321,6 @@ function User() {
   };
 
   const formatRegistrationDate = () => {
-    // Используем registrationDate из state или user?.created_at
     const dateStr = registrationDate || user?.created_at;
     
     if (!dateStr) {
