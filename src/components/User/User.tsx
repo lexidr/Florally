@@ -136,18 +136,47 @@ function User() {
     }
   };
 
+  // Функция для получения полного профиля пользователя с бэка
+  const fetchFullUserProfile = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return null;
+    
+    try {
+      const response = await fetch(`${API}/auth/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const userData = await response.json();
+        return userData;
+      }
+    } catch (error) {
+      console.error("Ошибка получения профиля:", error);
+    }
+    return null;
+  };
+
   useEffect(() => {
     const authCheck = async () => {
       try {
         const authData = checkAuth();
         setIsLoggedIn(authData.isAuthenticated);
-        setUser(authData.user);
         
-        if (authData.user && authData.user.createdAt && !registrationDate) {
-          setRegistrationDate(authData.user.createdAt);
-        }
-
         if (authData.user) {
+          // Сначала устанавливаем базовые данные
+          setUser(authData.user);
+          
+          // Затем получаем полный профиль с created_at
+          const fullProfile = await fetchFullUserProfile();
+          if (fullProfile) {
+            setUser((prev:any) => ({ ...prev, ...fullProfile }));
+            if (fullProfile.created_at) {
+              setRegistrationDate(fullProfile.created_at);
+            }
+          }
+          
           setFormData({
             username: authData.user.username || "",
             email: authData.user.email || "",
@@ -295,13 +324,26 @@ function User() {
   };
 
   const formatRegistrationDate = () => {
-    const dateStr = registrationDate || user?.createdAt;
-    if (!dateStr) return new Date().toLocaleDateString("ru-RU");
+    // Используем registrationDate из state или user?.created_at
+    const dateStr = registrationDate || user?.created_at;
+    
+    if (!dateStr) {
+      return "Дата неизвестна";
+    }
+    
     try {
       const date = new Date(dateStr);
-      return date.toLocaleDateString("ru-RU");
+      if (isNaN(date.getTime())) {
+        return "Дата неизвестна";
+      }
+      return date.toLocaleDateString("ru-RU", {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
     } catch (e) {
-      return new Date().toLocaleDateString("ru-RU");
+      console.error("Ошибка парсинга даты:", e);
+      return "Дата неизвестна";
     }
   };
 
@@ -443,7 +485,35 @@ function User() {
         </div>
         {modalOpen && selectedPlant && (
           <div className="modal-overlay" onClick={closePlantModal}>
-            <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px' }}>
+            <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px', position: 'relative' }}>
+              <button 
+                onClick={closePlantModal}
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  background: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                  color: '#A8C686',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 10
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#f5f5f5';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = '#FFFFFF';
+                }}
+              >
+                ✕
+              </button>
               <div style={{ display: "flex", gap: "16px", alignItems: "flex-start", flexWrap: "wrap" }}>
                 <div style={{ width: '120px', height: '120px', backgroundColor: '#F5F5F5', borderRadius: '16px', overflow: 'hidden', flexShrink: 0 }}>
                   <PlantImage src={selectedPlant.plant.photo} alt={selectedPlant.plant.name} plantId={selectedPlant.id} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -588,7 +658,36 @@ function User() {
       </main>
       {modalOpen && selectedPlant && (
         <div className="modal-overlay" onClick={closePlantModal}>
-          <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '24px' }}>
+          <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative' }}>
+            <button 
+              onClick={closePlantModal}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: '#FFFFFF',
+                border: 'none',
+                borderRadius: '50%',
+                width: '36px',
+                height: '36px',
+                fontSize: '22px',
+                cursor: 'pointer',
+                color: '#A8C686',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10,
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#f5f5f5';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#FFFFFF';
+              }}
+            >
+              ✕
+            </button>
             <div style={{ display: "flex", gap: "33px", alignItems: "flex-start", flexWrap: "wrap" }}>
               <div style={{ width: '220px', height: '220px', backgroundColor: '#F5F5F5', borderRadius: '20px', overflow: 'hidden', flexShrink: 0 }}>
                 <PlantImage src={selectedPlant.plant.photo} alt={selectedPlant.plant.name} plantId={selectedPlant.id} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
