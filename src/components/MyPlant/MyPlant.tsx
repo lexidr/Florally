@@ -925,17 +925,52 @@ function MyPlant() {
                             <img style={{width:"24px", height:"24px"}} src="/ph_plant-light.svg" alt=""/>
                           </div>
                           <div style={{flex:1, minWidth:0}}>
-                            <p style={{fontSize:"14px", margin:0, lineHeight:"1.5", wordBreak:"break-word", border: "1px solid #A8C686",borderRadius: "5px", padding: "5px"}}>{comment.text}</p>
+                            <p style={{fontSize:"14px", margin:0, lineHeight:"1.5", wordBreak:"break-word", border: "1px solid #A8C686",borderRadius: "5px", padding: "5px", paddingBottom: "20px"}}>{comment.text}</p>
                           </div>
+                          <div style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "8px",
+                          flexShrink: 0
+                        }}>
+                          {/* Кнопка редактирования */}
+                          <button
+                            onClick={() => console.log("Редактировать заметку:", comment.id)}
+                            title="Редактировать заметку"
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                              width: "24px",
+                              height: "24px",
+                              padding: "0",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center"
+                            }}
+                          >
+                            <img src="/edit_icon.svg" alt="" style={{width: "20px", height: "20px"}} />
+                          </button>
+
+                          {/* Кнопка удаления */}
                           <button
                             onClick={() => handleDeleteComment(comment.id)}
-                            style={{background:"none", border:"none", cursor:"pointer", color:"#ccc", fontSize:"18px", flexShrink:0, paddingTop:"10px",  height: "20px", width: "20px", padding:"0"}}
-                            >
-                          <img 
-                              src="/delete_icon.svg" 
-                              alt="Удалить" 
-                              style={{width: "20px", height: "20px"}} />
-                          </button>
+                            title="Удалить заметку"
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                              color: "#ccc",
+                              fontSize: "20px",
+                              width: "24px",
+                              height: "24px",
+                              padding: "0",
+                              flexShrink: 0
+                            }}
+                          >
+                            <img src="/delete_icon.svg" alt="" style={{width: "20px", height: "20px"}} />
+                            </button>
+                        </div>
                         </div>
                       ))
                     )}
@@ -1851,27 +1886,52 @@ function MyPlant() {
                           <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
                         </div>
                         <div style={{flex:1, minWidth:0}}>
-                          <p style={{fontSize:"18px", margin:0, lineHeight:"1.5", wordBreak:"break-word", border: "2px solid #A8C686",borderRadius: "8px", padding: "8px"}}>{comment.text}</p>
+                          <p style={{fontSize:"18px", margin:0, lineHeight:"1.5", wordBreak:"break-word", border: "2px solid #A8C686",borderRadius: "8px", padding: "8px", paddingBottom: "20px"}}>{comment.text}</p>
                         </div>
-                        <button
-                          onClick={() => handleDeleteComment(comment.id)}
-                          title="Удалить заметку"
-                          style={{
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            flexShrink: 0,
-                            padding: "0",
-                            marginRight: "8px", 
-                            width: "26.5px", 
-                            height: "26.5px",
-                          }}
+                        <div style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "8px",
+                          flexShrink: 0
+                        }}>
+                          {/* Кнопка редактирования */}
+                          <button
+                            onClick={() => console.log("Редактировать заметку:", comment.id)}
+                            title="Редактировать заметку"
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                              width: "24px",
+                              height: "24px",
+                              padding: "0",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center"
+                            }}
                           >
-                          <img 
-                              src="/delete_icon.svg" 
-                              alt="Удалить" 
-                              style={{width: "26.5px", height: "26.5px"}} />
-                         </button>
+                            <img src="/edit_icon.svg" alt="" style={{width: "26.5px", height: "26.5px"}} />
+                          </button>
+
+                          {/* Кнопка удаления */}
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                            title="Удалить заметку"
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                              color: "#ccc",
+                              fontSize: "20px",
+                              width: "24px",
+                              height: "24px",
+                              padding: "0",
+                              flexShrink: 0
+                            }}
+                          >
+                            <img src="/delete_icon.svg" alt="" style={{width: "26.5px", height: "26.5px"}} />
+                            </button>
+                        </div>
                       </div>
                     ))
                   )}
