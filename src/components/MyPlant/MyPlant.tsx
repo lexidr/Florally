@@ -209,24 +209,12 @@ function MyPlant() {
   const loadData = async () => {
     try {
       setLoading(true);
-       // ВРЕМЕННАЯ ЗАГЛУШКА — БЕЗ ЗАПРОСА К СЕРВЕРУ
-      const fakePlants = [
-        { id: "test1", name: "Монстера", photo: "", description: "Тестовое описание", season: "Весна-лето" },
-        { id: "test2", name: "Фикус", photo: "", description: "Тестовое описание", season: "Круглый год" },
-        { id: "test3", name: "Кактус", photo: "", description: "Тестовое описание", season: "Лето" },
-      ];
-      setAllPlants(fakePlants);
-      setUserPlants([]);
-      setRooms([]);
-      // КОНЕЦ ЗАГЛУШКИ
-
-      /*
       const plants = await getAllPlants();
       setAllPlants(plants || []);
       const userPlantsData = await getUserPlants();
       setUserPlants(userPlantsData as unknown as UserPlant[]);
       const roomsData = await getUserRooms();
-      setRooms(roomsData || []);*/
+      setRooms(roomsData || []);
     } catch (error: any) {
       console.error("Ошибка загрузки данных:", error);
       setSearchError("Ошибка загрузки данных.");
@@ -262,23 +250,12 @@ function MyPlant() {
   const handleAddUserPlant = async () => {
     if (selectedPlantToAdd) {
       try {
-        // ===== НАЧАЛО ЗАГЛУШКИ =====
-        const fakeNewPlant = {
-          id: `user-plant-${Date.now()}`,
-          plant: selectedPlantToAdd,
-          color: selectedColor,
-          room: selectedRoomForAdd ? rooms.find(r => r.name === selectedRoomForAdd) || null : null,
-        };
-        
-        setUserPlants(prev => [...prev, fakeNewPlant as any]);
-        // ===== КОНЕЦ ЗАГЛУШКИ =====
-
-        /*const newPlant = await addUserPlant(selectedPlantToAdd.id, selectedColor);
+        const newPlant = await addUserPlant(selectedPlantToAdd.id, selectedColor);
         if (selectedRoomForAdd) {
           const room = rooms.find(r => r.name === selectedRoomForAdd);
           if (room) await addPlantToRoom(room.id, newPlant.id);
         }
-        await loadData();*/
+        await loadData();
         setAddPlantModalOpen(false);
         setSelectedPlantToAdd(null);
         setSearchQuery("");
@@ -389,18 +366,12 @@ function MyPlant() {
   };
 
   const handleUpdateColor = async (userPlantId: string, color: string) => {
-    // ===== НАЧАЛО ЗАГЛУШКИ =====
-    setUserPlants(prev => prev.map(p => 
-      p.id === userPlantId ? { ...p, color } : p
-    ));
-    // ===== КОНЕЦ ЗАГЛУШКИ =====
-
-    /*try {
+    try {
       await updateUserPlant(userPlantId, { color });
       await loadData();
     } catch (error) {
       console.error(error);
-    }*/
+    }
   };
 
   const openRoomModal = (room: Room) => {
@@ -425,12 +396,8 @@ function MyPlant() {
     setComments([]);
     setCommentsLoading(true);
     try {
-      /*const loaded = await fetchComments(plant.id);
-      setComments(loaded);*/
-
-      // (заглушка):
-      setComments([]);
-      //
+      const loaded = await fetchComments(plant.id);
+      setComments(loaded);
     } catch (e) {
       console.error(e);
     } finally {
@@ -441,17 +408,7 @@ function MyPlant() {
   const handleAddComment = async () => {
     if (!selectedPlant || !newCommentText.trim()) return;
     setCommentSubmitting(true);
-     // ===== НАЧАЛО ЗАГЛУШКИ =====
-    const fakeComment = {
-      id: `comment-${Date.now()}`,
-      text: newCommentText.trim(),
-      created_at: new Date().toISOString(),
-    };
-    setComments(prev => [...prev, fakeComment]);
-    setNewCommentText("");
-    // ===== КОНЕЦ ЗАГЛУШКИ =====
-
-    /*try {
+    try {
       const created = await createComment(selectedPlant.id, newCommentText.trim());
       setComments(prev => [...prev, created]);
       setNewCommentText("");
@@ -459,21 +416,16 @@ function MyPlant() {
       console.error(e);
     } finally {
       setCommentSubmitting(false);
-    }*/
-   setCommentSubmitting(false);
+    }
   };
 
   const handleDeleteComment = async (commentId: string) => {
-    /*try {
+    try {
       await deleteComment(commentId);
       setComments(prev => prev.filter(c => c.id !== commentId));
     } catch (e) {
       console.error(e);
-    }*/
-
-    // ===== НАЧАЛО ЗАГЛУШКИ =====
-    setComments(prev => prev.filter(c => c.id !== commentId));
-    // ===== КОНЕЦ ЗАГЛУШКИ =====
+    }
   };
 
   const closePlantModal = () => {
@@ -488,9 +440,9 @@ function MyPlant() {
     const authCheck = async () => {
       try {
         const authData = checkAuth();
-        /* */  setIsLoggedIn (true)/*(authData.isAuthenticated)*/;
-        /* */  setUser ({ id: "dev", name: "Dev", email: "dev@test.com" } as any)/*(authData.user)*/;
-        /* */  /*if (authData.isAuthenticated)*/ await loadData();
+        setIsLoggedIn (authData.isAuthenticated);
+        setUser (authData.user);
+        if (authData.isAuthenticated) await loadData();
       } catch (error) {
         console.error(error);
         setIsLoggedIn(false);
@@ -1154,15 +1106,9 @@ function MyPlant() {
                   <footer style={{marginTop: '20px'}}>
                     <button 
                       style={{backgroundColor: '#A8C686', color: 'white', width: '100%', padding: '12px', fontSize: '16px', border: 'none', borderRadius: '8px', cursor: 'pointer'}}
-                      //ЗАГЛУШКА 
-                      onClick={() => {
-                              console.log("selectedPlantToAdd:", selectedPlantToAdd);
-                              handleAddUserPlant();
-                      }}
-                      //
 
-                      //onClick={handleAddUserPlant}
-                      // disabled={!selectedPlantToAdd}
+                      onClick={handleAddUserPlant}
+                      disabled={!selectedPlantToAdd}
                     >
                       Добавить
                     </button>
