@@ -447,7 +447,6 @@ const RegistrationForm = () => {
           />
         </div>
 
-        {/* Модальное окно с классами из CSS */}
         {showModal && (
           <div className="modal-overlay">
             <div className="modal-contentMail">

@@ -644,29 +644,9 @@ function MyPlant() {
             {roomModalOpen && selectedRoom && (
               <div className="modal-overlay" onClick={() => setRoomModalOpen(false)}>
                 <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto'}}>
+                  <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
-                    <h2 style={{margin: 0, fontSize: '24px'}}>{selectedRoom.name}</h2>
-                    <button
-                      onClick={() => handleDeleteRoom(selectedRoom.id, selectedRoom.name)}
-                      disabled={deletingRoomId === selectedRoom.id}
-                      style={{
-                        background: '#DF7171',
-                        border: 'none',
-                        borderRadius: '8px',
-                        padding: '6px 12px',
-                        width: '40%',
-                        cursor: deletingRoomId === selectedRoom.id ? 'default' : 'pointer',
-                        color: 'white',
-                        fontSize: '14px',
-                        fontWeight: '500',
-                        transition: 'background-color 0.2s',
-                        textAlign: 'center'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c55a5a'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DF7171'}
-                    >
-                      {deletingRoomId === selectedRoom.id ? '...' : 'Удалить комнату'}
-                    </button>
+                    <h2 style={{margin: 0, fontSize: '24px'}}>{selectedRoom.name}</h2>                  
                   </div>
                   <div style={{display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center'}}>
                     {selectedRoom.userPlants.map((plant) => (
@@ -707,7 +687,6 @@ function MyPlant() {
                             right: '4px',
                             background: 'rgba(223, 113, 113, 0.9)',
                             border: 'none',
-                            borderRadius: '50%',
                             width: '24px',
                             height: '24px',
                             color: 'white',
@@ -743,6 +722,30 @@ function MyPlant() {
                       <p style={{marginTop: '8px', fontSize: '12px'}}>Добавить растение</p>
                     </div>
                   </div>
+                   <button
+                      onClick={() => handleDeleteRoom(selectedRoom.id, selectedRoom.name)}
+                      disabled={deletingRoomId === selectedRoom.id}
+                      style={{
+                        background: '#DF7171',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '6px 12px',
+                        width: '40%',
+                        cursor: deletingRoomId === selectedRoom.id ? 'default' : 'pointer',
+                        color: 'white',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        transition: 'background-color 0.2s',
+                        textAlign: 'center',
+                        right: '50px',
+                        bottom: '40px',
+                        position: 'absolute'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c55a5a'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DF7171'}
+                    >
+                      {deletingRoomId === selectedRoom.id ? '...' : 'Удалить комнату'}
+                    </button>
                 </section>
               </div>
             )}
@@ -750,6 +753,7 @@ function MyPlant() {
             {modalOpen && selectedPlant && (
               <div className="modal-overlay" onClick={closePlantModal}>
                 <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px'}}>
+                  <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
                   <div style={{display: "flex", gap: "16px", alignItems: "flex-start", flexWrap: "wrap"}}>
                     <div style={{width: '120px', height: '120px', backgroundColor: '#F5F5F5', borderRadius: '16px', overflow: 'hidden', flexShrink: 0}}>
                       <PlantImage
@@ -955,6 +959,7 @@ function MyPlant() {
               <div className="modal-overlay" onClick={() => setAddPlantModalOpen(false)}>
                 <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
                   <h2>Добавить растение</h2>
+                  <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
                   <input
                     type="text"
                     placeholder="Поиск растения..."
@@ -1091,6 +1096,7 @@ function MyPlant() {
               <div className="modal-overlay" onClick={() => setAddRoomModalOpen(false)}>
                 <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
                   <h2>Добавить комнату</h2>
+                  <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
                   <input
                     type="text"
                     placeholder="Название комнаты..."
@@ -1114,7 +1120,7 @@ function MyPlant() {
               <div className="modal-overlay" onClick={() => setAddToRoomModalOpen(false)}>
                 <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'}}>
                   <h2>Добавить растение в "{selectedRoomForPlant.name}"</h2>
-                  
+                  <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
                   <input
                     type="text"
                     placeholder="Поиск растения..."
@@ -1202,7 +1208,7 @@ function MyPlant() {
               <div className="modal-overlay" onClick={() => setShowCreatePlantModal(false)}>
                 <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '24px'}}>
                   <h2>Новое растение</h2>
-                  
+                  <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
                   <div style={{display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '24px'}}>
                     <div
                       onClick={() => setShowImageGrid(true)}
@@ -1311,15 +1317,10 @@ function MyPlant() {
 
                   <footer style={{display: 'flex', justifyContent: 'flex-end', gap: '12px'}}>
                     <button
-                      onClick={() => setShowCreatePlantModal(false)}
-                      style={{padding: '10px 20px', background: '#eee', border: 'none', borderRadius: '8px', cursor: 'pointer'}}
-                    >
-                      Отмена
-                    </button>
-                    <button
                       disabled={!newPlantData.name.trim()}
                       style={{
                         padding: '10px 20px',
+                        width: '100%',
                         background: newPlantData.name.trim() ? '#A8C686' : '#ccc',
                         border: 'none',
                         borderRadius: '8px',
@@ -1561,29 +1562,9 @@ function MyPlant() {
           {roomModalOpen && selectedRoom && (
             <div className="modal-overlay" onClick={() => setRoomModalOpen(false)}>
               <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '70%', maxWidth: '900px', maxHeight: '85vh', overflowY: 'auto'}}>
+                <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
                   <h2 style={{margin: 0, fontSize: '28px'}}>{selectedRoom.name}</h2>
-                  <button
-                    onClick={() => handleDeleteRoom(selectedRoom.id, selectedRoom.name)}
-                    disabled={deletingRoomId === selectedRoom.id}
-                    style={{
-                      background: '#DF7171',
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '8px 16px',
-                      width: '40%',
-                      cursor: deletingRoomId === selectedRoom.id ? 'default' : 'pointer',
-                      color: 'white',
-                      fontSize: '16px',
-                      fontWeight: '500',
-                      transition: 'background-color 0.2s',
-                      textAlign: 'center'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c55a5a'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DF7171'}
-                  >
-                    {deletingRoomId === selectedRoom.id ? '...' : 'Удалить комнату'}
-                  </button>
                 </div>
                 <div style={{display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'flex-start'}}>
                   {selectedRoom.userPlants.map((plant) => (
@@ -1624,7 +1605,6 @@ function MyPlant() {
                           right: '8px',
                           background: 'rgba(223, 113, 113, 0.9)',
                           border: 'none',
-                          borderRadius: '50%',
                           width: '28px',
                           height: '28px',
                           color: 'white',
@@ -1665,6 +1645,30 @@ function MyPlant() {
                     <p style={{marginTop: '16px', fontSize: '14px', fontWeight: '500'}}>Добавить растение</p>
                   </div>
                 </div>
+                <button
+                    onClick={() => handleDeleteRoom(selectedRoom.id, selectedRoom.name)}
+                    disabled={deletingRoomId === selectedRoom.id}
+                    style={{
+                      background: '#DF7171',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '8px 16px',
+                      width: '40%',
+                      cursor: deletingRoomId === selectedRoom.id ? 'default' : 'pointer',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.2s',
+                      textAlign: 'center',
+                      right: '50px',
+                      bottom: '40px',
+                      position: 'absolute'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c55a5a'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DF7171'}
+                  >
+                    {deletingRoomId === selectedRoom.id ? '...' : 'Удалить комнату'}
+                  </button>
               </section>
             </div>
           )}
@@ -1672,6 +1676,7 @@ function MyPlant() {
           {modalOpen && selectedPlant && (
             <div className="modal-overlay" onClick={closePlantModal}>
               <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '24px'}}>
+                <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
                 <div style={{display: "flex", gap: "33px", alignItems: "flex-start", flexWrap: "wrap"}}>
                   <div style={{width: '220px', height: '220px', backgroundColor: '#F5F5F5', borderRadius: '20px', overflow: 'hidden', flexShrink: 0}}>
                     <PlantImage
@@ -1908,6 +1913,7 @@ function MyPlant() {
             <div className="modal-overlay" onClick={() => setAddPlantModalOpen(false)}>
               <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto'}}>
                 <h2>Добавить растение</h2>
+                <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
                 <input
                   type="text"
                   placeholder="Поиск растения..."
@@ -2044,7 +2050,7 @@ function MyPlant() {
             <div className="modal-overlay" onClick={() => setAddToRoomModalOpen(false)}>
               <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto'}}>
                 <h2>Добавить растение в "{selectedRoomForPlant.name}"</h2>
-                
+                <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
                 <input
                   type="text"
                   placeholder="Поиск растения..."
@@ -2132,6 +2138,7 @@ function MyPlant() {
             <div className="modal-overlay" onClick={() => setAddRoomModalOpen(false)}>
               <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto'}}>
                 <h2>Добавить комнату</h2>
+                <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
                 <input
                   type="text"
                   placeholder="Название комнаты..."
@@ -2153,8 +2160,9 @@ function MyPlant() {
 
           {showCreatePlantModal && (
             <div className="modal-overlay" onClick={() => setShowCreatePlantModal(false)}>
-              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '24px'}}>
+               <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '24px'}}>
                 <h2>Новое растение</h2>
+                <button className="modal-close-btn" onClick={() => setShowCreatePlantModal(false)}>✕</button>
                 <div style={{display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '24px'}}>
                   <div onClick={() => setShowImageGrid(true)} style={{width: '200px', height: '200px', backgroundColor: '#f0f0f0', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
                     <img
@@ -2186,8 +2194,7 @@ function MyPlant() {
                 <div style={{marginBottom: '16px'}}><label>Сезон</label><input type="text" value={newPlantData.season} onChange={e => setNewPlantData(prev => ({...prev, season: e.target.value}))} style={{width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', marginTop: '8px', margin: 0}} placeholder="Весна-лето" /></div>
                 <div style={{marginBottom: '24px'}}><label>Заметки</label><textarea value={newPlantData.notes} onChange={e => setNewPlantData(prev => ({...prev, notes: e.target.value}))} rows={2} style={{width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', marginTop: '8px', resize: 'none'}} placeholder="Личные заметки о растении..." /></div>
                 <footer style={{display: 'flex', justifyContent: 'flex-end', gap: '12px'}}>
-                  <button onClick={() => setShowCreatePlantModal(false)} style={{padding: '10px 20px', background: '#eee', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>Отмена</button>
-                  <button disabled={!newPlantData.name.trim()} style={{padding: '10px 20px', background: newPlantData.name.trim() ? '#A8C686' : '#ccc', border: 'none', borderRadius: '8px', color: 'white', cursor: newPlantData.name.trim() ? 'pointer' : 'default'}}>Добавить</button>
+                  <button disabled={!newPlantData.name.trim()} style={{padding: '10px 20px',width:'100%', background: newPlantData.name.trim() ? '#A8C686' : '#ccc', border: 'none', borderRadius: '8px', color: 'white', cursor: newPlantData.name.trim() ? 'pointer' : 'default'}}>Добавить</button>
                 </footer>
               </section>
             </div>
