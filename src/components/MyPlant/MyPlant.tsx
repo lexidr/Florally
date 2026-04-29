@@ -924,15 +924,18 @@ function MyPlant() {
                           }}>
                             <img style={{width:"24px", height:"24px"}} src="/ph_plant-light.svg" alt=""/>
                           </div>
-                          <div style={{flex:1}}>
-                            <p style={{fontSize:"14px", margin:0, lineHeight:"1.5", wordBreak:"break-word"}}>{comment.text}</p>
+                          <div style={{flex:1, minWidth:0}}>
+                            <p style={{fontSize:"14px", margin:0, lineHeight:"1.5", wordBreak:"break-word", border: "1px solid #A8C686",borderRadius: "5px", padding: "5px"}}>{comment.text}</p>
                           </div>
                           <button
                             onClick={() => handleDeleteComment(comment.id)}
-                            style={{background:"none", border:"none", cursor:"pointer", color:"#ccc", fontSize:"18px", flexShrink:0, paddingTop:"10px"}}
-                            onMouseEnter={e => (e.currentTarget.style.color = "#DF7171")}
-                            onMouseLeave={e => (e.currentTarget.style.color = "#ccc")}
-                          >×</button>
+                            style={{background:"none", border:"none", cursor:"pointer", color:"#ccc", fontSize:"18px", flexShrink:0, paddingTop:"10px",  height: "20px", width: "20px", padding:"0"}}
+                            >
+                          <img 
+                              src="/delete_icon.svg" 
+                              alt="Удалить" 
+                              style={{width: "20px", height: "20px"}} />
+                          </button>
                         </div>
                       ))
                     )}
@@ -952,7 +955,6 @@ function MyPlant() {
                           fontSize:"14px",
                           fontFamily:"inherit",
                           outline:"none",
-                          backgroundColor: "#FFFFFF"
                         }}
                         onKeyDown={e => {
                           if (e.key === "Enter" && !e.shiftKey) {
@@ -1848,16 +1850,28 @@ function MyPlant() {
                         }}>
                           <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
                         </div>
-                        <div style={{flex:1}}>
-                          <p style={{fontSize:"18px", margin:0, lineHeight:"1.5", wordBreak:"break-word"}}>{comment.text}</p>
+                        <div style={{flex:1, minWidth:0}}>
+                          <p style={{fontSize:"18px", margin:0, lineHeight:"1.5", wordBreak:"break-word", border: "2px solid #A8C686",borderRadius: "8px", padding: "8px"}}>{comment.text}</p>
                         </div>
                         <button
                           onClick={() => handleDeleteComment(comment.id)}
                           title="Удалить заметку"
-                          style={{background:"none", border:"none", cursor:"pointer", color:"#ccc", fontSize:"20px", flexShrink:0, paddingTop:"14px", transition:"color 0.2s"}}
-                          onMouseEnter={e => (e.currentTarget.style.color = "#DF7171")}
-                          onMouseLeave={e => (e.currentTarget.style.color = "#ccc")}
-                        >×</button>
+                          style={{
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            flexShrink: 0,
+                            padding: "0",
+                            marginRight: "8px", 
+                            width: "26.5px", 
+                            height: "26.5px",
+                          }}
+                          >
+                          <img 
+                              src="/delete_icon.svg" 
+                              alt="Удалить" 
+                              style={{width: "26.5px", height: "26.5px"}} />
+                         </button>
                       </div>
                     ))
                   )}
@@ -1877,7 +1891,6 @@ function MyPlant() {
                         fontSize:"16px",
                         fontFamily:"inherit",
                         outline:"none",
-                        backgroundColor: "#FFFFFF"
                       }}
                       onKeyDown={e => {
                         if (e.key === "Enter" && !e.shiftKey) {
