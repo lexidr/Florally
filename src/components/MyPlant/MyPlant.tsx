@@ -440,8 +440,8 @@ function MyPlant() {
   const authCheck = async () => {
       try {
         const authData = checkAuth();
-        setIsLoggedIn(authData.isAuthenticated);
-        setUser(authData.user);
+        setIsLoggedIn (authData.isAuthenticated);
+        setUser (authData.user);
         if (authData.isAuthenticated) await loadData();
       } catch (error) {
         console.error(error);
@@ -836,20 +836,23 @@ function MyPlant() {
                       display:"flex", 
                       alignItems:"center", 
                       marginBottom: "15px",
-                      backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#F5F8F2",
+                      backgroundColor: "#ffffff",
                       borderRadius: "12px",
                       padding: "12px"
                     }}>
                       <div style={{
                         width:"52px", 
                         height:"52px", 
-                        backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#A8C686",
+                        backgroundColor: (() => {
+                          const color = userPlants.find(p => p.id === selectedPlant.id)?.color;
+                          return color && color !== "#FFFFFF" ? color : "#A8C686";
+                        })(), 
                         borderRadius: "12px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center"
                       }}>
-                        <img style={{width:"32px", height:"32px"}} src="/plant_light.svg" alt=""/>
+                        <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
                       </div>
                       <div style={{marginLeft:"14px"}}>
                         <p style={{fontSize:"20px", fontWeight:"450"}}>Описание</p>
@@ -862,20 +865,23 @@ function MyPlant() {
                       display:"flex", 
                       alignItems:"center", 
                       marginBottom: "15px",
-                      backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#F5F8F2",
+                      backgroundColor: "#ffffff",
                       borderRadius: "12px",
                       padding: "12px"
                     }}>
                       <div style={{
                         width:"52px", 
                         height:"52px", 
-                        backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#A8C686",
+                        backgroundColor: (() => {
+                          const color = userPlants.find(p => p.id === selectedPlant.id)?.color;
+                          return color && color !== "#FFFFFF" ? color : "#A8C686";
+                        })(), 
                         borderRadius: "12px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center"
                       }}>
-                        <img style={{width:"32px", height:"32px"}} src="/plant_light.svg" alt=""/>
+                        <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
                       </div>
                       <div style={{marginLeft:"14px"}}>
                         <p style={{fontSize:"20px", fontWeight:"450"}}>Сезон</p>
@@ -900,30 +906,71 @@ function MyPlant() {
                           alignItems:"flex-start", 
                           gap:"10px", 
                           marginBottom:"12px",
-                          backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#F5F8F2",
+                          backgroundColor: "#ffffff",
                           borderRadius: "10px",
                           padding: "10px 12px"
                         }}>
                           <div style={{
                             width:"40px", 
                             height:"40px", 
-                            backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#A8C686",
+                            backgroundColor: (() => {
+                              const color = userPlants.find(p => p.id === selectedPlant.id)?.color;
+                              return color && color !== "#FFFFFF" ? color : "#A8C686";
+                            })(), 
                             borderRadius: "10px",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center"
                           }}>
-                            <img style={{width:"24px", height:"24px"}} src="/plant_light.svg" alt=""/>
+                            <img style={{width:"24px", height:"24px"}} src="/ph_plant-light.svg" alt=""/>
                           </div>
-                          <div style={{flex:1}}>
-                            <p style={{fontSize:"14px", margin:0, lineHeight:"1.5", wordBreak:"break-word"}}>{comment.text}</p>
+                          <div style={{flex:1, minWidth:0}}>
+                            <p style={{fontSize:"14px", margin:0, lineHeight:"1.5", wordBreak:"break-word", border: "1px solid #A8C686",borderRadius: "5px", padding: "5px", paddingBottom: "20px"}}>{comment.text}</p>
                           </div>
+                          <div style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "8px",
+                          flexShrink: 0
+                        }}>
+                          {/* Кнопка редактирования */}
+                          <button
+                            onClick={() => console.log("Редактировать заметку:", comment.id)}
+                            title="Редактировать заметку"
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                              width: "24px",
+                              height: "24px",
+                              padding: "0",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center"
+                            }}
+                          >
+                            <img src="/edit_icon.svg" alt="" style={{width: "20px", height: "20px"}} />
+                          </button>
+
+                          {/* Кнопка удаления */}
                           <button
                             onClick={() => handleDeleteComment(comment.id)}
-                            style={{background:"none", border:"none", cursor:"pointer", color:"#ccc", fontSize:"18px", flexShrink:0, paddingTop:"10px"}}
-                            onMouseEnter={e => (e.currentTarget.style.color = "#DF7171")}
-                            onMouseLeave={e => (e.currentTarget.style.color = "#ccc")}
-                          >×</button>
+                            title="Удалить заметку"
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                              color: "#ccc",
+                              fontSize: "20px",
+                              width: "24px",
+                              height: "24px",
+                              padding: "0",
+                              flexShrink: 0
+                            }}
+                          >
+                            <img src="/delete_icon.svg" alt="" style={{width: "20px", height: "20px"}} />
+                            </button>
+                        </div>
                         </div>
                       ))
                     )}
@@ -943,7 +990,6 @@ function MyPlant() {
                           fontSize:"14px",
                           fontFamily:"inherit",
                           outline:"none",
-                          backgroundColor: "#FFFFFF"
                         }}
                         onKeyDown={e => {
                           if (e.key === "Enter" && !e.shiftKey) {
@@ -1114,6 +1160,7 @@ function MyPlant() {
                   <footer style={{marginTop: '20px'}}>
                     <button 
                       style={{backgroundColor: '#A8C686', color: 'white', width: '100%', padding: '12px', fontSize: '16px', border: 'none', borderRadius: '8px', cursor: 'pointer'}}
+
                       onClick={handleAddUserPlant}
                       disabled={!selectedPlantToAdd}
                     >
@@ -1801,21 +1848,24 @@ function MyPlant() {
                     display:"flex", 
                     alignItems:"flex-start", 
                     marginBottom: "20px",
-                    backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#F5F8F2",
+                    backgroundColor: "#ffffff",
                     borderRadius: "12px",
                     padding: "16px"
                   }}>
                     <div style={{
                       width:"52px", 
                       height:"52px", 
-                      backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#A8C686",
+                      backgroundColor: (() => {
+                          const color = userPlants.find(p => p.id === selectedPlant.id)?.color;
+                          return color && color !== "#FFFFFF" ? color : "#A8C686";
+                      })(), 
                       borderRadius: "12px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       flexShrink: 0
                     }}>
-                      <img style={{width:"32px", height:"32px"}} src="/plant_light.svg" alt=""/>
+                      <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
                     </div>
                     <div style={{marginLeft:"14px", flex: 1}}>
                       <p style={{fontSize:"24px", fontWeight:"450", margin: "0 0 8px 0"}}>Описание</p>
@@ -1828,21 +1878,24 @@ function MyPlant() {
                     display:"flex", 
                     alignItems:"flex-start", 
                     marginBottom: "20px",
-                    backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#F5F8F2",
+                    backgroundColor: "#ffffff",
                     borderRadius: "12px",
                     padding: "16px"
                   }}>
                     <div style={{
                       width:"52px", 
                       height:"52px", 
-                      backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#A8C686",
+                      backgroundColor: (() => {
+                          const color = userPlants.find(p => p.id === selectedPlant.id)?.color;
+                          return color && color !== "#FFFFFF" ? color : "#A8C686";
+                      })(), 
                       borderRadius: "12px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       flexShrink: 0
                     }}>
-                      <img style={{width:"32px", height:"32px"}} src="/plant_light.svg" alt=""/>
+                      <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
                     </div>
                     <div style={{marginLeft:"14px", flex: 1}}>
                       <p style={{fontSize:"24px", fontWeight:"450", margin: "0 0 8px 0"}}>Сезон</p>
@@ -1867,32 +1920,72 @@ function MyPlant() {
                         alignItems:"flex-start", 
                         gap:"14px", 
                         marginBottom:"16px",
-                        backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#F5F8F2",
+                        backgroundColor: "#ffffff",
                         borderRadius: "12px",
                         padding: "12px 16px"
                       }}>
                         <div style={{
                           width:"52px", 
                           height:"52px", 
-                          backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#A8C686",
+                          backgroundColor: (() => {
+                            const color = userPlants.find(p => p.id === selectedPlant.id)?.color;
+                            return color && color !== "#FFFFFF" ? color : "#A8C686";
+                          })(), 
                           borderRadius: "12px",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           flexShrink: 0
                         }}>
-                          <img style={{width:"32px", height:"32px"}} src="/plant_light.svg" alt=""/>
+                          <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
                         </div>
-                        <div style={{flex:1}}>
-                          <p style={{fontSize:"18px", margin:0, lineHeight:"1.5", wordBreak:"break-word"}}>{comment.text}</p>
+                        <div style={{flex:1, minWidth:0}}>
+                          <p style={{fontSize:"18px", margin:0, lineHeight:"1.5", wordBreak:"break-word", border: "2px solid #A8C686",borderRadius: "8px", padding: "8px", paddingBottom: "20px"}}>{comment.text}</p>
                         </div>
-                        <button
-                          onClick={() => handleDeleteComment(comment.id)}
-                          title="Удалить заметку"
-                          style={{background:"none", border:"none", cursor:"pointer", color:"#ccc", fontSize:"20px", flexShrink:0, paddingTop:"14px", transition:"color 0.2s"}}
-                          onMouseEnter={e => (e.currentTarget.style.color = "#DF7171")}
-                          onMouseLeave={e => (e.currentTarget.style.color = "#ccc")}
-                        >×</button>
+                        <div style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "8px",
+                          flexShrink: 0
+                        }}>
+                          {/* Кнопка редактирования */}
+                          <button
+                            onClick={() => console.log("Редактировать заметку:", comment.id)}
+                            title="Редактировать заметку"
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                              width: "24px",
+                              height: "24px",
+                              padding: "0",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center"
+                            }}
+                          >
+                            <img src="/edit_icon.svg" alt="" style={{width: "26.5px", height: "26.5px"}} />
+                          </button>
+
+                          {/* Кнопка удаления */}
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                            title="Удалить заметку"
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                              color: "#ccc",
+                              fontSize: "20px",
+                              width: "24px",
+                              height: "24px",
+                              padding: "0",
+                              flexShrink: 0
+                            }}
+                          >
+                            <img src="/delete_icon.svg" alt="" style={{width: "26.5px", height: "26.5px"}} />
+                            </button>
+                        </div>
                       </div>
                     ))
                   )}
@@ -1912,7 +2005,6 @@ function MyPlant() {
                         fontSize:"16px",
                         fontFamily:"inherit",
                         outline:"none",
-                        backgroundColor: "#FFFFFF"
                       }}
                       onKeyDown={e => {
                         if (e.key === "Enter" && !e.shiftKey) {
