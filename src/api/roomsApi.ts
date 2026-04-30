@@ -29,6 +29,7 @@ export interface Plant {
   photo: string | null;
   watering_frequency?: number;
   fertilizing_frequency?: number;
+  recommendations?:string;
 }
 
 export const getUserRooms = async (): Promise<Room[]> => {

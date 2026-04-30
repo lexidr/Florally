@@ -10,6 +10,7 @@ export interface Plant {
   fertilizing_frequency?: number;
   created_at?: string;
   updated_at?: string;
+  recommendations?: string;
 }
 
 export interface Room {
@@ -32,6 +33,11 @@ export interface UserPlant {
   user_id?: string;
   created_at?: string;
   updated_at?: string;
+  is_custom?: boolean;
+  custom_name?: string;
+  custom_description?: string;
+  custom_season?: string;
+  custom_photo?: string;
 }
 
 export interface Comment {
@@ -188,6 +194,23 @@ export const getUserComments = async (): Promise<Comment[]> => {
   }
 };
 
+export const createCustomPlant = async (data: {
+  name: string;
+  description?: string;
+  season?: string;
+  photo?: string;
+  color?: string;
+  roomId?: string;
+}): Promise<UserPlant> => {
+  try {
+    const response = await Http.post('/users_plants/custom', data);
+    return response.data;
+  } catch (error) {
+    console.error('Ошибка при создании пользовательского растения:', error);
+    throw error;
+  }
+};
+
 export default {
   getAllPlants,
   getPlantsBySeason,
@@ -202,4 +225,5 @@ export default {
   updateComment,
   deleteComment,
   getUserComments,
+  createCustomPlant,
 };

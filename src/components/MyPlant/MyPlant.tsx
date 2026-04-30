@@ -7,6 +7,9 @@ import {
   addUserPlant, 
   deleteUserPlant, 
   updateUserPlant,
+  createCustomPlant,
+  type UserPlant,
+  type Plant,
 } from "../../api/plantsApi";
 import { API } from "../../constants/api";
 import {
@@ -16,8 +19,6 @@ import {
   addPlantToRoom,
   removePlantFromRoom,
   type Room,
-  type UserPlant,
-  type Plant,
 } from "../../api/roomsApi";
 import "./MyPlant.css";
 
@@ -86,6 +87,7 @@ interface SelectedPlant {
   image: string;
   description: string;
   season: string;
+  recommendations?: string;
   customCare?: any[];
 }
 
@@ -189,9 +191,10 @@ function MyPlant() {
     name: "",
     description: "",
     season: "",
-    notes: "",
+    recommendations: "",
     photoIndex: 0,
   });
+  const [newPlantColor, setNewPlantColor] = useState("#FFFFFF");
   const [showImageGrid, setShowImageGrid] = useState(false);
 
   const isCalendarActive = location.pathname === "/";
@@ -206,12 +209,35 @@ function MyPlant() {
   const screenSize = useScreenSize();
   const isMobile = screenSize === 'mobile';
 
+  const normalizeUserPlants = (plants: UserPlant[]): UserPlant[] => {
+    return plants.map(plant => {
+      if (plant.is_custom) {
+        return {
+          ...plant,
+          plant: {
+            id: plant.id,
+            name: plant.custom_name || 'Без названия',
+            description: plant.custom_description || '',
+            season: plant.custom_season || '',
+            photo: plant.custom_photo || null,
+            watering_frequency: undefined,
+            fertilizing_frequency: undefined,
+            created_at: plant.created_at,
+            updated_at: plant.updated_at,
+          } as Plant,
+        };
+      }
+      return plant;
+    });
+  };
+
   const loadData = async () => {
     try {
       setLoading(true);
       const plants = await getAllPlants();
       setAllPlants(plants || []);
-      const userPlantsData = await getUserPlants();
+      let userPlantsData = await getUserPlants();
+      userPlantsData = normalizeUserPlants(userPlantsData as unknown as UserPlant[]);
       setUserPlants(userPlantsData as unknown as UserPlant[]);
       const roomsData = await getUserRooms();
       setRooms(roomsData || []);
@@ -389,6 +415,7 @@ function MyPlant() {
       image: plant.plant.photo || "",
       description: plant.plant.description,
       season: plant.plant.season,
+      recommendations: plant.plant.recommendations,
       customCare: []
     });
     setModalOpen(true);
@@ -435,13 +462,41 @@ function MyPlant() {
     setNewCommentText("");
   };
 
+  const handleCreateCustomPlant = async () => {
+    if (!newPlantData.name.trim()) return;
+    try {
+      const photoUrl = newPlantData.photoIndex === 0
+        ? "/plug-image-plant.png"
+        : `/plug-image-plant${newPlantData.photoIndex}.png`;
+      await createCustomPlant({
+        name: newPlantData.name.trim(),
+        description: newPlantData.description,
+        season: newPlantData.season,
+        photo: photoUrl,
+        color: newPlantColor,
+      });
+      setShowCreatePlantModal(false);
+      await loadData();
+      setNewPlantData({
+        name: "",
+        description: "",
+        season: "",
+        recommendations: "",
+        photoIndex: 0,
+      });
+      setNewPlantColor("#FFFFFF");
+    } catch (error) {
+      console.error("Ошибка при создании растения:", error);
+      alert("Не удалось создать растение. Попробуйте позже.");
+    }
+  };
 
   useEffect(() => {
-  const authCheck = async () => {
+    const authCheck = async () => {
       try {
         const authData = checkAuth();
-        setIsLoggedIn (authData.isAuthenticated);
-        setUser (authData.user);
+        setIsLoggedIn(authData.isAuthenticated);
+        setUser(authData.user);
         if (authData.isAuthenticated) await loadData();
       } catch (error) {
         console.error(error);
@@ -540,7 +595,7 @@ function MyPlant() {
                           className="mobile-plant-card"
                           onClick={() => openPlantModal(plant)}
                           style={{
-                            backgroundColor: plant.color || "#FFFFFF",
+                            backgroundColor: "#FFFFFF",
                             borderRadius: '16px',
                             padding: '12px',
                             transition: 'background-color 0.3s ease'
@@ -578,7 +633,7 @@ function MyPlant() {
                         <div className="mobile-room-preview">
                           {room.userPlants.slice(0, room.userPlants.length <= 3 ? 3 : 4).map((plant) => (
                             <div key={plant.id} className="mobile-room-preview-image" style={{
-                              backgroundColor: plant.color || "#FFFFFF",
+                              backgroundColor:  "#FFFFFF",
                               borderRadius: '12px',
                               padding: '2px'
                             }}>
@@ -682,7 +737,7 @@ function MyPlant() {
                           width: '140px',
                           cursor: 'pointer',
                           textAlign: 'center',
-                          backgroundColor: plant.color || "#FFFFFF",
+                          backgroundColor:  "#FFFFFF",
                           borderRadius: '12px',
                           padding: '12px',
                           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
@@ -810,7 +865,28 @@ function MyPlant() {
                       </p>
                       <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
                         <label style={{fontSize: "14px"}}>Цвет фона:</label>
+                        <div 
+                          onClick={() => {
+                            const input = document.getElementById(`color-picker-mobile-${selectedPlant?.id}`);
+                            if (input) input.click();
+                          }}
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "6px",
+                            border: "2px solid #ddd",
+                            backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF",
+                            cursor: "pointer",
+                            transition: "transform 0.1s ease",
+                            margin: '4px'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                          onTouchStart={(e) => e.currentTarget.style.transform = "scale(0.95)"}
+                          onTouchEnd={(e) => e.currentTarget.style.transform = "scale(1)"}
+                        />
                         <input 
+                          id={`color-picker-mobile-${selectedPlant?.id}`}
                           type="color" 
                           value={userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF"}
                           onChange={(e) => {
@@ -818,11 +894,11 @@ function MyPlant() {
                             if (plant) handleUpdateColor(plant.id, e.target.value);
                           }}
                           style={{
-                            width: "40px",
-                            height: "40px",
-                            border: "2px solid #ddd",
-                            borderRadius: "6px",
-                            cursor: "pointer"
+                            position: "fixed",
+                            opacity: 0,
+                            pointerEvents: "none",
+                            width: 0,
+                            height: 0
                           }}
                         />
                       </div>
@@ -889,6 +965,35 @@ function MyPlant() {
                       </div>
                     </div>
                     <hr style={{width:"100%", marginBottom:"14px", opacity:"50%", borderColor:"#A8C686"}}/>
+                    <div style={{
+                      width:"100%", 
+                      display:"flex", 
+                      alignItems:"center", 
+                      marginBottom: "15px",
+                      backgroundColor: "#ffffff",
+                      borderRadius: "12px",
+                      padding: "12px"
+                    }}>
+                      <div style={{
+                        width:"52px", 
+                        height:"52px", 
+                        backgroundColor: (() => {
+                          const color = userPlants.find(p => p.id === selectedPlant.id)?.color;
+                          return color && color !== "#FFFFFF" ? color : "#A8C686";
+                        })(), 
+                        borderRadius: "12px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}>
+                        <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
+                      </div>
+                      <div style={{marginLeft:"14px"}}>
+                        <p style={{fontSize:"20px", fontWeight:"450"}}>Рекомендации</p>
+                        <p style={{fontSize:"16px"}}>{selectedPlant.recommendations || "У этого растения пока нет рекомендаций, но скоро появятся"}</p>
+                      </div>
+                    </div>
+                    <hr style={{width:"100%", marginBottom:"14px", opacity:"50%", borderColor:"#A8C686"}}/>
                   </div>
 
                   <h1 style={{fontSize:"24px", fontWeight:"500", color:"#2E2E2E", margin:"28px 0 16px 0"}}>
@@ -933,7 +1038,6 @@ function MyPlant() {
                           gap: "8px",
                           flexShrink: 0
                         }}>
-                          {/* Кнопка редактирования */}
                           <button
                             onClick={() => console.log("Редактировать заметку:", comment.id)}
                             title="Редактировать заметку"
@@ -952,7 +1056,6 @@ function MyPlant() {
                             <img src="/edit_icon.svg" alt="" style={{width: "20px", height: "20px"}} />
                           </button>
 
-                          {/* Кнопка удаления */}
                           <button
                             onClick={() => handleDeleteComment(comment.id)}
                             title="Удалить заметку"
@@ -1011,6 +1114,7 @@ function MyPlant() {
                           cursor: newCommentText.trim() ? "pointer" : "default",
                           height:"44px",
                           flexShrink:0,
+                          width: '40%'
                         }}
                       >
                         {commentSubmitting ? "..." : "Добавить"}
@@ -1064,9 +1168,10 @@ function MyPlant() {
                         name: "",
                         description: "",
                         season: "",
-                        notes: "",
+                        recommendations: "",
                         photoIndex: 0,
                       });
+                      setNewPlantColor("#FFFFFF");
                     }}
                     style={{
                       padding: "10px",
@@ -1146,21 +1251,53 @@ function MyPlant() {
                           <option key={room.id} value={room.name}>{room.name}</option>
                         ))}
                       </select>
-                      <div style={{marginTop: '10px'}}>
-                        <label>Цвет фона: </label>
-                        <input 
-                          type="color" 
-                          value={selectedColor}
-                          onChange={(e) => setSelectedColor(e.target.value)}
-                          style={{marginLeft: '10px'}}
-                        />
+                      <div style={{marginTop: '16px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap'}}>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                          <label style={{fontSize: '14px', fontWeight: '500'}}>Цвет фона:</label>
+                          <div 
+                            onClick={() => {
+                              const input = document.getElementById('color-picker-add');
+                              if (input) input.click();
+                            }}
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              borderRadius: "6px",
+                              border: "2px solid #ddd",
+                              backgroundColor: selectedColor,
+                              cursor: "pointer",
+                              transition: "transform 0.1s ease",
+                              margin: "8px"
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                          />
+                          <input 
+                            id="color-picker-add"
+                            type="color" 
+                            value={selectedColor}
+                            onChange={(e) => setSelectedColor(e.target.value)}
+                            style={{
+                              position: "fixed",
+                              opacity: 0,
+                              pointerEvents: "none",
+                              width: 0,
+                              height: 0
+                            }}
+                          />
+                        </div>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '8px', right: "34px", position: "absolute"}}>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#A8C686"/>
+                          </svg>
+                          <span style={{fontSize: '12px', color: '#666'}}>Цвет влияет на иконки в карточке растения</span>
+                        </div>
                       </div>
                     </div>
                   )}
                   <footer style={{marginTop: '20px'}}>
                     <button 
                       style={{backgroundColor: '#A8C686', color: 'white', width: '100%', padding: '12px', fontSize: '16px', border: 'none', borderRadius: '8px', cursor: 'pointer'}}
-
                       onClick={handleAddUserPlant}
                       disabled={!selectedPlantToAdd}
                     >
@@ -1259,14 +1396,47 @@ function MyPlant() {
                   )}
 
                   {selectedPlantToAdd && (
-                    <div style={{marginTop: '10px'}}>
-                      <label>Цвет фона: </label>
-                      <input 
-                        type="color" 
-                        value={selectedColor}
-                        onChange={(e) => setSelectedColor(e.target.value)}
-                        style={{marginLeft: '10px'}}
-                      />
+                    <div style={{marginTop: '16px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap'}}>
+                      <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                        <label style={{fontSize: '14px', fontWeight: '500'}}>Цвет фона:</label>
+                        <div 
+                          onClick={() => {
+                            const input = document.getElementById('color-picker-add-to-room');
+                            if (input) input.click();
+                          }}
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "6px",
+                            border: "2px solid #ddd",
+                            backgroundColor: selectedColor,
+                            cursor: "pointer",
+                            transition: "transform 0.1s ease",
+                            margin: "8px"
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                        />
+                        <input 
+                          id="color-picker-add-to-room"
+                          type="color" 
+                          value={selectedColor}
+                          onChange={(e) => setSelectedColor(e.target.value)}
+                          style={{
+                            position: "fixed",
+                            opacity: 0,
+                            pointerEvents: "none",
+                            width: 0,
+                            height: 0
+                          }}
+                        />
+                      </div>
+                      <div style={{display: 'flex', alignItems: 'center', gap: '8px', right: '30px', position: 'absolute'}}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#A8C686"/>
+                        </svg>
+                        <span style={{fontSize: '12px', color: '#666'}}>Цвет влияет на иконки в карточке растения</span>
+                      </div>
                     </div>
                   )}
                   
@@ -1398,19 +1568,57 @@ function MyPlant() {
                     />
                   </div>
 
-                  <div style={{marginBottom: '24px'}}>
-                    <label>Заметки</label>
+                  <div style={{marginBottom: '16px'}}>
+                    <label>Рекомендации</label>
                     <textarea
-                      value={newPlantData.notes}
-                      onChange={e => setNewPlantData(prev => ({...prev, notes: e.target.value}))}
-                      rows={2}
+                      value={newPlantData.recommendations}
+                      onChange={e => setNewPlantData(prev => ({...prev, recommendations: e.target.value}))}
+                      rows={3}
                       style={{width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', marginTop: '8px', resize: 'none'}}
-                      placeholder="Личные заметки о растении..."
+                      placeholder="Рекомендации по уходу..."
                     />
+                  </div>
+
+                  <div style={{marginBottom: '24px'}}>
+                    <label>Цвет фона для карточки</label>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px'}}>
+                      <div 
+                        onClick={() => {
+                          const input = document.getElementById('color-picker-create-plant');
+                          if (input) input.click();
+                        }}
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "8px",
+                          border: "2px solid #ddd",
+                          backgroundColor: newPlantColor,
+                          cursor: "pointer",
+                          transition: "transform 0.1s ease"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                      />
+                      <input 
+                        id="color-picker-create-plant"
+                        type="color" 
+                        value={newPlantColor}
+                        onChange={(e) => setNewPlantColor(e.target.value)}
+                        style={{
+                          position: "fixed",
+                          opacity: 0,
+                          pointerEvents: "none",
+                          width: 0,
+                          height: 0
+                        }}
+                      />
+                      <span style={{fontSize: '12px', color: '#666'}}>Цвет будет использован для иконок в карточке растения</span>
+                    </div>
                   </div>
 
                   <footer style={{display: 'flex', justifyContent: 'flex-end', gap: '12px'}}>
                     <button
+                      onClick={handleCreateCustomPlant}
                       disabled={!newPlantData.name.trim()}
                       style={{
                         padding: '10px 20px',
@@ -1533,7 +1741,6 @@ function MyPlant() {
                         justifyContent: 'space-between', 
                         height: '212px', 
                         width: '212px',
-                        backgroundColor: plant.color || "#F5F5F5",
                         borderRadius: '20px',
                         padding: '8px',
                         transition: 'background-color 0.3s ease',
@@ -1588,7 +1795,7 @@ function MyPlant() {
                               width: '92px',
                               height: '92px',
                               margin: '4px',
-                              backgroundColor: plant.color || '#FFFFFF',
+                              backgroundColor: '#FFFFFF',
                               borderRadius: '12px',
                               padding: '4px',
                             }}
@@ -1615,9 +1822,17 @@ function MyPlant() {
                           </button>
                         )}
                       </div>
-                      <p style={{ fontWeight: '500', textAlign: 'center', marginTop: '8px' }}>
-                        {room.name}
-                      </p>
+                      <p style={{ 
+                      fontWeight: '500', 
+                      textAlign: 'center', 
+                      marginTop: '8px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      maxWidth: '220px'
+                    }}>
+                      {room.name}
+                    </p>
                     </div>
                   </div>
                 ))}
@@ -1678,7 +1893,7 @@ function MyPlant() {
                         width: '180px',
                         cursor: 'pointer',
                         textAlign: 'center',
-                        backgroundColor: plant.color || "#FFFFFF",
+                        backgroundColor: "#FFFFFF",
                         borderRadius: '16px',
                         padding: '16px',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
@@ -1814,7 +2029,26 @@ function MyPlant() {
                     </p>
                     <div style={{display: "flex", alignItems: "center", gap: "12px", marginTop: "8px"}}>
                       <label style={{fontSize: "16px", fontWeight: "500"}}>Цвет фона:</label>
+                      <div 
+                        onClick={() => {
+                          const input = document.getElementById(`color-picker-${selectedPlant?.id}`);
+                          if (input) input.click();
+                        }}
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "8px",
+                          border: "2px solid #ddd",
+                          backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF",
+                          cursor: "pointer",
+                          transition: "transform 0.1s ease",
+                          margin: "8px"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                      />
                       <input 
+                        id={`color-picker-${selectedPlant?.id}`}
                         type="color" 
                         value={userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF"}
                         onChange={(e) => {
@@ -1822,15 +2056,15 @@ function MyPlant() {
                           if (plant) handleUpdateColor(plant.id, e.target.value);
                         }}
                         style={{
-                          width: "50px",
-                          height: "50px",
-                          border: "2px solid #ddd",
-                          borderRadius: "8px",
-                          cursor: "pointer"
+                          position: "fixed",
+                          opacity: 0,
+                          pointerEvents: "none",
+                          width: 0,
+                          height: 0
                         }}
                       />
                     </div>
-                  </div>
+                   </div> 
                 </div>
                 
                 <h1 style={{
@@ -1903,6 +2137,36 @@ function MyPlant() {
                     </div>
                   </div>
                   <hr style={{width:"100%", margin:"20px 0", opacity:"50%", borderColor:"#A8C686"}}/>
+                  <div style={{
+                    width:"100%", 
+                    display:"flex", 
+                    alignItems:"flex-start", 
+                    marginBottom: "20px",
+                    backgroundColor: "#ffffff",
+                    borderRadius: "12px",
+                    padding: "16px"
+                  }}>
+                    <div style={{
+                      width:"52px", 
+                      height:"52px", 
+                      backgroundColor: (() => {
+                          const color = userPlants.find(p => p.id === selectedPlant.id)?.color;
+                          return color && color !== "#FFFFFF" ? color : "#A8C686";
+                      })(), 
+                      borderRadius: "12px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0
+                    }}>
+                      <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
+                    </div>
+                    <div style={{marginLeft:"14px", flex: 1}}>
+                      <p style={{fontSize:"24px", fontWeight:"450", margin: "0 0 8px 0"}}>Рекомендации</p>
+                      <p style={{fontSize:"18px", margin: 0, lineHeight: "1.5"}}>{selectedPlant.recommendations || "У этого растения пока нет рекомендаций, но скоро появятся"}</p>
+                    </div>
+                  </div>
+                  <hr style={{width:"100%", margin:"20px 0", opacity:"50%", borderColor:"#A8C686"}}/>
                 </div>
 
                 <h1 style={{fontSize:"32px", fontWeight:"500", color:"#2E2E2E", margin:"40px 0 20px 0"}}>
@@ -1940,7 +2204,7 @@ function MyPlant() {
                           <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
                         </div>
                         <div style={{flex:1, minWidth:0}}>
-                          <p style={{fontSize:"18px", margin:0, lineHeight:"1.5", wordBreak:"break-word", border: "2px solid #A8C686",borderRadius: "8px", padding: "8px", paddingBottom: "20px"}}>{comment.text}</p>
+                          <p style={{fontSize:"18px", margin:0, lineHeight:"1.5", wordBreak:"break-word",borderRadius: "8px", padding: "8px", paddingBottom: "20px", background: "#E1E9D9"}}>{comment.text}</p>
                         </div>
                         <div style={{
                           display: "flex",
@@ -1948,7 +2212,6 @@ function MyPlant() {
                           gap: "8px",
                           flexShrink: 0
                         }}>
-                          {/* Кнопка редактирования */}
                           <button
                             onClick={() => console.log("Редактировать заметку:", comment.id)}
                             title="Редактировать заметку"
@@ -1967,7 +2230,6 @@ function MyPlant() {
                             <img src="/edit_icon.svg" alt="" style={{width: "26.5px", height: "26.5px"}} />
                           </button>
 
-                          {/* Кнопка удаления */}
                           <button
                             onClick={() => handleDeleteComment(comment.id)}
                             title="Удалить заметку"
@@ -2024,7 +2286,7 @@ function MyPlant() {
                         padding:"10px 20px",
                         fontSize:"16px",
                         cursor: newCommentText.trim() ? "pointer" : "default",
-                        height:"48px",
+                        height:"60px",
                         width: "20%",
                         flexShrink:0,
                         transition:"background-color 0.2s",
@@ -2097,9 +2359,10 @@ function MyPlant() {
                       name: "",
                       description: "",
                       season: "",
-                      notes: "",
+                      recommendations: "",
                       photoIndex: 0,
                     });
+                    setNewPlantColor("#FFFFFF");
                   }}
                   style={{
                     padding: "10px",
@@ -2179,14 +2442,47 @@ function MyPlant() {
                         <option key={room.id} value={room.name}>{room.name}</option>
                       ))}
                     </select>
-                    <div style={{marginTop: "10px"}}>
-                      <label>Цвет фона: </label>
-                      <input 
-                        type="color" 
-                        value={selectedColor}
-                        onChange={(e) => setSelectedColor(e.target.value)}
-                        style={{marginLeft: "10px"}}
-                      />
+                    <div style={{marginTop: "16px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap"}}>
+                      <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
+                        <label style={{fontSize: "14px", fontWeight: "500"}}>Цвет фона:</label>
+                        <div 
+                          onClick={() => {
+                            const input = document.getElementById('color-picker-add-desktop');
+                            if (input) input.click();
+                          }}
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "6px",
+                            border: "2px solid #ddd",
+                            backgroundColor: selectedColor,
+                            cursor: "pointer",
+                            transition: "transform 0.1s ease",
+                            margin: "8px"
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                        />
+                        <input 
+                          id="color-picker-add-desktop"
+                          type="color" 
+                          value={selectedColor}
+                          onChange={(e) => setSelectedColor(e.target.value)}
+                          style={{
+                            position: "fixed",
+                            opacity: 0,
+                            pointerEvents: "none",
+                            width: 0,
+                            height: 0
+                          }}
+                        />
+                      </div>
+                      <div style={{display: "flex", alignItems: "center", gap: "8px"}}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#A8C686"/>
+                        </svg>
+                        <span style={{fontSize: "12px", color: "#666"}}>Цвет влияет на иконки в карточке растения</span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -2262,14 +2558,47 @@ function MyPlant() {
                 )}
 
                 {selectedPlantToAdd && (
-                  <div style={{marginTop: "10px"}}>
-                    <label>Цвет фона: </label>
-                    <input 
-                      type="color" 
-                      value={selectedColor}
-                      onChange={(e) => setSelectedColor(e.target.value)}
-                      style={{marginLeft: "10px"}}
-                    />
+                  <div style={{marginTop: "16px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap"}}>
+                    <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
+                      <label style={{fontSize: "14px", fontWeight: "500"}}>Цвет фона:</label>
+                      <div 
+                        onClick={() => {
+                          const input = document.getElementById('color-picker-add-to-room-desktop');
+                          if (input) input.click();
+                        }}
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "6px",
+                          border: "2px solid #ddd",
+                          backgroundColor: selectedColor,
+                          cursor: "pointer",
+                          transition: "transform 0.1s ease",
+                          margin: "8px"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                      />
+                      <input 
+                        id="color-picker-add-to-room-desktop"
+                        type="color" 
+                        value={selectedColor}
+                        onChange={(e) => setSelectedColor(e.target.value)}
+                        style={{
+                          position: "fixed",
+                          opacity: 0,
+                          pointerEvents: "none",
+                          width: 0,
+                          height: 0
+                        }}
+                      />
+                    </div>
+                    <div style={{display: "flex", alignItems: "center", gap: "8px"}}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#A8C686"/>
+                      </svg>
+                      <span style={{fontSize: "12px", color: "#666"}}>Цвет влияет на иконки в карточке растения</span>
+                    </div>
                   </div>
                 )}
                 
@@ -2365,9 +2694,45 @@ function MyPlant() {
                 )}
                 <div style={{marginBottom: '16px'}}><label>Описание</label><textarea value={newPlantData.description} onChange={e => setNewPlantData(prev => ({...prev, description: e.target.value}))} rows={3} style={{width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', marginTop: '8px', resize: 'none'}} placeholder="Уход, особенности..." /></div>
                 <div style={{marginBottom: '16px'}}><label>Сезон</label><input type="text" value={newPlantData.season} onChange={e => setNewPlantData(prev => ({...prev, season: e.target.value}))} style={{width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', marginTop: '8px', margin: 0}} placeholder="Весна-лето" /></div>
-                <div style={{marginBottom: '24px'}}><label>Заметки</label><textarea value={newPlantData.notes} onChange={e => setNewPlantData(prev => ({...prev, notes: e.target.value}))} rows={2} style={{width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', marginTop: '8px', resize: 'none'}} placeholder="Личные заметки о растении..." /></div>
+                <div style={{marginBottom: '16px'}}><label>Рекомендации</label><textarea value={newPlantData.recommendations} onChange={e => setNewPlantData(prev => ({...prev, recommendations: e.target.value}))} rows={3} style={{width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', marginTop: '8px', resize: 'none'}} placeholder="Рекомендации по уходу..." /></div>
+                <div style={{marginBottom: '24px'}}>
+                  <label>Цвет фона для карточки</label>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px'}}>
+                    <div 
+                      onClick={() => {
+                        const input = document.getElementById('color-picker-create-plant-desktop');
+                        if (input) input.click();
+                      }}
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        borderRadius: "8px",
+                        border: "2px solid #ddd",
+                        backgroundColor: newPlantColor,
+                        cursor: "pointer",
+                        transition: "transform 0.1s ease"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                      onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                    />
+                    <input 
+                      id="color-picker-create-plant-desktop"
+                      type="color" 
+                      value={newPlantColor}
+                      onChange={(e) => setNewPlantColor(e.target.value)}
+                      style={{
+                        position: "fixed",
+                        opacity: 0,
+                        pointerEvents: "none",
+                        width: 0,
+                        height: 0
+                      }}
+                    />
+                    <span style={{fontSize: '12px', color: '#666'}}>Цвет будет использован для иконок в карточке растения</span>
+                  </div>
+                </div>
                 <footer style={{display: 'flex', justifyContent: 'flex-end', gap: '12px'}}>
-                  <button disabled={!newPlantData.name.trim()} style={{padding: '10px 20px',width:'100%', background: newPlantData.name.trim() ? '#A8C686' : '#ccc', border: 'none', borderRadius: '8px', color: 'white', cursor: newPlantData.name.trim() ? 'pointer' : 'default'}}>Добавить</button>
+                  <button onClick={handleCreateCustomPlant} disabled={!newPlantData.name.trim()} style={{padding: '10px 20px',width:'100%', background: newPlantData.name.trim() ? '#A8C686' : '#ccc', border: 'none', borderRadius: '8px', color: 'white', cursor: newPlantData.name.trim() ? 'pointer' : 'default'}}>Добавить</button>
                 </footer>
               </section>
             </div>
