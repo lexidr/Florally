@@ -489,10 +489,22 @@ function User() {
                     <h2 className="mobile-section-title">Мои растения</h2>
                     {plants && plants.length > 0 ? (
                       <>
-                        <div className="scroll-container" style={{ backgroundColor: '#f0f0f0', borderRadius: '16px', padding: '16px' }}>
-                          <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '16px', justifyContent: 'center', width: 'max-content', maxHeight: '244px' }}>
-                            {plants.slice(0, 3).map(plant => renderPlantCard(plant))}
-                          </div>
+                        <div className="mobile-plants-grid">
+                          {plants.slice(0, 4).map((plant) => {
+                            const roomName = rooms.find(r => r.userPlants.some(p => p.id === plant.id))?.name || "Без комнаты";
+                            return (
+                              <div key={plant.id} className="mobile-plant-square" onClick={() => openPlantModal(plant)}>
+                                <PlantImage
+                                  src={plant.plant.photo}
+                                  alt={plant.plant.name}
+                                  plantId={plant.id}
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }}
+                                />
+                                <p className="mobile-plant-name">{plant.plant.name}</p>
+                                <p className="mobile-plant-room">Комната: {roomName}</p>
+                              </div>
+                            );
+                          })}
                         </div>
                         <button className="mobile-view-more-btn" onClick={handleViewMoreClick}>Посмотреть еще</button>
                       </>
@@ -521,7 +533,7 @@ function User() {
           </div>
         </main>
         <div className="mobile-bottom-menu">
-          <Link to="/plants/my_plants" className="mobile-menu-item"><img src="/ph_plant-light.svg" alt="Мои растения" className={`mobile-menu-icon ${isMyPlantsActive ? 'active-icon' : ''}`} /></Link>
+          <Link to="/plants/my_plants" className="mobile-menu-item"><img src="/ph_plant-dark.svg" alt="Мои растения" className={`mobile-menu-icon ${isMyPlantsActive ? 'active-icon' : ''}`} /></Link>
           <Link to="/" className="mobile-menu-item"><img src="/proicons_calendar.svg" alt="Календарь" className={`mobile-menu-icon ${isCalendarActive ? 'active-icon' : ''}`} /></Link>
           <Link to="/user" className="mobile-menu-item"><img src="/ion_person-outline.svg" alt="Профиль" className={`mobile-menu-icon ${isUserActive ? 'active-icon' : ''}`} /></Link>
         </div>
