@@ -20,7 +20,7 @@ type CalendarDay = number | string;
 
 interface Task {
   id: string;
-  title: string;
+  title: string;        // автоматически формируется: "Тип Растение1, Растение2..."
   type: string;
   plantIds: string[];
   date: string;
@@ -41,8 +41,10 @@ const HomePage: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isTaskInfoModalOpen, setIsTaskInfoModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  
   const [newTask, setNewTask] = useState({
-    title: "",
     type: "",
     customType: "",
     plantIds: [] as string[],
@@ -65,10 +67,13 @@ const HomePage: React.FC = () => {
   const loadUserData = async () => {
     if (!isLoggedIn) return;
     try {
-      const plants = await getUserPlants();
-      setUserPlants(plants as UserPlant[]);
-      const roomsData = await getUserRooms();
+      const [plants, roomsData] = await Promise.all([getUserPlants(), getUserRooms()]);
       setRooms(roomsData || []);
+      const plantsWithRooms = (plants as UserPlant[]).map(plant => ({
+        ...plant,
+        room: plant.room || (plant.room_id ? roomsData.find(r => r.id === plant.room_id) : undefined)
+      }));
+      setUserPlants(plantsWithRooms);
     } catch (error) {
       console.error("Ошибка загрузки данных:", error);
     }
@@ -94,7 +99,6 @@ const HomePage: React.FC = () => {
 
     checkScreenSize();
     window.addEventListener("resize", checkScreenSize);
-
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
@@ -124,72 +128,50 @@ const HomePage: React.FC = () => {
   const getDaysInMonth = (date: Date): CalendarDay[][] => {
     const year = date.getFullYear();
     const month = date.getMonth();
-
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-
     const startDayOfWeek = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-
     const days: CalendarDay[][] = [];
     let currentWeek: CalendarDay[] = [];
-
-    for (let i = 0; i < startDayOfWeek; i++) {
-      currentWeek.push("");
-    }
-
+    for (let i = 0; i < startDayOfWeek; i++) currentWeek.push("");
     for (let day = 1; day <= daysInMonth; day++) {
       currentWeek.push(day);
-
       if (currentWeek.length === 7) {
         days.push([...currentWeek]);
         currentWeek = [];
       }
     }
-
     if (currentWeek.length > 0) {
-      while (currentWeek.length < 7) {
-        currentWeek.push("");
-      }
+      while (currentWeek.length < 7) currentWeek.push("");
       days.push(currentWeek);
     }
-
     return days;
   };
 
   const getMonthName = (date: Date): string => {
-    const months = [
-      "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
-      "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь",
-    ];
+    const months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
     return months[date.getMonth()];
   };
 
-  const prevMonth = (): void => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-  };
-
-  const nextMonth = (): void => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-  };
+  const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
 
   const isToday = (day: CalendarDay): boolean => {
     const today = new Date();
-    return (
-      day !== "" &&
-      day === today.getDate() &&
-      currentDate.getMonth() === today.getMonth() &&
-      currentDate.getFullYear() === today.getFullYear()
-    );
+    return day !== "" && day === today.getDate() && currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear();
   };
 
   const isSelected = (day: CalendarDay): boolean => {
-    return (
-      day !== "" &&
-      day === selectedDate.getDate() &&
-      currentDate.getMonth() === selectedDate.getMonth() &&
-      currentDate.getFullYear() === selectedDate.getFullYear()
-    );
+    return day !== "" && day === selectedDate.getDate() && currentDate.getMonth() === selectedDate.getMonth() && currentDate.getFullYear() === selectedDate.getFullYear();
+  };
+
+  const hasTasks = (day: CalendarDay): boolean => {
+    if (day === "") return false;
+    const dayNum = typeof day === "string" ? parseInt(day, 10) : day;
+    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum);
+    const dateStr = date.toISOString().split('T')[0];
+    return tasks.some(task => task.date === dateStr && !task.completed);
   };
 
   const handleDayClick = (day: CalendarDay): void => {
@@ -199,22 +181,15 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const handleLoginClick = (): void => {
-    navigate("/auth/signin");
-  };
-
-  const handleLogoutClick = async (): Promise<void> => {
+  const handleLoginClick = () => navigate("/auth/signin");
+  
+  const handleLogoutClick = async () => {
     try {
-      const confirmLogout = window.confirm("Вы уверены, что хотите выйти?");
-      if (!confirmLogout) return;
-
+      if (!window.confirm("Вы уверены, что хотите выйти?")) return;
       await SignOut();
       setIsLoggedIn(false);
       setUser(null);
-
-      if (location.pathname === "/user") {
-        navigate("/");
-      }
+      if (location.pathname === "/user") navigate("/");
     } catch (error) {
       console.error("Ошибка при выходе:", error);
     }
@@ -222,24 +197,47 @@ const HomePage: React.FC = () => {
 
   const getTasksForDate = (date: Date): Task[] => {
     const dateStr = date.toISOString().split('T')[0];
-    return tasks.filter(task => task.date === dateStr && !task.completed);
+    // Сначала невыполненные, потом выполненные
+    const tasksForDate = tasks.filter(task => task.date === dateStr);
+    return [...tasksForDate.filter(t => !t.completed), ...tasksForDate.filter(t => t.completed)];
   };
 
   const toggleTaskComplete = (taskId: string) => {
-    const updatedTasks = tasks.map(task =>
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    );
+    const updatedTasks = tasks.map(task => task.id === taskId ? { ...task, completed: !task.completed } : task);
     saveTasks(updatedTasks);
   };
 
   const deleteTask = (taskId: string) => {
-    const updatedTasks = tasks.filter(task => task.id !== taskId);
-    saveTasks(updatedTasks);
+    if (window.confirm("Вы уверены, что хотите удалить задачу?")) {
+      saveTasks(tasks.filter(task => task.id !== taskId));
+    }
   };
 
-  const openTaskModal = () => {
+  const getPlantNamesByIds = (plantIds: string[]): string => {
+    if (!userPlants.length) return "Загрузка...";
+    const names = plantIds.map(id => {
+      const plant = userPlants.find(p => p.id === id);
+      return plant?.plant.name || `Растение (ID: ${id})`;
+    });
+    return names.join(", ");
+  };
+
+  const getUniqueRoomsByPlantIds = (plantIds: string[]): string => {
+    const roomNames = new Set<string>();
+    plantIds.forEach(id => {
+      const plant = userPlants.find(p => p.id === id);
+      if (plant?.room?.name) {
+        roomNames.add(plant.room.name);
+      } else {
+        roomNames.add("Без комнаты");
+      }
+    });
+    return Array.from(roomNames).join(", ");
+  };
+
+  const openTaskModal = async () => {
+    await loadUserData();
     setNewTask({
-      title: "",
       type: "",
       customType: "",
       plantIds: [],
@@ -256,6 +254,31 @@ const HomePage: React.FC = () => {
     setIsFilterOpen(false);
   };
 
+  const openTaskInfoModal = async (task: Task) => {
+    await loadUserData();
+    setSelectedTask(task);
+    setIsTaskInfoModalOpen(true);
+  };
+
+  const closeTaskInfoModal = () => {
+    setIsTaskInfoModalOpen(false);
+    setSelectedTask(null);
+  };
+
+  const handleToggleCompleteAndClose = () => {
+    if (selectedTask) {
+      toggleTaskComplete(selectedTask.id);
+      closeTaskInfoModal();
+    }
+  };
+
+  const handleDeleteTaskAndClose = () => {
+    if (selectedTask) {
+      deleteTask(selectedTask.id);
+      closeTaskInfoModal();
+    }
+  };
+
   const handleTypeSelect = (type: string) => {
     if (type === "Другое") {
       setNewTask(prev => ({ ...prev, type: "Другое", customType: "" }));
@@ -266,57 +289,37 @@ const HomePage: React.FC = () => {
   };
 
   const handleSelectAllPlants = () => {
-    const filteredPlants = getFilteredPlants();
+    const filtered = getFilteredPlants();
     if (newTask.selectAll) {
       setNewTask(prev => ({ ...prev, selectAll: false, plantIds: [] }));
     } else {
-      setNewTask(prev => ({
-        ...prev,
-        selectAll: true,
-        plantIds: filteredPlants.map(p => p.id)
-      }));
+      setNewTask(prev => ({ ...prev, selectAll: true, plantIds: filtered.map(p => p.id) }));
     }
   };
 
   const handlePlantToggle = (plantId: string) => {
     if (newTask.plantIds.includes(plantId)) {
-      setNewTask(prev => ({
-        ...prev,
-        plantIds: prev.plantIds.filter(id => id !== plantId),
-        selectAll: false
-      }));
+      setNewTask(prev => ({ ...prev, plantIds: prev.plantIds.filter(id => id !== plantId), selectAll: false }));
     } else {
-      setNewTask(prev => ({
-        ...prev,
-        plantIds: [...prev.plantIds, plantId],
-        selectAll: false
-      }));
+      setNewTask(prev => ({ ...prev, plantIds: [...prev.plantIds, plantId], selectAll: false }));
     }
   };
 
   const getFilteredPlants = () => {
     let filtered = userPlants;
-    
     if (selectedRoomFilter !== "all") {
       filtered = filtered.filter(plant => plant.room?.id === selectedRoomFilter);
     }
-    
-    if (searchQuery) {
+    if (searchQuery.trim() !== "") {
       filtered = filtered.filter(plant =>
         plant.plant.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-    
     return filtered;
   };
 
   const handleAddTask = async () => {
     const finalType = newTask.type === "Другое" ? newTask.customType : newTask.type;
-    
-    if (!newTask.title.trim()) {
-      alert("Введите название задачи");
-      return;
-    }
     if (!finalType) {
       alert("Выберите тип задачи");
       return;
@@ -326,32 +329,31 @@ const HomePage: React.FC = () => {
       return;
     }
 
-    setIsSubmitting(true);
+    const plantNames = getPlantNamesByIds(newTask.plantIds);
+    const autoTitle = `${finalType} ${plantNames}`;
 
+    setIsSubmitting(true);
     const newTaskObj: Task = {
       id: Date.now().toString(),
-      title: newTask.title,
+      title: autoTitle,
       type: finalType,
       plantIds: newTask.plantIds,
       date: selectedDate.toISOString().split('T')[0],
       completed: false,
     };
-
     saveTasks([...tasks, newTaskObj]);
     setIsSubmitting(false);
     closeTaskModal();
   };
 
   useEffect(() => {
-    const days = getDaysInMonth(currentDate);
-    setCalendarDays(days);
+    setCalendarDays(getDaysInMonth(currentDate));
     setCurrentMonth(getMonthName(currentDate));
     setCurrentYear(currentDate.getFullYear().toString());
   }, [currentDate]);
 
   useEffect(() => {
-    const days = getDaysInMonth(currentDate);
-    setCalendarDays(days);
+    setCalendarDays(getDaysInMonth(currentDate));
     setCurrentMonth(getMonthName(currentDate));
     setCurrentYear(currentDate.getFullYear().toString());
     setSelectedDate(new Date());
@@ -360,7 +362,6 @@ const HomePage: React.FC = () => {
   const isCalendarActive = location.pathname === "/";
   const isMyPlantsActive = location.pathname === "/plants/my_plants";
   const isUserActive = location.pathname === "/user";
-
   const todayTasks = getTasksForDate(selectedDate);
 
   if (loading) {
@@ -368,7 +369,7 @@ const HomePage: React.FC = () => {
       <div className="app">
         <header className="header">
           <div className="header-content">
-            <Link to="/"><img src={"/logo.svg"} alt="Florally" className="logo" /></Link>
+            <Link to="/"><img src="/logo.svg" alt="Florally" className="logo" /></Link>
             <div className="loading-auth">Загрузка...</div>
           </div>
         </header>
@@ -382,79 +383,51 @@ const HomePage: React.FC = () => {
     );
   }
 
+  // МОБИЛЬНАЯ ВЕРСИЯ
   if (screenSize === "mobile") {
     return (
       <div className="mobile-app">
         <header className="mobile-header">
           <div className="mobile-header-content">
-            <Link to="/"> <img src="/logo.svg" alt="Florally" className="mobile-logo" /> </Link>
+            <Link to="/"><img src="/logo.svg" alt="Florally" className="mobile-logo" /></Link>
           </div>
         </header>
-
         <main className="mobile-main-content">
           <div className="mobile-content-wrapper">
             <div className="mobile-form-container full-height">
               {!isLoggedIn ? (
                 <>
                   <h2 className="mobile-title">
-                    Зарегистрируйся,
-                    <br />
-                    чтобы знать больше
-                    <br />
-                    о своих растениях!
+                    Зарегистрируйся,<br />чтобы знать больше<br />о своих растениях!
                   </h2>
-
                   <div className="mobile-button-container">
                     <Link to="/auth/signup" className="mobile-registration-link">
-                      <button className="mobile-registration-button">
-                        Зарегистрироваться
-                      </button>
+                      <button className="mobile-registration-button">Зарегистрироваться</button>
                     </Link>
                   </div>
-
                   <div className="mobile-login-container">
                     <span className="mobile-login-text">
-                      Есть аккаунт?{" "}
-                      <Link to="/auth/signin" className="mobile-login-link">
-                        Войти
-                      </Link>
+                      Есть аккаунт? <Link to="/auth/signin" className="mobile-login-link">Войти</Link>
                     </span>
                   </div>
                 </>
               ) : (
                 <div className="mobile-calendar-wrapper">
                   <h2 className="mobile-calendar-title">Календарь</h2>
-
                   <div className="mobile-calendar-container">
                     <div className="mobile-calendar-nav">
-                      <button className="mobile-calendar-nav-button" onClick={prevMonth}>
-                        &lt;
-                      </button>
-                      <h3 className="mobile-calendar-month">
-                        {currentMonth} {currentYear}
-                      </h3>
-                      <button className="mobile-calendar-nav-button" onClick={nextMonth}>
-                        &gt;
-                      </button>
+                      <button className="mobile-calendar-nav-button" onClick={() => prevMonth()}>&lt;</button>
+                      <h3 className="mobile-calendar-month">{currentMonth} {currentYear}</h3>
+                      <button className="mobile-calendar-nav-button" onClick={() => nextMonth()}>&gt;</button>
                     </div>
-
                     <div className="mobile-calendar">
-                      <ul className="mobile-weekdays">
-                        <li>Пн</li>
-                        <li>Вт</li>
-                        <li>Ср</li>
-                        <li>Чт</li>
-                        <li>Пт</li>
-                        <li>Сб</li>
-                        <li>Вс</li>
-                      </ul>
+                      <ul className="mobile-weekdays"><li>Пн</li><li>Вт</li><li>Ср</li><li>Чт</li><li>Пт</li><li>Сб</li><li>Вс</li></ul>
                       <div className="mobile-calendar-days">
                         {calendarDays.map((week, weekIndex) => (
                           <div key={weekIndex} className="mobile-week">
                             {week.map((day, dayIndex) => {
                               const today = isToday(day);
                               const selected = isSelected(day);
-
                               return (
                                 <div
                                   key={`${weekIndex}-${dayIndex}`}
@@ -462,7 +435,7 @@ const HomePage: React.FC = () => {
                                     day === "" ? "mobile-empty" : ""
                                   } ${today ? "mobile-today" : ""} ${
                                     selected ? "mobile-selected" : ""
-                                  }`}
+                                  } ${hasTasks(day) ? "mobile-has-tasks" : ""}`}
                                   onClick={() => handleDayClick(day)}
                                 >
                                   {day}
@@ -474,57 +447,57 @@ const HomePage: React.FC = () => {
                       </div>
                     </div>
                   </div>
-
-                  <div style={{ position: 'relative' }}>
+                  <div style={{ position: 'relative', marginTop: '20px' }}>
                     <h2 className="mobile-tasks-title">
                       Задачи на {selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}
                     </h2>
-                    <button
-                      className="add-task-button"
-                      onClick={openTaskModal}
-                      style={{
-                        position: 'absolute',
-                        right: '16px',
-                        top: '0',
-                        width: '40px',
-                        height: '60px',
-                        borderRadius: '50%',
-                        backgroundColor: '#A8C686',
-                        border: 'none',
-                        fontSize: '24px',
-                        color: 'white',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                      }}
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  <div className="mobile-tasks-container">
-                    <div className="mobile-tasks-list">
-                      {todayTasks.length === 0 ? (
-                        <div style={{ 
-                          textAlign: 'center', 
-                          padding: '20px', 
-                          color: '#999',
+                    {todayTasks.length > 0 && (
+                      <button
+                        className="add-task-button"
+                        onClick={() => { openTaskModal(); }}
+                        style={{
+                          position: 'absolute',
+                          right: '16px',
+                          top: '0',
+                          width: '40px',
+                          height: '60px',
+                          borderRadius: '50%',
+                          backgroundColor: '#A8C686',
+                          border: 'none',
+                          fontSize: '24px',
+                          color: 'white',
+                          cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          minHeight: '550px',
-                          width: '100%'
-                        }}>
-                          Нет задач на этот день
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                        }}
+                      >+</button>
+                    )}
+                  </div>
+                  <div className="mobile-tasks-container">
+                    <div className="mobile-tasks-list">
+                      {todayTasks.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '20px', color: '#999', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '250px', width: '100%' }}>
+                          <p style={{ marginBottom: '16px', fontSize: '16px' }}>Пока нет задач</p>
+                          <button onClick={() => { openTaskModal(); }} style={{ backgroundColor: '#A8C686', border: 'none', borderRadius: '24px', padding: '10px 20px', color: 'white', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>Добавить задачу</button>
                         </div>
                       ) : (
                         todayTasks.map(task => (
-                          <div key={task.id} className="mobile-task-item">
-                            <div 
+                          <div 
+                            key={task.id} 
+                            className={`mobile-task-item ${task.completed ? 'completed-task' : ''}`} 
+                            style={{ 
+                              cursor: 'pointer',
+                              backgroundColor: task.completed ? '#f0f0f0' : 'white',
+                              borderRadius: '8px',
+                              marginBottom: '8px'
+                            }} 
+                            onClick={() => openTaskInfoModal(task)}
+                          >
+                            <div
                               className="mobile-task-checkbox"
-                              onClick={() => toggleTaskComplete(task.id)}
+                              onClick={(e) => { e.stopPropagation(); toggleTaskComplete(task.id); }}
                               style={{
                                 width: '24px',
                                 height: '24px',
@@ -535,25 +508,8 @@ const HomePage: React.FC = () => {
                               }}
                             />
                             <div className="mobile-task-content" style={{ flex: 1 }}>
-                              <p className="mobile-task-title" style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
-                                {task.title}
-                              </p>
-                              <p className="mobile-task-time" style={{ fontSize: '12px', color: '#666' }}>
-                                Тип: {task.type}
-                              </p>
+                              <p className="mobile-task-title" style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>{task.title}</p>
                             </div>
-                            <button
-                              onClick={() => deleteTask(task.id)}
-                              style={{
-                                background: 'none',
-                                border: 'none',
-                                fontSize: '20px',
-                                cursor: 'pointer',
-                                color: '#DF7171'
-                              }}
-                            >
-                              ×
-                            </button>
                           </div>
                         ))
                       )}
@@ -564,296 +520,104 @@ const HomePage: React.FC = () => {
             </div>
           </div>
         </main>
-
         <div className="mobile-bottom-menu">
           <Link to="/plants/my_plants" className="mobile-menu-item">
-            <img
-              src="/ph_plant-light.svg"
-              alt="Мои растения"
-              className={`mobile-menu-icon ${isMyPlantsActive ? "active-icon" : ""}`}
-            />
+            <img src="/ph_plant-light.svg" alt="Мои растения" className={`mobile-menu-icon ${isMyPlantsActive ? "active-icon" : ""}`} />
           </Link>
-
           <Link to="/" className="mobile-menu-item">
-            <img
-              src="/proicons_calendar.svg"
-              alt="Календарь"
-              className={`mobile-menu-icon ${isCalendarActive ? "active-icon" : ""}`}
-            />
+            <img src="/proicons_calendar.svg" alt="Календарь" className={`mobile-menu-icon ${isCalendarActive ? "active-icon" : ""}`} />
           </Link>
-
           <Link to="/user" className="mobile-menu-item">
-            <img
-              src="/ion_person-outline.svg"
-              alt="Профиль"
-              className={`mobile-menu-icon ${isUserActive ? "active-icon" : ""}`}
-            />
+            <img src="/ion_person-outline.svg" alt="Профиль" className={`mobile-menu-icon ${isUserActive ? "active-icon" : ""}`} />
           </Link>
         </div>
 
+        {/* Модальное окно добавления задачи */}
         {isTaskModalOpen && (
-          <div className="modal-overlay" onClick={closeTaskModal}>
-            <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{
-              width: '90%',
-              maxWidth: '500px',
-              maxHeight: '85vh',
-              overflowY: 'auto',
-              padding: '20px',
-              position: 'relative',
-              backgroundColor: 'white',
-              borderRadius: '20px'
-            }}>
-              <button
-                onClick={closeTaskModal}
-                style={{
-                  position: 'absolute',
-                  top: '12px',
-                  right: '12px',
-                  background: '#FFFFFF',
-                  border: '1px solid #ddd',
-                  borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
-                  fontSize: '20px',
-                  cursor: 'pointer',
-                  color: '#000000',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  zIndex: 10
-                }}
-              >
-                ✕
-              </button>
-
+          <div className="modal-overlay" onClick={() => closeTaskModal()}>
+            <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px', position: 'relative', backgroundColor: 'white', borderRadius: '20px', minHeight: '0' }}>
+              <button onClick={() => closeTaskModal()} style={{ position: 'absolute', top: '12px', right: '12px', background: '#FFFFFF', border: '1px solid #ddd', borderRadius: '50%', width: '32px', height: '32px', fontSize: '20px', cursor: 'pointer', color: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
               <h2 style={{ marginBottom: '20px', fontSize: '24px' }}>Новая задача</h2>
-
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Задача *</label>
-                <input
-                  type="text"
-                  value={newTask.title}
-                  onChange={(e) => setNewTask(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="Например: Полить монстеру"
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid #ddd',
-                    fontSize: '16px'
-                  }}
-                />
-              </div>
-
               <div style={{ marginBottom: '16px', position: 'relative' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Тип задачи *</label>
-                <div
-                  onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid #ddd',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
-                  <span>{newTask.type === "Другое" ? newTask.customType || "Другое" : newTask.type || "Выберите тип"}</span>
-                  <span>▼</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px' }}>
+                  <label style={{ minWidth: '80px', fontWeight: '500' }}>Тип задачи</label>
+                  <div onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>{newTask.type === "Другое" ? newTask.customType || "Другое" : newTask.type || "Выберите тип"}</span><span>▼</span>
+                  </div>
                 </div>
                 {isTypeDropdownOpen && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    right: 0,
-                    backgroundColor: 'white',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    zIndex: 20,
-                    maxHeight: '200px',
-                    overflowY: 'auto'
-                  }}>
-                    {taskTypes.map(type => (
-                      <div
-                        key={type}
-                        onClick={() => handleTypeSelect(type)}
-                        style={{
-                          padding: '10px',
-                          cursor: 'pointer',
-                          borderBottom: '1px solid #eee'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-                      >
-                        {type}
-                      </div>
-                    ))}
+                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px', zIndex: 20, maxHeight: '200px', overflowY: 'auto' }}>
+                    {taskTypes.map(type => <div key={type} onClick={() => handleTypeSelect(type)} style={{ padding: '10px', cursor: 'pointer', borderBottom: '1px solid #eee' }}>{type}</div>)}
                   </div>
                 )}
                 {newTask.type === "Другое" && (
-                  <input
-                    type="text"
-                    value={newTask.customType}
-                    onChange={(e) => setNewTask(prev => ({ ...prev, customType: e.target.value }))}
-                    placeholder="Введите свой тип задачи"
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: '8px',
-                      border: '1px solid #ddd',
-                      marginTop: '8px',
-                      fontSize: '16px'
-                    }}
-                  />
+                  <input type="text" value={newTask.customType} onChange={e => setNewTask(prev => ({ ...prev, customType: e.target.value }))} placeholder="Введите свой тип задачи" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginTop: '8px', fontSize: '16px' }} />
                 )}
               </div>
-
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Выбрать растения *</label>
-                
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Поиск растений..."
-                    style={{
-                      flex: 1,
-                      padding: '8px',
-                      borderRadius: '8px',
-                      border: '1px solid #ddd',
-                      fontSize: '14px'
-                    }}
-                  />
-                  <button
-                    onClick={() => setIsFilterOpen(!isFilterOpen)}
-                    style={{
-                      padding: '8px 12px',
-                      backgroundColor: '#f0f0f0',
-                      border: '1px solid #ddd',
-                      borderRadius: '8px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    🔽
-                  </button>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Выбрать растения</label>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', alignItems: 'center' }}>
+                  <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Поиск растений..." style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px' }} />
+                  <button onClick={() => setIsFilterOpen(!isFilterOpen)} style={{ width: '40px', height: '36px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>⚙️</button>
                 </div>
-
                 {isFilterOpen && (
-                  <div style={{
-                    marginBottom: '12px',
-                    padding: '10px',
-                    backgroundColor: '#f9f9f9',
-                    borderRadius: '8px'
-                  }}>
+                  <div style={{ marginBottom: '12px', padding: '10px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
                     <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500' }}>Фильтр по комнате</label>
-                    <select
-                      value={selectedRoomFilter}
-                      onChange={(e) => setSelectedRoomFilter(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '8px',
-                        borderRadius: '8px',
-                        border: '1px solid #ddd'
-                      }}
-                    >
+                    <select value={selectedRoomFilter} onChange={e => setSelectedRoomFilter(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ddd' }}>
                       <option value="all">Все комнаты</option>
-                      {rooms.map(room => (
-                        <option key={room.id} value={room.id}>{room.name}</option>
-                      ))}
+                      {rooms.map(room => <option key={room.id} value={room.id}>{room.name}</option>)}
                     </select>
                   </div>
                 )}
-
                 <div style={{ marginBottom: '12px' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={newTask.selectAll}
-                      onChange={handleSelectAllPlants}
-                      style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                    />
+                    <input type="checkbox" checked={newTask.selectAll} onChange={() => handleSelectAllPlants()} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
                     <span>Выбрать все</span>
                   </label>
                 </div>
-
-                <div style={{
-                  maxHeight: '250px',
-                  overflowY: 'auto',
-                  border: '1px solid #eee',
-                  borderRadius: '8px',
-                  padding: '8px'
-                }}>
+                <div style={{ maxHeight: '250px', overflowY: 'auto', border: '1px solid #eee', borderRadius: '8px', padding: '8px' }}>
                   {getFilteredPlants().length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
-                      Нет растений для отображения
-                    </div>
+                    <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>Нет растений для отображения</div>
                   ) : (
                     getFilteredPlants().map(plant => (
-                      <label
-                        key={plant.id}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          padding: '8px',
-                          cursor: 'pointer',
-                          borderBottom: '1px solid #eee'
-                        }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={newTask.plantIds.includes(plant.id)}
-                          onChange={() => handlePlantToggle(plant.id)}
-                          style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                        />
-                        <div style={{
-                          width: '30px',
-                          height: '30px',
-                          backgroundColor: '#f0f0f0',
-                          borderRadius: '6px',
-                          overflow: 'hidden'
-                        }}>
-                          <img
-                            src={plant.plant.photo || `/plug-image-plant1.png`}
-                            alt={plant.plant.name}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          />
+                      <label key={plant.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', cursor: 'pointer', borderBottom: '1px solid #eee' }}>
+                        <input type="checkbox" checked={newTask.plantIds.includes(plant.id)} onChange={() => handlePlantToggle(plant.id)} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                        <div style={{ width: '30px', height: '30px', backgroundColor: '#f0f0f0', borderRadius: '6px', overflow: 'hidden' }}>
+                          <img src={plant.plant.photo || `/plug-image-plant1.png`} alt={plant.plant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
-                        <div>
-                          <div style={{ fontWeight: '500' }}>{plant.plant.name}</div>
-                          <div style={{ fontSize: '12px', color: '#666' }}>
-                            Комната: {plant.room?.name || "Без комнаты"}
-                          </div>
-                        </div>
+                        <div><div style={{ fontWeight: '500' }}>{plant.plant.name}</div><div style={{ fontSize: '12px', color: '#666' }}>Комната: {plant.room?.name || "Без комнаты"}</div></div>
                       </label>
                     ))
                   )}
                 </div>
               </div>
-
               <footer style={{ marginTop: '20px' }}>
-                <button
-                  onClick={handleAddTask}
-                  disabled={isSubmitting}
-                  style={{
-                    backgroundColor: '#A8C686',
-                    color: 'white',
-                    width: '100%',
-                    padding: '12px',
-                    fontSize: '16px',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: isSubmitting ? 'default' : 'pointer',
-                    opacity: isSubmitting ? 0.7 : 1
-                  }}
-                >
-                  {isSubmitting ? "Добавление..." : "Добавить задачу"}
-                </button>
+                <button onClick={() => { handleAddTask(); }} disabled={isSubmitting} style={{ backgroundColor: '#A8C686', color: 'white', width: '100%', padding: '12px', fontSize: '16px', border: 'none', borderRadius: '8px', cursor: isSubmitting ? 'default' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}>{isSubmitting ? "Добавление..." : "Добавить задачу"}</button>
               </footer>
+            </section>
+          </div>
+        )}
+
+        {/* Модальное окно деталей задачи */}
+        {isTaskInfoModalOpen && selectedTask && (
+          <div className="modal-overlay" onClick={() => closeTaskInfoModal()}>
+            <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px', position: 'relative', backgroundColor: 'white', borderRadius: '20px', minHeight: '0' }}>
+              <button onClick={() => closeTaskInfoModal()} style={{ position: 'absolute', top: '12px', right: '12px', background: '#FFFFFF', border: '1px solid #ddd', borderRadius: '50%', width: '32px', height: '32px', fontSize: '20px', cursor: 'pointer', color: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
+              <h2 style={{ marginBottom: '20px', fontSize: '24px' }}>Детали задачи</h2>
+              <div style={{ marginBottom: '16px' }}>
+                <p style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>{selectedTask.title}</p>
+                <p><strong>Дата:</strong> {new Date(selectedTask.date).toLocaleDateString('ru-RU')}</p>
+                <p><strong>Тип:</strong> {selectedTask.type}</p>
+                <p><strong>Растения:</strong> {getPlantNamesByIds(selectedTask.plantIds)}</p>
+                <p><strong>Комнаты:</strong> {getUniqueRoomsByPlantIds(selectedTask.plantIds)}</p>
+                <p><strong>Статус:</strong> {selectedTask.completed ? "Выполнена" : "Не выполнена"}</p>
+              </div>
+              <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+                {!selectedTask.completed && (
+                  <button onClick={() => handleToggleCompleteAndClose()} style={{ flex: 1, backgroundColor: '#A8C686', color: 'white', padding: '10px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Отметить выполненной</button>
+                )}
+                <button onClick={() => handleDeleteTaskAndClose()} style={{ flex: 1, backgroundColor: '#DF7171', color: 'white', padding: '10px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Удалить задачу</button>
+              </div>
             </section>
           </div>
         )}
@@ -861,40 +625,22 @@ const HomePage: React.FC = () => {
     );
   }
 
+  // ДЕСКТОПНАЯ ВЕРСИЯ
   return (
     <div className="app">
       <header className="header">
         <div className="header-content">
           <Link to="/"><img src="/logo.svg" alt="Florally" className="logo" /></Link>
           <nav className="navigation">
-            <Link
-              to="/plants/my_plants"
-              className={`nav-link ${isMyPlantsActive ? "calendar-active" : ""}`}
-            >
-              Мои растения
-            </Link>
-            <Link
-              to="/"
-              className={`nav-link ${isCalendarActive ? "calendar-active" : ""}`}
-            >
-              Календарь
-            </Link>
-            <Link
-              to="/user"
-              className={`nav-link ${isUserActive ? "calendar-active" : ""}`}
-            >
-              Профиль
-            </Link>
+            <Link to="/plants/my_plants" className={`nav-link ${isMyPlantsActive ? "calendar-active" : ""}`}>Мои растения</Link>
+            <Link to="/" className={`nav-link ${isCalendarActive ? "calendar-active" : ""}`}>Календарь</Link>
+            <Link to="/user" className={`nav-link ${isUserActive ? "calendar-active" : ""}`}>Профиль</Link>
           </nav>
           <div className="auth-section">
             {isLoggedIn ? (
-              <button className="auth-section-button logout-button" onClick={handleLogoutClick}>
-                Выйти
-              </button>
+              <button className="auth-section-button logout-button" onClick={() => { handleLogoutClick(); }}>Выйти</button>
             ) : (
-              <button className="auth-section-button login-button" onClick={handleLoginClick}>
-                Войти
-              </button>
+              <button className="auth-section-button login-button" onClick={() => handleLoginClick()}>Войти</button>
             )}
           </div>
         </div>
@@ -904,37 +650,10 @@ const HomePage: React.FC = () => {
           <h2 className="card-title">Задачи на {selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</h2>
           {!isLoggedIn && (
             <div className="not-authorized-container">
-              <div className="not-authorized-message">
-                <p>
-                  Зарегистрируйся,
-                  <br />
-                  чтобы знать больше
-                  <br />
-                  о своих растениях!
-                </p>
-              </div>
+              <div className="not-authorized-message"><p>Зарегистрируйся,<br />чтобы знать больше<br />о своих растениях!</p></div>
               <div className="registration-form-section">
-                <div style={{ margin: "1.2vh 0" }}>
-                  <button
-                    className="registration-button"
-                    style={{ width: "100%", margin: "0 auto" }}
-                    onClick={() => navigate("/auth/signup")}
-                  >
-                    Зарегистрироваться
-                  </button>
-                </div>
-
-                <div style={{ margin: "1vh 0", textAlign: "center" }}>
-                  <span style={{ fontSize: "1.7vh" }} className="login-link">
-                    Есть аккаунт?{" "}
-                    <Link
-                      to="/auth/signin"
-                      style={{ color: "#74885d", textDecoration: "none" }}
-                    >
-                      Войти
-                    </Link>
-                  </span>
-                </div>
+                <div style={{ margin: "1.2vh 0" }}><button className="registration-button" style={{ width: "100%", margin: "0 auto" }} onClick={() => navigate("/auth/signup")}>Зарегистрироваться</button></div>
+                <div style={{ margin: "1vh 0", textAlign: "center" }}><span style={{ fontSize: "1.7vh" }} className="login-link">Есть аккаунт? <Link to="/auth/signin" style={{ color: "#74885d", textDecoration: "none" }}>Войти</Link></span></div>
               </div>
             </div>
           )}
@@ -942,29 +661,29 @@ const HomePage: React.FC = () => {
             <>
               <div className="tasks-list" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                 {todayTasks.length === 0 ? (
-                  <div style={{ 
-                    textAlign: 'center', 
-                    padding: '20px', 
-                    color: '#999',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: '550px',
-                    width: '100%',
-                  }}>
-                    Нет задач на этот день
+                  <div style={{ textAlign: 'center', padding: '40px 20px', color: '#999', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '200px', width: '100%' }}>
+                    <p style={{ marginBottom: '16px', fontSize: '16px' }}>Пока нет задач</p>
+                    <button onClick={() => { openTaskModal(); }} style={{ backgroundColor: '#A8C686', border: 'none', borderRadius: '24px', padding: '10px 20px', color: 'white', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>Добавить задачу</button>
                   </div>
                 ) : (
                   todayTasks.map(task => (
-                    <div key={task.id} style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      padding: '12px',
-                      borderBottom: '1px solid #eee'
-                    }}>
+                    <div 
+                      key={task.id} 
+                      style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '12px', 
+                        padding: '12px', 
+                        borderBottom: '1px solid #eee', 
+                        cursor: 'pointer',
+                        backgroundColor: task.completed ? '#f5f5f5' : 'white',
+                        borderRadius: '8px',
+                        marginBottom: '4px'
+                      }} 
+                      onClick={() => openTaskInfoModal(task)}
+                    >
                       <div
-                        onClick={() => toggleTaskComplete(task.id)}
+                        onClick={(e) => { e.stopPropagation(); toggleTaskComplete(task.id); }}
                         style={{
                           width: '24px',
                           height: '24px',
@@ -975,59 +694,38 @@ const HomePage: React.FC = () => {
                         }}
                       />
                       <div style={{ flex: 1 }}>
-                        <p style={{ margin: 0, fontSize: '16px', textDecoration: task.completed ? 'line-through' : 'none' }}>
-                          {task.title}
-                        </p>
-                        <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#666' }}>
-                          Тип: {task.type}
-                        </p>
+                        <p style={{ margin: 0, fontSize: '16px', textDecoration: task.completed ? 'line-through' : 'none' }}>{task.title}</p>
                       </div>
-                      <button
-                        onClick={() => deleteTask(task.id)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          fontSize: '20px',
-                          cursor: 'pointer',
-                          color: '#DF7171'
-                        }}
-                      >
-                        ×
-                      </button>
                     </div>
                   ))
                 )}
               </div>
-              <button
-                className="add-task-button"
-                onClick={openTaskModal}
-                style={{
-                  position: 'absolute',
-                  bottom: '20px',
-                  right: '20px',
-                  width: '48px',
-                  height: '60px',
-                  borderRadius: '50%',
-                  backgroundColor: '#A8C686',
-                  border: 'none',
-                  fontSize: '28px',
-                  color: 'white',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  transition: 'transform 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-              >
-                +
-              </button>
+              {todayTasks.length > 0 && (
+                <button
+                  className="add-task-button"
+                  onClick={() => { openTaskModal(); }}
+                  style={{
+                    position: 'absolute',
+                    bottom: '20px',
+                    right: '20px',
+                    width: '48px',
+                    height: '60px',
+                    borderRadius: '50%',
+                    backgroundColor: '#A8C686',
+                    border: 'none',
+                    fontSize: '28px',
+                    color: 'white',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                    transition: 'transform 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                >+</button>
+              )}
             </>
           )}
         </section>
@@ -1035,26 +733,14 @@ const HomePage: React.FC = () => {
           <section className="calendar-container">
             <div className="calendar-header">
               <nav className="calendar-nav">
-                <button className="calendar-nav-button" onClick={prevMonth}>
-                  &lt;
-                </button>
-                <h2 className="calendar-title">
-                  {currentMonth} {currentYear}
-                </h2>
-                <button className="calendar-nav-button" onClick={nextMonth}>
-                  &gt;
-                </button>
+                <button className="calendar-nav-button" onClick={() => prevMonth()}>&lt;</button>
+                <h2 className="calendar-title">{currentMonth} {currentYear}</h2>
+                <button className="calendar-nav-button" onClick={() => nextMonth()}>&gt;</button>
               </nav>
             </div>
             <div className="calendar">
               <ul className="weekdays">
-                <li className="weekday">Пн</li>
-                <li className="weekday">Вт</li>
-                <li className="weekday">Ср</li>
-                <li className="weekday">Чт</li>
-                <li className="weekday">Пт</li>
-                <li className="weekday">Сб</li>
-                <li className="weekday">Вс</li>
+                <li className="weekday">Пн</li><li className="weekday">Вт</li><li className="weekday">Ср</li><li className="weekday">Чт</li><li className="weekday">Пт</li><li className="weekday">Сб</li><li className="weekday">Вс</li>
               </ul>
               <div className="calendar-days">
                 {calendarDays.map((week, weekIndex) => (
@@ -1062,13 +748,14 @@ const HomePage: React.FC = () => {
                     {week.map((day, dayIndex) => {
                       const today = isToday(day);
                       const selected = isSelected(day);
-
                       return (
                         <div
                           key={`${weekIndex}-${dayIndex}`}
                           className={`calendar-day ${
                             day === "" ? "empty" : ""
-                          } ${today ? "today" : ""} ${selected ? "selected" : ""}`}
+                          } ${today ? "today" : ""} ${selected ? "selected" : ""} ${
+                            hasTasks(day) ? "has-tasks" : ""
+                          }`}
                           onClick={() => handleDayClick(day)}
                         >
                           {day}
@@ -1087,269 +774,92 @@ const HomePage: React.FC = () => {
         </div>
       </main>
 
+      {/* Десктопное модальное окно добавления задачи */}
       {isTaskModalOpen && (
-        <div className="modal-overlay" onClick={closeTaskModal}>
-          <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{
-            maxWidth: '600px',
-            maxHeight: '85vh',
-            overflowY: 'auto',
-            padding: '24px',
-            position: 'relative',
-            backgroundColor: 'white',
-            borderRadius: '20px'
-          }}>
-            <button
-              onClick={closeTaskModal}
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                background: '#FFFFFF',
-                border: '1px solid #ddd',
-                borderRadius: '50%',
-                width: '36px',
-                height: '36px',
-                fontSize: '22px',
-                cursor: 'pointer',
-                color: '#000000',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 10
-              }}
-            >
-              ✕
-            </button>
-
+        <div className="modal-overlay" onClick={() => closeTaskModal()}>
+          <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px', maxHeight: '85vh', overflowY: 'auto', padding: '24px', position: 'relative', backgroundColor: 'white', borderRadius: '20px', minHeight: '0' }}>
+            <button onClick={() => closeTaskModal()} style={{ position: 'absolute', top: '16px', right: '16px', background: '#FFFFFF', border: '1px solid #ddd', borderRadius: '50%', width: '36px', height: '36px', fontSize: '22px', cursor: 'pointer', color: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
             <h2 style={{ marginBottom: '24px', fontSize: '28px' }}>Новая задача</h2>
-
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Задача *</label>
-              <input
-                type="text"
-                value={newTask.title}
-                onChange={(e) => setNewTask(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Например: Полить монстеру"
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  border: '1px solid #ddd',
-                  fontSize: '16px'
-                }}
-              />
-            </div>
-
             <div style={{ marginBottom: '20px', position: 'relative' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Тип задачи *</label>
-              <div
-                onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  border: '1px solid #ddd',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-              >
-                <span>{newTask.type === "Другое" ? newTask.customType || "Другое" : newTask.type || "Выберите тип"}</span>
-                <span>▼</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <label style={{ width: '100px', fontWeight: '500' }}>Тип задачи</label>
+                <div onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '38.4px' }}>
+                  <span>{newTask.type === "Другое" ? newTask.customType || "Другое" : newTask.type || "Выберите тип"}</span><span>▼</span>
+                </div>
               </div>
               {isTypeDropdownOpen && (
-                <div style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: 0,
-                  right: 0,
-                  backgroundColor: 'white',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  zIndex: 20,
-                  maxHeight: '200px',
-                  overflowY: 'auto'
-                }}>
-                  {taskTypes.map(type => (
-                    <div
-                      key={type}
-                      onClick={() => handleTypeSelect(type)}
-                      style={{
-                        padding: '12px',
-                        cursor: 'pointer',
-                        borderBottom: '1px solid #eee'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-                    >
-                      {type}
-                    </div>
-                  ))}
+                <div style={{ position: 'absolute', top: '100%', left: '112px', right: 0, backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px', zIndex: 20, maxHeight: '200px', overflowY: 'auto' }}>
+                  {taskTypes.map(type => <div key={type} onClick={() => handleTypeSelect(type)} style={{ padding: '12px', cursor: 'pointer', borderBottom: '1px solid #eee' }}>{type}</div>)}
                 </div>
               )}
               {newTask.type === "Другое" && (
-                <input
-                  type="text"
-                  value={newTask.customType}
-                  onChange={(e) => setNewTask(prev => ({ ...prev, customType: e.target.value }))}
-                  placeholder="Введите свой тип задачи"
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    border: '1px solid #ddd',
-                    marginTop: '8px',
-                    fontSize: '16px'
-                  }}
-                />
+                <input type="text" value={newTask.customType} onChange={e => setNewTask(prev => ({ ...prev, customType: e.target.value }))} placeholder="Введите свой тип задачи" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ddd', marginTop: '8px', fontSize: '16px' }} />
               )}
             </div>
-
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Выбрать растения *</label>
-              
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Поиск растений..."
-                  style={{
-                    flex: 1,
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid #ddd',
-                    fontSize: '14px'
-                  }}
-                />
-                <button
-                  onClick={() => setIsFilterOpen(!isFilterOpen)}
-                  style={{
-                    padding: '10px 16px',
-                    backgroundColor: '#f0f0f0',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  🔽 Фильтр
-                </button>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Выбрать растения</label>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', alignItems: 'center' }}>
+                <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Поиск растений..." style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px' }} />
+                <button onClick={() => setIsFilterOpen(!isFilterOpen)} style={{ width: '40px', height: '38px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>⚙️</button>
               </div>
-
               {isFilterOpen && (
-                <div style={{
-                  marginBottom: '12px',
-                  padding: '12px',
-                  backgroundColor: '#f9f9f9',
-                  borderRadius: '8px'
-                }}>
+                <div style={{ marginBottom: '12px', padding: '12px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
                   <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500' }}>Фильтр по комнате</label>
-                  <select
-                    value={selectedRoomFilter}
-                    onChange={(e) => setSelectedRoomFilter(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '8px',
-                      borderRadius: '8px',
-                      border: '1px solid #ddd'
-                    }}
-                  >
+                  <select value={selectedRoomFilter} onChange={e => setSelectedRoomFilter(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ddd' }}>
                     <option value="all">Все комнаты</option>
-                    {rooms.map(room => (
-                      <option key={room.id} value={room.id}>{room.name}</option>
-                    ))}
+                    {rooms.map(room => <option key={room.id} value={room.id}>{room.name}</option>)}
                   </select>
                 </div>
               )}
-
               <div style={{ marginBottom: '12px' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    checked={newTask.selectAll}
-                    onChange={handleSelectAllPlants}
-                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                  />
+                  <input type="checkbox" checked={newTask.selectAll} onChange={() => handleSelectAllPlants()} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
                   <span>Выбрать все</span>
                 </label>
               </div>
-
-              <div style={{
-                maxHeight: '300px',
-                overflowY: 'auto',
-                border: '1px solid #eee',
-                borderRadius: '8px',
-                padding: '8px'
-              }}>
+              <div style={{ maxHeight: '220px', overflowY: 'auto', border: '1px solid #eee', borderRadius: '8px', padding: '8px' }}>
                 {getFilteredPlants().length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
-                    Нет растений для отображения
-                  </div>
+                  <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>Нет растений для отображения</div>
                 ) : (
                   getFilteredPlants().map(plant => (
-                    <label
-                      key={plant.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '12px',
-                        padding: '10px',
-                        cursor: 'pointer',
-                        borderBottom: '1px solid #eee'
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={newTask.plantIds.includes(plant.id)}
-                        onChange={() => handlePlantToggle(plant.id)}
-                        style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                      />
-                      <div style={{
-                        width: '40px',
-                        height: '40px',
-                        backgroundColor: '#f0f0f0',
-                        borderRadius: '8px',
-                        overflow: 'hidden'
-                      }}>
-                        <img
-                          src={plant.plant.photo || `/plug-image-plant1.png`}
-                          alt={plant.plant.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
+                    <label key={plant.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', cursor: 'pointer', borderBottom: '1px solid #eee' }}>
+                      <input type="checkbox" checked={newTask.plantIds.includes(plant.id)} onChange={() => handlePlantToggle(plant.id)} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                      <div style={{ width: '40px', height: '40px', backgroundColor: '#f0f0f0', borderRadius: '8px', overflow: 'hidden' }}>
+                        <img src={plant.plant.photo || `/plug-image-plant1.png`} alt={plant.plant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
-                      <div>
-                        <div style={{ fontWeight: '500' }}>{plant.plant.name}</div>
-                        <div style={{ fontSize: '12px', color: '#666' }}>
-                          Комната: {plant.room?.name || "Без комнаты"}
-                        </div>
-                      </div>
+                      <div><div style={{ fontWeight: '500' }}>{plant.plant.name}</div><div style={{ fontSize: '12px', color: '#666' }}>Комната: {plant.room?.name || "Без комнаты"}</div></div>
                     </label>
                   ))
                 )}
               </div>
             </div>
-
             <footer style={{ marginTop: '24px' }}>
-              <button
-                onClick={handleAddTask}
-                disabled={isSubmitting}
-                style={{
-                  backgroundColor: '#A8C686',
-                  color: 'white',
-                  width: '100%',
-                  padding: '14px',
-                  fontSize: '16px',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: isSubmitting ? 'default' : 'pointer',
-                  opacity: isSubmitting ? 0.7 : 1,
-                  fontWeight: '500'
-                }}
-              >
-                {isSubmitting ? "Добавление..." : "Добавить задачу"}
-              </button>
+              <button onClick={() => { handleAddTask(); }} disabled={isSubmitting} style={{ backgroundColor: '#A8C686', color: 'white', width: '100%', padding: '14px', fontSize: '16px', border: 'none', borderRadius: '8px', cursor: isSubmitting ? 'default' : 'pointer', opacity: isSubmitting ? 0.7 : 1, fontWeight: '500' }}>{isSubmitting ? "Добавление..." : "Добавить задачу"}</button>
             </footer>
+          </section>
+        </div>
+      )}
+
+      {/* Десктопное модальное окно деталей задачи */}
+      {isTaskInfoModalOpen && selectedTask && (
+        <div className="modal-overlay" onClick={() => closeTaskInfoModal()}>
+          <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '24px', position: 'relative', backgroundColor: 'white', borderRadius: '20px', minHeight: '0' }}>
+            <button onClick={() => closeTaskInfoModal()} style={{ position: 'absolute', top: '16px', right: '16px', background: '#FFFFFF', border: '1px solid #ddd', borderRadius: '50%', width: '36px', height: '36px', fontSize: '22px', cursor: 'pointer', color: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
+            <h2 style={{ marginBottom: '24px', fontSize: '28px' }}>Детали задачи</h2>
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{ fontSize: '20px', fontWeight: '600', marginBottom: '16px' }}>{selectedTask.title}</p>
+              <p><strong>Дата:</strong> {new Date(selectedTask.date).toLocaleDateString('ru-RU')}</p>
+              <p><strong>Тип:</strong> {selectedTask.type}</p>
+              <p><strong>Растения:</strong> {getPlantNamesByIds(selectedTask.plantIds)}</p>
+              <p><strong>Комнаты:</strong> {getUniqueRoomsByPlantIds(selectedTask.plantIds)}</p>
+              <p><strong>Статус:</strong> {selectedTask.completed ? "Выполнена" : "Не выполнена"}</p>
+            </div>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+              {!selectedTask.completed && (
+                <button onClick={() => handleToggleCompleteAndClose()} style={{ flex: 1, backgroundColor: '#A8C686', color: 'white', padding: '12px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}>Отметить выполненной</button>
+              )}
+              <button onClick={() => handleDeleteTaskAndClose()} style={{ flex: 1, backgroundColor: '#DF7171', color: 'white', padding: '12px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}>Удалить задачу</button>
+            </div>
           </section>
         </div>
       )}

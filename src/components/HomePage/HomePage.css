@@ -229,6 +229,46 @@ body {
   transition: all 0.2s ease;
 }
 
+/* Десктоп: выделение дат с задачами */
+.calendar-day.has-tasks {
+  background-color: #e8f0e0;
+  border-radius: 50%;
+  font-weight: 600;
+  color: #4a6741;
+  position: relative;
+}
+.calendar-day.has-tasks::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #A8C686;
+  border-radius: 50%;
+}
+
+/* Мобильная версия */
+.mobile-calendar-day.mobile-has-tasks {
+  background-color: #e8f0e0;
+  border-radius: 50%;
+  font-weight: 600;
+  color: #4a6741;
+  position: relative;
+}
+.mobile-calendar-day.mobile-has-tasks::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #A8C686;
+  border-radius: 50%;
+}
+
 .calendar-nav-button:hover {
   background: #8fb072;
   transform: scale(1.1);
