@@ -20,7 +20,7 @@ type CalendarDay = number | string;
 
 interface Task {
   id: string;
-  title: string;        // автоматически формируется: "Тип Растение1, Растение2..."
+  title: string;
   type: string;
   plantIds: string[];
   date: string;
@@ -64,6 +64,46 @@ const HomePage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const formatLocalDate = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const normalizeTaskDate = (task: Task): Task => {
+    if (task.date && task.date.includes('T')) {
+      const localDate = new Date(task.date);
+      if (!isNaN(localDate.getTime())) {
+        return { ...task, date: formatLocalDate(localDate) };
+      }
+    }
+    return task;
+  };
+
+  const getPlantColorFromDB = (plantId: string): string => {
+    const userPlant = userPlants.find(p => p.id === plantId);
+    if (userPlant && userPlant.color && userPlant.color !== "#FFFFFF") {
+      return userPlant.color;
+    }
+    return "#A8C686";
+  };
+
+  const getTaskColor = (task: Task): string => {
+    if (task.plantIds.length === 0) return "#A8C686";
+    return getPlantColorFromDB(task.plantIds[0]);
+  };
+
+  const getUniquePlantIdsForDate = (date: Date): string[] => {
+    const dateStr = formatLocalDate(date);
+    const tasksForDate = tasks.filter(task => task.date === dateStr && !task.completed);
+    const plantIds = new Set<string>();
+    tasksForDate.forEach(task => {
+      task.plantIds.forEach(pid => plantIds.add(pid));
+    });
+    return Array.from(plantIds);
+  };
+
   const loadUserData = async () => {
     if (!isLoggedIn) return;
     try {
@@ -82,7 +122,11 @@ const HomePage: React.FC = () => {
   const loadTasks = () => {
     const savedTasks = localStorage.getItem("user_tasks");
     if (savedTasks) {
-      setTasks(JSON.parse(savedTasks));
+      let parsed = JSON.parse(savedTasks);
+      if (Array.isArray(parsed)) {
+        parsed = parsed.map(normalizeTaskDate);
+        setTasks(parsed);
+      }
     }
   };
 
@@ -166,14 +210,6 @@ const HomePage: React.FC = () => {
     return day !== "" && day === selectedDate.getDate() && currentDate.getMonth() === selectedDate.getMonth() && currentDate.getFullYear() === selectedDate.getFullYear();
   };
 
-  const hasTasks = (day: CalendarDay): boolean => {
-    if (day === "") return false;
-    const dayNum = typeof day === "string" ? parseInt(day, 10) : day;
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum);
-    const dateStr = date.toISOString().split('T')[0];
-    return tasks.some(task => task.date === dateStr && !task.completed);
-  };
-
   const handleDayClick = (day: CalendarDay): void => {
     if (day !== "") {
       const dayNum = typeof day === "string" ? parseInt(day, 10) : day;
@@ -196,8 +232,7 @@ const HomePage: React.FC = () => {
   };
 
   const getTasksForDate = (date: Date): Task[] => {
-    const dateStr = date.toISOString().split('T')[0];
-    // Сначала невыполненные, потом выполненные
+    const dateStr = formatLocalDate(date);
     const tasksForDate = tasks.filter(task => task.date === dateStr);
     return [...tasksForDate.filter(t => !t.completed), ...tasksForDate.filter(t => t.completed)];
   };
@@ -338,7 +373,7 @@ const HomePage: React.FC = () => {
       title: autoTitle,
       type: finalType,
       plantIds: newTask.plantIds,
-      date: selectedDate.toISOString().split('T')[0],
+      date: formatLocalDate(selectedDate),
       completed: false,
     };
     saveTasks([...tasks, newTaskObj]);
@@ -383,7 +418,6 @@ const HomePage: React.FC = () => {
     );
   }
 
-  // МОБИЛЬНАЯ ВЕРСИЯ
   if (screenSize === "mobile") {
     return (
       <div className="mobile-app">
@@ -428,6 +462,10 @@ const HomePage: React.FC = () => {
                             {week.map((day, dayIndex) => {
                               const today = isToday(day);
                               const selected = isSelected(day);
+                              const dayNum = typeof day === "string" ? (day ? parseInt(day, 10) : null) : day;
+                              const plantIdsForDay = dayNum !== null && day !== ""
+                                ? getUniquePlantIdsForDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum))
+                                : [];
                               return (
                                 <div
                                   key={`${weekIndex}-${dayIndex}`}
@@ -435,10 +473,24 @@ const HomePage: React.FC = () => {
                                     day === "" ? "mobile-empty" : ""
                                   } ${today ? "mobile-today" : ""} ${
                                     selected ? "mobile-selected" : ""
-                                  } ${hasTasks(day) ? "mobile-has-tasks" : ""}`}
+                                  }`}
                                   onClick={() => handleDayClick(day)}
                                 >
-                                  {day}
+                                  {day !== "" && <span className="mobile-day-number">{day}</span>}
+                                  {plantIdsForDay.length > 0 && (
+                                    <div className="mobile-task-indicators">
+                                      {plantIdsForDay.slice(0, 3).map(pid => (
+                                        <span
+                                          key={pid}
+                                          className="mobile-task-color-dot"
+                                          style={{ backgroundColor: getPlantColorFromDB(pid) }}
+                                        />
+                                      ))}
+                                      {plantIdsForDay.length > 3 && (
+                                        <span className="mobile-task-color-dot more">+{plantIdsForDay.length - 3}</span>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
                               );
                             })}
@@ -480,38 +532,41 @@ const HomePage: React.FC = () => {
                       {todayTasks.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: '20px', color: '#999', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '250px', width: '100%' }}>
                           <p style={{ marginBottom: '16px', fontSize: '16px' }}>Пока нет задач</p>
-                          <button onClick={() => { openTaskModal(); }} style={{ backgroundColor: '#A8C686', border: 'none', borderRadius: '24px', padding: '10px 20px', color: 'white', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>Добавить задачу</button>
+                          <button onClick={() => { openTaskModal(); }} style={{ backgroundColor: '#A8C686', border: 'none', borderRadius: '24px', padding: '10px 20px', color: 'white', fontSize: '14px', fontWeight: '500', cursor: 'pointer',width: "40%" }}>Добавить задачу</button>
                         </div>
                       ) : (
-                        todayTasks.map(task => (
-                          <div 
-                            key={task.id} 
-                            className={`mobile-task-item ${task.completed ? 'completed-task' : ''}`} 
-                            style={{ 
-                              cursor: 'pointer',
-                              backgroundColor: task.completed ? '#f0f0f0' : 'white',
-                              borderRadius: '8px',
-                              marginBottom: '8px'
-                            }} 
-                            onClick={() => openTaskInfoModal(task)}
-                          >
-                            <div
-                              className="mobile-task-checkbox"
-                              onClick={(e) => { e.stopPropagation(); toggleTaskComplete(task.id); }}
-                              style={{
-                                width: '24px',
-                                height: '24px',
-                                borderRadius: '50%',
-                                border: '2px solid #A8C686',
+                        todayTasks.map(task => {
+                          const taskColor = getTaskColor(task);
+                          return (
+                            <div 
+                              key={task.id} 
+                              className={`mobile-task-item ${task.completed ? 'completed-task' : ''}`} 
+                              style={{ 
                                 cursor: 'pointer',
-                                backgroundColor: task.completed ? '#A8C686' : 'transparent'
-                              }}
-                            />
-                            <div className="mobile-task-content" style={{ flex: 1 }}>
-                              <p className="mobile-task-title" style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>{task.title}</p>
+                                backgroundColor: task.completed ? '#f0f0f0' : 'white',
+                                borderRadius: '8px',
+                                marginBottom: '8px'
+                              }} 
+                              onClick={() => openTaskInfoModal(task)}
+                            >
+                              <div
+                                className="mobile-task-checkbox"
+                                onClick={(e) => { e.stopPropagation(); toggleTaskComplete(task.id); }}
+                                style={{
+                                  width: '24px',
+                                  height: '24px',
+                                  borderRadius: '50%',
+                                  border: `2px solid ${taskColor}`,
+                                  cursor: 'pointer',
+                                  backgroundColor: task.completed ? taskColor : 'transparent'
+                                }}
+                              />
+                              <div className="mobile-task-content" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <p className="mobile-task-title" style={{ textDecoration: task.completed ? 'line-through' : 'none', margin: 0 }}>{task.title}</p>
+                              </div>
                             </div>
-                          </div>
-                        ))
+                          );
+                        })
                       )}
                     </div>
                   </div>
@@ -522,7 +577,7 @@ const HomePage: React.FC = () => {
         </main>
         <div className="mobile-bottom-menu">
           <Link to="/plants/my_plants" className="mobile-menu-item">
-            <img src="/ph_plant-light.svg" alt="Мои растения" className={`mobile-menu-icon ${isMyPlantsActive ? "active-icon" : ""}`} />
+            <img src="/ph_plant-dark.svg" alt="Мои растения" className={`mobile-menu-icon ${isMyPlantsActive ? "active-icon" : ""}`} />
           </Link>
           <Link to="/" className="mobile-menu-item">
             <img src="/proicons_calendar.svg" alt="Календарь" className={`mobile-menu-icon ${isCalendarActive ? "active-icon" : ""}`} />
@@ -532,15 +587,14 @@ const HomePage: React.FC = () => {
           </Link>
         </div>
 
-        {/* Модальное окно добавления задачи */}
         {isTaskModalOpen && (
           <div className="modal-overlay" onClick={() => closeTaskModal()}>
             <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px', position: 'relative', backgroundColor: 'white', borderRadius: '20px', minHeight: '0' }}>
-              <button onClick={() => closeTaskModal()} style={{ position: 'absolute', top: '12px', right: '12px', background: '#FFFFFF', border: '1px solid #ddd', borderRadius: '50%', width: '32px', height: '32px', fontSize: '20px', cursor: 'pointer', color: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
-              <h2 style={{ marginBottom: '20px', fontSize: '24px' }}>Новая задача</h2>
+              <button onClick={() => closeTaskModal()} style={{ position: 'absolute', top: '12px', right: '12px', background: '#FFFFFF', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '20px', cursor: 'pointer', color: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
+              <h2 style={{ marginBottom: '20px', fontSize: '24px'  }}>Новая задача</h2>
               <div style={{ marginBottom: '16px', position: 'relative' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px' }}>
-                  <label style={{ minWidth: '80px', fontWeight: '500' }}>Тип задачи</label>
+                  <label style={{ minWidth: '80px', fontWeight: '500',margin:'6px' }}>Тип задачи</label>
                   <div onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>{newTask.type === "Другое" ? newTask.customType || "Другое" : newTask.type || "Выберите тип"}</span><span>▼</span>
                   </div>
@@ -555,10 +609,10 @@ const HomePage: React.FC = () => {
                 )}
               </div>
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Выбрать растения</label>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500',margin:'6px' }}>Выбрать растения</label>
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', alignItems: 'center' }}>
                   <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Поиск растений..." style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px' }} />
-                  <button onClick={() => setIsFilterOpen(!isFilterOpen)} style={{ width: '40px', height: '36px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>⚙️</button>
+                  <button onClick={() => setIsFilterOpen(!isFilterOpen)} style={{ width: '80px', height: '36px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',color:'#2d3436' }}>Фильтр</button>
                 </div>
                 {isFilterOpen && (
                   <div style={{ marginBottom: '12px', padding: '10px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
@@ -598,7 +652,6 @@ const HomePage: React.FC = () => {
           </div>
         )}
 
-        {/* Модальное окно деталей задачи */}
         {isTaskInfoModalOpen && selectedTask && (
           <div className="modal-overlay" onClick={() => closeTaskInfoModal()}>
             <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px', position: 'relative', backgroundColor: 'white', borderRadius: '20px', minHeight: '0' }}>
@@ -625,7 +678,6 @@ const HomePage: React.FC = () => {
     );
   }
 
-  // ДЕСКТОПНАЯ ВЕРСИЯ
   return (
     <div className="app">
       <header className="header">
@@ -663,41 +715,44 @@ const HomePage: React.FC = () => {
                 {todayTasks.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '40px 20px', color: '#999', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '200px', width: '100%' }}>
                     <p style={{ marginBottom: '16px', fontSize: '16px' }}>Пока нет задач</p>
-                    <button onClick={() => { openTaskModal(); }} style={{ backgroundColor: '#A8C686', border: 'none', borderRadius: '24px', padding: '10px 20px', color: 'white', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>Добавить задачу</button>
+                    <button onClick={() => { openTaskModal(); }} style={{ backgroundColor: '#A8C686', border: 'none', borderRadius: '24px', padding: '10px 20px', color: 'white', fontSize: '14px', fontWeight: '500', cursor: 'pointer', width:'40%' }}>Добавить задачу</button>
                   </div>
                 ) : (
-                  todayTasks.map(task => (
-                    <div 
-                      key={task.id} 
-                      style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '12px', 
-                        padding: '12px', 
-                        borderBottom: '1px solid #eee', 
-                        cursor: 'pointer',
-                        backgroundColor: task.completed ? '#f5f5f5' : 'white',
-                        borderRadius: '8px',
-                        marginBottom: '4px'
-                      }} 
-                      onClick={() => openTaskInfoModal(task)}
-                    >
-                      <div
-                        onClick={(e) => { e.stopPropagation(); toggleTaskComplete(task.id); }}
-                        style={{
-                          width: '24px',
-                          height: '24px',
-                          borderRadius: '50%',
-                          border: '2px solid #A8C686',
+                  todayTasks.map(task => {
+                    const taskColor = getTaskColor(task);
+                    return (
+                      <div 
+                        key={task.id} 
+                        style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '12px', 
+                          padding: '12px', 
+                          borderBottom: '1px solid #eee', 
                           cursor: 'pointer',
-                          backgroundColor: task.completed ? '#A8C686' : 'transparent'
-                        }}
-                      />
-                      <div style={{ flex: 1 }}>
-                        <p style={{ margin: 0, fontSize: '16px', textDecoration: task.completed ? 'line-through' : 'none' }}>{task.title}</p>
+                          backgroundColor: task.completed ? '#f5f5f5' : 'white',
+                          borderRadius: '8px',
+                          marginBottom: '4px'
+                        }} 
+                        onClick={() => openTaskInfoModal(task)}
+                      >
+                        <div
+                          onClick={(e) => { e.stopPropagation(); toggleTaskComplete(task.id); }}
+                          style={{
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '50%',
+                            border: `2px solid ${taskColor}`,
+                            cursor: 'pointer',
+                            backgroundColor: task.completed ? taskColor : 'transparent'
+                          }}
+                        />
+                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <p style={{ margin: 0, fontSize: '16px', textDecoration: task.completed ? 'line-through' : 'none' }}>{task.title}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
               {todayTasks.length > 0 && (
@@ -748,17 +803,37 @@ const HomePage: React.FC = () => {
                     {week.map((day, dayIndex) => {
                       const today = isToday(day);
                       const selected = isSelected(day);
+                      const dayNum = typeof day === "string" ? (day ? parseInt(day, 10) : null) : day;
+                      const plantIdsForDay = dayNum !== null && day !== ""
+                        ? getUniquePlantIdsForDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum))
+                        : [];
                       return (
                         <div
                           key={`${weekIndex}-${dayIndex}`}
                           className={`calendar-day ${
                             day === "" ? "empty" : ""
-                          } ${today ? "today" : ""} ${selected ? "selected" : ""} ${
-                            hasTasks(day) ? "has-tasks" : ""
-                          }`}
+                          } ${today ? "today" : ""} ${selected ? "selected" : ""}`}
                           onClick={() => handleDayClick(day)}
                         >
-                          {day}
+                          {day !== "" && (
+                            <>
+                              <span className="day-number">{day}</span>
+                              {plantIdsForDay.length > 0 && (
+                                <div className="task-indicators">
+                                  {plantIdsForDay.slice(0, 3).map(pid => (
+                                    <span
+                                      key={pid}
+                                      className="task-color-dot"
+                                      style={{ backgroundColor: getPlantColorFromDB(pid) }}
+                                    />
+                                  ))}
+                                  {plantIdsForDay.length > 3 && (
+                                    <span className="task-color-dot more">+{plantIdsForDay.length - 3}</span>
+                                  )}
+                                </div>
+                              )}
+                            </>
+                          )}
                         </div>
                       );
                     })}
@@ -774,15 +849,14 @@ const HomePage: React.FC = () => {
         </div>
       </main>
 
-      {/* Десктопное модальное окно добавления задачи */}
       {isTaskModalOpen && (
         <div className="modal-overlay" onClick={() => closeTaskModal()}>
           <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px', maxHeight: '85vh', overflowY: 'auto', padding: '24px', position: 'relative', backgroundColor: 'white', borderRadius: '20px', minHeight: '0' }}>
-            <button onClick={() => closeTaskModal()} style={{ position: 'absolute', top: '16px', right: '16px', background: '#FFFFFF', border: '1px solid #ddd', borderRadius: '50%', width: '36px', height: '36px', fontSize: '22px', cursor: 'pointer', color: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
+            <button onClick={() => closeTaskModal()} style={{ position: 'absolute', top: '16px', right: '16px', background: '#FFFFFF', border: 'none', borderRadius: '50%', width: '36px', height: '36px', fontSize: '22px', cursor: 'pointer', color: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
             <h2 style={{ marginBottom: '24px', fontSize: '28px' }}>Новая задача</h2>
             <div style={{ marginBottom: '20px', position: 'relative' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                <label style={{ width: '100px', fontWeight: '500' }}>Тип задачи</label>
+                <label style={{ width: '100px', fontWeight: '500',margin:'6px'  }}>Тип задачи</label>
                 <div onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '38.4px' }}>
                   <span>{newTask.type === "Другое" ? newTask.customType || "Другое" : newTask.type || "Выберите тип"}</span><span>▼</span>
                 </div>
@@ -797,10 +871,10 @@ const HomePage: React.FC = () => {
               )}
             </div>
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Выбрать растения</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500',margin:'6px'  }}>Выбрать растения</label>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', alignItems: 'center' }}>
                 <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Поиск растений..." style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px' }} />
-                <button onClick={() => setIsFilterOpen(!isFilterOpen)} style={{ width: '40px', height: '38px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>⚙️</button>
+                <button onClick={() => setIsFilterOpen(!isFilterOpen)} style={{ width: '80px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', color:'#2d3436' }}>Фильтр</button>
               </div>
               {isFilterOpen && (
                 <div style={{ marginBottom: '12px', padding: '12px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
@@ -840,7 +914,6 @@ const HomePage: React.FC = () => {
         </div>
       )}
 
-      {/* Десктопное модальное окно деталей задачи */}
       {isTaskInfoModalOpen && selectedTask && (
         <div className="modal-overlay" onClick={() => closeTaskInfoModal()}>
           <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '24px', position: 'relative', backgroundColor: 'white', borderRadius: '20px', minHeight: '0' }}>
