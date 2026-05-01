@@ -585,8 +585,6 @@ function MyPlant() {
                   <div className="mobile-plants-grid">
                     {userPlants.length === 0 ? (
                       <div className="mobile-empty-message">
-                        <p>У вас пока нет растений</p>
-                        <p>Нажмите "+" чтобы добавить</p>
                       </div>
                     ) : (
                       userPlants.map((plant) => (
@@ -1725,8 +1723,6 @@ function MyPlant() {
               <div className="side_elements">
                 {userPlants.length === 0 ? (
                   <div className="empty-message-desktop">
-                    <p>У вас пока нет растений</p>
-                    <p>Нажмите "+" чтобы добавить</p>
                   </div>
                 ) : (
                   userPlants.map((plant) => (
@@ -2227,7 +2223,7 @@ function MyPlant() {
                               justifyContent: "center"
                             }}
                           >
-                            <img src="/edit_icon.svg" alt="" style={{width: "26.5px", height: "26.5px"}} />
+                            <img src="/edit_icon.svg" alt="" style={{width: "40px", height: "40px",borderRadius: "4px"}} />
                           </button>
 
                           <button
@@ -2245,7 +2241,7 @@ function MyPlant() {
                               flexShrink: 0
                             }}
                           >
-                            <img src="/delete_icon.svg" alt="" style={{width: "26.5px", height: "26.5px"}} />
+                            <img src="/delete_icon.svg" alt="" style={{width: "40px", height: "40px"}} />
                             </button>
                         </div>
                       </div>

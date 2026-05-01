@@ -117,6 +117,7 @@
   display: flex;
   position: relative;
   overflow: hidden;
+  justify-content: center;
 }
 
 .centered-plant {
