@@ -585,7 +585,14 @@ function MyPlant() {
     return (
       <div className="app">
         <header className="header"><div className="header-content"><Link to="/"><img src={"/logo.svg"} alt="Florally" className="logo" /></Link><div className="loading-auth">Загрузка...</div></div></header>
-        <main className="my-plants-content"><div className="loading-container"><div className="loading-spinner"></div><p>Загрузка данных...</p></div></main>
+        <main className="my-plants-content">
+          <div className="coming-soon-container">
+            <div className="plant-image-container">
+              <img src="/plug-image-plant.png" alt="plant" className="centered-plant" />
+            </div>
+            <div className="coming-soon-text">Загрузка...</div>
+          </div>
+        </main>
       </div>
     );
   }
