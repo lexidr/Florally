@@ -79,6 +79,24 @@ async function deleteComment(commentId: string): Promise<void> {
   }
 }
 
+async function updateCommentOnServer(commentId: string, text: string): Promise<Comment> {
+  const token = localStorage.getItem("access_token");
+  const response = await fetch(`${API}/comments/${commentId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+    body: JSON.stringify({ text }),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Failed to update comment:", errorText);
+    throw new Error("Failed to update comment");
+  }
+  return response.json();
+}
+
 interface SelectedPlant {
   id: string;
   name: string;
@@ -205,6 +223,9 @@ function MyPlant() {
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [newCommentText, setNewCommentText] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editingCommentText, setEditingCommentText] = useState("");
+  const [commentUpdating, setCommentUpdating] = useState(false);
 
   const screenSize = useScreenSize();
   const isMobile = screenSize === 'mobile';
@@ -422,6 +443,7 @@ function MyPlant() {
     setNewCommentText("");
     setComments([]);
     setCommentsLoading(true);
+    setEditingCommentId(null);
     try {
       const loaded = await fetchComments(plant.id);
       setComments(loaded);
@@ -455,11 +477,38 @@ function MyPlant() {
     }
   };
 
+  const handleStartEditComment = (comment: Comment) => {
+    setEditingCommentId(comment.id);
+    setEditingCommentText(comment.text);
+  };
+
+  const handleCancelEditComment = () => {
+    setEditingCommentId(null);
+    setEditingCommentText("");
+  };
+
+  const handleSaveEditComment = async (commentId: string) => {
+    if (!editingCommentText.trim()) return;
+    setCommentUpdating(true);
+    try {
+      const updated = await updateCommentOnServer(commentId, editingCommentText.trim());
+      setComments(prev => prev.map(c => c.id === commentId ? updated : c));
+      setEditingCommentId(null);
+      setEditingCommentText("");
+    } catch (e) {
+      console.error("Ошибка при обновлении заметки:", e);
+      alert("Не удалось обновить заметку");
+    } finally {
+      setCommentUpdating(false);
+    }
+  };
+
   const closePlantModal = () => {
     setModalOpen(false);
     setSelectedPlant(null);
     setComments([]);
     setNewCommentText("");
+    setEditingCommentId(null);
   };
 
   const handleCreateCustomPlant = async () => {
@@ -1005,6 +1054,7 @@ function MyPlant() {
                     ) : (
                       comments.map(comment => (
                         <div key={comment.id} style={{
+                          position: "relative",
                           display:"flex", 
                           alignItems:"flex-start", 
                           gap:"10px", 
@@ -1028,50 +1078,106 @@ function MyPlant() {
                             <img style={{width:"24px", height:"24px"}} src="/ph_plant-light.svg" alt=""/>
                           </div>
                           <div style={{flex:1, minWidth:0}}>
-                            <p style={{fontSize:"14px", margin:0, lineHeight:"1.5", wordBreak:"break-word", border: "1px solid #A8C686",borderRadius: "5px", padding: "5px", paddingBottom: "20px"}}>{comment.text}</p>
+                            {editingCommentId === comment.id ? (
+                              <div>
+                                <textarea
+                                  value={editingCommentText}
+                                  onChange={(e) => setEditingCommentText(e.target.value)}
+                                  rows={3}
+                                  style={{
+                                    width: '100%',
+                                    padding: '8px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #A8C686',
+                                    fontSize: '14px',
+                                    fontFamily: 'inherit',
+                                    resize: 'vertical'
+                                  }}
+                                  autoFocus
+                                />
+                                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                                  <button
+                                    onClick={() => handleSaveEditComment(comment.id)}
+                                    disabled={commentUpdating || !editingCommentText.trim()}
+                                    style={{
+                                      background: '#A8C686',
+                                      color: 'white',
+                                      border: 'none',
+                                      borderRadius: '6px',
+                                      padding: '4px 12px',
+                                      fontSize: '12px',
+                                      cursor: commentUpdating || !editingCommentText.trim() ? 'default' : 'pointer',
+                                      opacity: commentUpdating || !editingCommentText.trim() ? 0.6 : 1
+                                    }}
+                                  >
+                                    {commentUpdating ? '...' : 'Сохранить'}
+                                  </button>
+                                  <button
+                                    onClick={handleCancelEditComment}
+                                    style={{
+                                      background: '#ccc',
+                                      color: 'white',
+                                      border: 'none',
+                                      borderRadius: '6px',
+                                      padding: '4px 12px',
+                                      fontSize: '12px',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    Отмена
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <p style={{fontSize:"14px", margin:0, lineHeight:"1.5", wordBreak:"break-word", border: "1px solid #A8C686",borderRadius: "5px", padding: "5px", paddingBottom: "20px", width: "95%"}}>{comment.text}</p>
+                            )}
                           </div>
-                          <div style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "8px",
-                          flexShrink: 0
-                        }}>
-                          <button
-                            onClick={() => console.log("Редактировать заметку:", comment.id)}
-                            title="Редактировать заметку"
-                            style={{
-                              background: "none",
-                              border: "none",
-                              cursor: "pointer",
-                              width: "24px",
-                              height: "24px",
-                              padding: "0",
+                          {!editingCommentId && (
+                            <div style={{
+                              position: "absolute",
+                              top: "10px",
+                              right: "12px",
                               display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center"
-                            }}
-                          >
-                            <img src="/edit_icon.svg" alt="" style={{width: "20px", height: "20px"}} />
-                          </button>
+                              flexDirection: "column",
+                              gap: "8px"
+                            }}>
+                              <button
+                                onClick={() => handleStartEditComment(comment)}
+                                title="Редактировать заметку"
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  cursor: "pointer",
+                                  width: "24px",
+                                  height: "24px",
+                                  padding: "0",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center"
+                                }}
+                              >
+                                <img src="/edit_icon.svg" alt="" style={{width: "20px", height: "20px"}} />
+                              </button>
 
-                          <button
-                            onClick={() => handleDeleteComment(comment.id)}
-                            title="Удалить заметку"
-                            style={{
-                              background: "none",
-                              border: "none",
-                              cursor: "pointer",
-                              color: "#ccc",
-                              fontSize: "20px",
-                              width: "24px",
-                              height: "24px",
-                              padding: "0",
-                              flexShrink: 0
-                            }}
-                          >
-                            <img src="/delete_icon.svg" alt="" style={{width: "20px", height: "20px"}} />
-                            </button>
-                        </div>
+                              <button
+                                onClick={() => handleDeleteComment(comment.id)}
+                                title="Удалить заметку"
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  cursor: "pointer",
+                                  color: "#ccc",
+                                  fontSize: "20px",
+                                  width: "24px",
+                                  height: "24px",
+                                  padding: "0",
+                                  flexShrink: 0
+                                }}
+                              >
+                                <img src="/delete_icon.svg" alt="" style={{width: "20px", height: "20px"}} />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       ))
                     )}
@@ -2176,6 +2282,7 @@ function MyPlant() {
                   ) : (
                     comments.map(comment => (
                       <div key={comment.id} style={{
+                        position: "relative",
                         display:"flex", 
                         alignItems:"flex-start", 
                         gap:"14px", 
@@ -2200,50 +2307,106 @@ function MyPlant() {
                           <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
                         </div>
                         <div style={{flex:1, minWidth:0}}>
-                          <p style={{fontSize:"18px", margin:0, lineHeight:"1.5", wordBreak:"break-word",borderRadius: "8px", padding: "8px", paddingBottom: "20px", background: "#E1E9D9"}}>{comment.text}</p>
+                          {editingCommentId === comment.id ? (
+                            <div>
+                              <textarea
+                                value={editingCommentText}
+                                onChange={(e) => setEditingCommentText(e.target.value)}
+                                rows={3}
+                                style={{
+                                  width: '100%',
+                                  padding: '8px',
+                                  borderRadius: '8px',
+                                  border: '1px solid #A8C686',
+                                  fontSize: '16px',
+                                  fontFamily: 'inherit',
+                                  resize: 'vertical'
+                                }}
+                                autoFocus
+                              />
+                              <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                                <button
+                                  onClick={() => handleSaveEditComment(comment.id)}
+                                  disabled={commentUpdating || !editingCommentText.trim()}
+                                  style={{
+                                    background: '#A8C686',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    padding: '6px 12px',
+                                    fontSize: '14px',
+                                    cursor: commentUpdating || !editingCommentText.trim() ? 'default' : 'pointer',
+                                    opacity: commentUpdating || !editingCommentText.trim() ? 0.6 : 1
+                                  }}
+                                >
+                                  {commentUpdating ? '...' : 'Сохранить'}
+                                </button>
+                                <button
+                                  onClick={handleCancelEditComment}
+                                  style={{
+                                    background: '#ccc',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    padding: '6px 12px',
+                                    fontSize: '14px',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  Отмена
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p style={{fontSize:"18px", margin:0, lineHeight:"1.5", wordBreak:"break-word",borderRadius: "8px", padding: "8px", paddingBottom: "20px", background: "#E1E9D9", width: "95%"}}>{comment.text}</p>
+                          )}
                         </div>
-                        <div style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "8px",
-                          flexShrink: 0
-                        }}>
-                          <button
-                            onClick={() => console.log("Редактировать заметку:", comment.id)}
-                            title="Редактировать заметку"
-                            style={{
-                              background: "none",
-                              border: "none",
-                              cursor: "pointer",
-                              width: "24px",
-                              height: "24px",
-                              padding: "0",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center"
-                            }}
-                          >
-                            <img src="/edit_icon.svg" alt="" style={{width: "40px", height: "40px",borderRadius: "4px"}} />
-                          </button>
-
-                          <button
-                            onClick={() => handleDeleteComment(comment.id)}
-                            title="Удалить заметку"
-                            style={{
-                              background: "none",
-                              border: "none",
-                              cursor: "pointer",
-                              color: "#ccc",
-                              fontSize: "20px",
-                              width: "24px",
-                              height: "24px",
-                              padding: "0",
-                              flexShrink: 0
-                            }}
-                          >
-                            <img src="/delete_icon.svg" alt="" style={{width: "40px", height: "40px"}} />
+                        {!editingCommentId && (
+                          <div style={{
+                            position: "absolute",
+                            top: "12px",
+                            right: "16px",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "4px"
+                          }}>
+                            <button
+                              onClick={() => handleStartEditComment(comment)}
+                              title="Редактировать заметку"
+                              style={{
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
+                                width: "24px",
+                                height: "24px",
+                                padding: "0",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center"
+                              }}
+                            >
+                              <img src="/edit_icon.svg" alt="" style={{width: "26.5px", height: "26.5px"}} />
                             </button>
-                        </div>
+
+                            <button
+                              onClick={() => handleDeleteComment(comment.id)}
+                              title="Удалить заметку"
+                              style={{
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
+                                color: "#ccc",
+                                fontSize: "20px",
+                                width: "24px",
+                                height: "24px",
+                                padding: "0",
+                                flexShrink: 0
+                              }}
+                            >
+                              <img src="/delete_icon.svg" alt="" style={{width: "26.5px", height: "26.5px"}} />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))
                   )}
@@ -2320,7 +2483,7 @@ function MyPlant() {
 
           {addPlantModalOpen && (
             <div className="modal-overlay" onClick={() => setAddPlantModalOpen(false)}>
-              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto', position: 'relative'}}>
+              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto', position: 'relative',width: "60%"}}>
                 <h2>Добавить растение</h2>
                 <button 
                   className="modal-close-btn" 
@@ -2497,7 +2660,7 @@ function MyPlant() {
 
           {addToRoomModalOpen && selectedRoomForPlant && (
             <div className="modal-overlay" onClick={() => setAddToRoomModalOpen(false)}>
-              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto', position: 'relative'}}>
+              <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxHeight: '80vh', overflowY: 'auto', position: 'relative', width: "60%"}}>
                 <h2>Добавить растение в "{selectedRoomForPlant.name}"</h2>
                 <button 
                   className="modal-close-btn" 
