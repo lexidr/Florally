@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { checkAuth, SignOut } from "../../api/authApi";
 import { getUserPlants, type UserPlant } from "../../api/plantsApi";
@@ -25,6 +25,7 @@ interface Task {
   plantIds: string[];
   date: string;
   completed: boolean;
+  color: string;
 }
 
 const HomePage: React.FC = () => {
@@ -64,6 +65,8 @@ const HomePage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const colorsEnrichedRef = useRef(false);
+
   const formatLocalDate = (date: Date): string => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -89,11 +92,6 @@ const HomePage: React.FC = () => {
     return "#A8C686";
   };
 
-  const getTaskColor = (task: Task): string => {
-    if (task.plantIds.length === 0) return "#A8C686";
-    return getPlantColorFromDB(task.plantIds[0]);
-  };
-
   const getUniquePlantIdsForDate = (date: Date): string[] => {
     const dateStr = formatLocalDate(date);
     const tasksForDate = tasks.filter(task => task.date === dateStr && !task.completed);
@@ -117,6 +115,28 @@ const HomePage: React.FC = () => {
     } catch (error) {
       console.error("Ошибка загрузки данных:", error);
     }
+  };
+
+  const enrichTasksWithColors = (plants: UserPlant[]) => {
+    const savedTasks = localStorage.getItem("user_tasks");
+    if (!savedTasks) return false;
+    let parsed = JSON.parse(savedTasks);
+    let needUpdate = false;
+    const enriched = parsed.map((task: any) => {
+      if (!task.color && task.plantIds && task.plantIds.length > 0) {
+        needUpdate = true;
+        const plant = plants.find(p => p.id === task.plantIds[0]);
+        const color = plant && plant.color && plant.color !== "#FFFFFF" ? plant.color : "#A8C686";
+        return { ...task, color };
+      }
+      return task;
+    });
+    if (needUpdate) {
+      localStorage.setItem("user_tasks", JSON.stringify(enriched));
+      setTasks(enriched.map(normalizeTaskDate));
+      return true;
+    }
+    return false;
   };
 
   const loadTasks = () => {
@@ -168,6 +188,13 @@ const HomePage: React.FC = () => {
 
     authCheck();
   }, []);
+
+  useEffect(() => {
+    if (userPlants.length > 0 && !colorsEnrichedRef.current) {
+      const enriched = enrichTasksWithColors(userPlants);
+      if (enriched) colorsEnrichedRef.current = true;
+    }
+  }, [userPlants]);
 
   const getDaysInMonth = (date: Date): CalendarDay[][] => {
     const year = date.getFullYear();
@@ -367,6 +394,14 @@ const HomePage: React.FC = () => {
     const plantNames = getPlantNamesByIds(newTask.plantIds);
     const autoTitle = `${finalType} ${plantNames}`;
 
+    let taskColor = "#A8C686";
+    if (newTask.plantIds.length > 0) {
+      const mainPlant = userPlants.find(p => p.id === newTask.plantIds[0]);
+      if (mainPlant && mainPlant.color && mainPlant.color !== "#FFFFFF") {
+        taskColor = mainPlant.color;
+      }
+    }
+
     setIsSubmitting(true);
     const newTaskObj: Task = {
       id: Date.now().toString(),
@@ -375,6 +410,7 @@ const HomePage: React.FC = () => {
       plantIds: newTask.plantIds,
       date: formatLocalDate(selectedDate),
       completed: false,
+      color: taskColor,
     };
     saveTasks([...tasks, newTaskObj]);
     setIsSubmitting(false);
@@ -536,7 +572,7 @@ const HomePage: React.FC = () => {
                         </div>
                       ) : (
                         todayTasks.map(task => {
-                          const taskColor = getTaskColor(task);
+                          const taskColor = task.color || getPlantColorFromDB(task.plantIds[0] || "");
                           return (
                             <div 
                               key={task.id} 
@@ -719,7 +755,7 @@ const HomePage: React.FC = () => {
                   </div>
                 ) : (
                   todayTasks.map(task => {
-                    const taskColor = getTaskColor(task);
+                    const taskColor = task.color || getPlantColorFromDB(task.plantIds[0] || "");
                     return (
                       <div 
                         key={task.id} 
