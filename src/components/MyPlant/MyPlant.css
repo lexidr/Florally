@@ -280,6 +280,18 @@
   text-align: center;
 }
 
+.modal-contentMP input,
+.modal-contentMP textarea {
+  font-family: "Manrope", sans-serif; 
+  font-size: 14px;                     
+}
+
+.modal-contentMP input::placeholder,
+.modal-contentMP textarea::placeholder {
+  font-family: "Manrope", sans-serif;
+  font-size: 14px;                    
+}
+
 .element_mobile{
   width: 162px;
   height: 162px;
