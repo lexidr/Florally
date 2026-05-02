@@ -4,14 +4,15 @@
   box-sizing: border-box;
 }
 
-.mobile_header{
+.mobile_header {
   width: 100vw;
   height: 6.4vh;
 }
 
-.mobile-app{
+.mobile-app {
   width: 100vw;
   height: 100vh;
+  overflow-x: hidden;
 }
 
 .modal-close-btn {
@@ -47,7 +48,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  min-height: calc(100vh - 80px); 
+  min-height: calc(100vh - 80px);
   padding: 2rem;
   max-width: 500px;
   margin: 0 auto;
@@ -95,15 +96,12 @@
     min-height: calc(100vh - 60px);
     padding: 1.5rem;
   }
-
   .login-required-container h2 {
     font-size: 1.5rem;
   }
-
   .login-required-container p {
     font-size: 0.9rem;
   }
-
   .login-required-container .login-button {
     padding: 10px 28px;
     font-size: 0.9rem;
@@ -112,8 +110,8 @@
 
 .my-plants-content {
   width: 100%;
-  height: calc(100vh - 72px); 
-  background: #E7E7E7; 
+  height: calc(100vh - 72px);
+  background: #E7E7E7;
   display: flex;
   position: relative;
   overflow: hidden;
@@ -128,25 +126,25 @@
   animation: float 3s ease-in-out infinite;
 }
 
-.p_center{
+.p_center {
   margin-bottom: 20px;
 }
 
-.left_side_plants{
+.left_side_plants {
   max-width: 699px;
   margin: 37px 80px;
   max-height: calc(100vh - 74px);
   text-align: center;
   overflow-y: auto;
   -ms-overflow-style: none;
-  scrollbar-width: none;    
+  scrollbar-width: none;
 }
 
 .left_side_plants::-webkit-scrollbar {
   display: none;
 }
 
-.side_elements{
+.side_elements {
   gap: 21px;
   display: flex;
   flex-wrap: wrap;
@@ -155,32 +153,32 @@
   justify-content: flex-start;
 }
 
-.left_side_plants>p{
+.left_side_plants > p {
   font-family: "Stolzl";
   font-weight: 500;
   font-size: 36px;
 }
 
-.right_side_rooms{
+.right_side_rooms {
   max-width: 470px;
   margin: 37px 80px;
   text-align: center;
   overflow-y: auto;
   -ms-overflow-style: none;
-  scrollbar-width: none;    
+  scrollbar-width: none;
 }
 
 .right_side_rooms::-webkit-scrollbar {
-  display: none;  
+  display: none;
 }
 
-.right_side_rooms>p{
+.right_side_rooms > p {
   font-family: "Stolzl";
   font-weight: 500;
   font-size: 36px;
 }
 
-.vertical_line{
+.vertical_line {
   border-right: 3px solid #A8C686;
   height: calc(100% - 74px);
   margin: 37px 0;
@@ -189,35 +187,35 @@
 }
 
 .element {
-    width: 212px;
-    height: 212px;
-    background-color: #ffff;
-    border-radius: 28px;
-    text-align: center;
-    cursor: pointer;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  width: 212px;
+  height: 212px;
+  background-color: #ffff;
+  border-radius: 28px;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .plant_name {
-    font-family: "Stolzl";
-    font-weight: 500;
-    font-size: 16px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    max-width: 196px;
-    text-align: center;
+  font-family: "Stolzl";
+  font-weight: 500;
+  font-size: 16px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 196px;
+  text-align: center;
 }
 
-.place_of_plant{
+.place_of_plant {
   font-family: "Stolzl";
   font-size: 12px;
   padding-bottom: 16px;
 }
 
-.zamiokulcas_left_side{
+.zamiokulcas_left_side {
   width: 196px;
   height: 148px;
   object-fit: cover;
@@ -228,7 +226,7 @@
   display: block;
 }
 
-.add_new_plant_new_place{
+.add_new_plant_new_place {
   font-size: 16px;
   font-weight: 500;
   margin-top: 12px;
@@ -246,7 +244,7 @@
   justify-content: center;
 }
 
-.button_add{
+.button_add {
   background: #A8C686;
   color: white;
   border-radius: 20px;
@@ -260,7 +258,7 @@
   justify-content: center;
 }
 
-.button_room{
+.button_room {
   font-size: 20px;
   background: #ECF3E3;
   color: #A8C686;
@@ -269,12 +267,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 92px; 
+  width: 92px;
   height: 92px;
   margin: 0 8px 8px 0;
 }
 
-.my_plant_mobile{
+.my_plant_mobile {
   margin-top: 32px;
   font-size: 28px;
   text-align: center;
@@ -282,17 +280,17 @@
 
 .modal-contentMP input,
 .modal-contentMP textarea {
-  font-family: "Manrope", sans-serif; 
-  font-size: 14px;                     
+  font-family: "Manrope", sans-serif;
+  font-size: 14px;
 }
 
 .modal-contentMP input::placeholder,
 .modal-contentMP textarea::placeholder {
   font-family: "Manrope", sans-serif;
-  font-size: 14px;                    
+  font-size: 14px;
 }
 
-.element_mobile{
+.element_mobile {
   width: 162px;
   height: 162px;
   background-color: #ffff;
@@ -301,7 +299,7 @@
   cursor: pointer;
 }
 
-.zamiokulcas_mobile{
+.zamiokulcas_mobile {
   width: 146px;
   height: 112px;
   object-fit: cover;
@@ -312,36 +310,36 @@
   display: block;
 }
 
-.plant_name_mobile{
+.plant_name_mobile {
   font-family: "Stolzl";
   font-weight: 500;
   font-size: 12px;
 }
 
-.place_of_plant_mobile{
+.place_of_plant_mobile {
   font-family: "Stolzl";
   font-size: 8px;
   padding-bottom: 12px;
 }
 
-.section_mobile{
-  margin-left: 20px ;
+.section_mobile {
+  margin-left: 20px;
   margin-right: 20px;
   width: calc(100vw - 40px);
   margin-top: 16px;
   display: flex;
   flex-wrap: wrap;
-  gap:11px;
+  gap: 11px;
 }
 
-.add_new_plant_new_place_mobile{
+.add_new_plant_new_place_mobile {
   font-size: 12px;
   font-weight: 500;
   margin-top: 12px;
   margin-bottom: 35px;
 }
 
-.button_add_mobile{
+.button_add_mobile {
   background: #A8C686;
   color: white;
   border-radius: 20px;
@@ -353,7 +351,7 @@
   justify-content: center;
 }
 
-.button_room_mobile{
+.button_room_mobile {
   font-size: 20px;
   background: #ECF3E3;
   color: #A8C686;
@@ -362,18 +360,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px; 
+  width: 64px;
   height: 64px;
   margin: 0 11px 11px 0;
 }
 
-.my_rooms_mobile{
+.my_rooms_mobile {
   margin-top: 32px;
   font-size: 20px;
   text-align: center;
 }
 
-.footer{
+.footer {
   background-color: white;
   overflow: hidden;
   position: absolute;
@@ -390,7 +388,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -404,7 +402,7 @@
   min-height: 90vh;
   position: relative;
   border-radius: 36px;
-  display: flex;           
+  display: flex;
   flex-direction: column;
 }
 
@@ -416,17 +414,17 @@
   cursor: pointer;
 }
 
-.modal_img_plant_dekstop{
+.modal_img_plant_dekstop {
   width: 220px;
   height: 220px;
   border-radius: 20px;
   object-fit: cover;
 }
 
-.modal_footer{
-  width:100%;
-  float:left;
-  display:inline-flex ;
+.modal_footer {
+  width: 100%;
+  float: left;
+  display: inline-flex;
   justify-content: flex-end;
   margin-top: auto;
 }
@@ -437,6 +435,23 @@
   padding-bottom: 68px;
   min-height: 100vh;
   background-color: #E7E7E7;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.mobile-myplants-content::-webkit-scrollbar {
+  width: 4px;
+  background: transparent;
+}
+
+.mobile-myplants-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.mobile-myplants-content::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .mobile-myplants-container {
@@ -455,8 +470,8 @@
 
 .mobile-plants-grid,
 .mobile-rooms-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   justify-content: flex-start;
   margin-bottom: 32px;
@@ -465,29 +480,38 @@
 .mobile-plant-card,
 .mobile-room-card,
 .mobile-add-card {
-  width: calc(50% - 8px);
-  min-width: 140px;
   background-color: white !important;
   border-radius: 20px;
   padding: 12px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mobile-plant-card:active,
+.mobile-room-card:active {
+  transform: scale(0.98);
 }
 
 .mobile-plant-image {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 1 / 1;
   background-color: #F5F5F5;
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 12px;
+  position: relative;
 }
 
 .mobile-plant-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .mobile-room-preview {
@@ -551,7 +575,7 @@
   align-items: center;
   justify-content: center;
   min-height: 180px;
-  background-color: #F5F5F5;
+  background-color: #F5F5F5 !important;
 }
 
 .mobile-add-button {
@@ -608,26 +632,6 @@
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
-}
-
-@media (max-width: 480px) {
-  .mobile-plant-card,
-  .mobile-room-card,
-  .mobile-add-card {
-    width: calc(50% - 8px);
-    min-width: 130px;
-    padding: 10px;
-  }
-  
-  .mobile-section-title {
-    font-size: 20px;
-  }
-  
-  .mobile-room-preview-image,
-  .mobile-room-add-btn {
-    width: 50px;
-    height: 50px;
-  }
 }
 
 .login-required-container-desktop {
@@ -715,20 +719,29 @@
   text-align: center;
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
+@media (max-width: 480px) {
+  .mobile-plants-grid,
+  .mobile-rooms-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
-  50% {
-    transform: translateY(-10px);
+  .mobile-plant-card,
+  .mobile-room-card,
+  .mobile-add-card {
+    padding: 10px;
   }
-}
-
-@keyframes fadeInOut {
-  0%, 100% {
-    opacity: 0.7;
+  .mobile-section-title {
+    font-size: 20px;
   }
-  50% {
-    opacity: 1;
+  .mobile-room-preview-image,
+  .mobile-room-add-btn {
+    width: 50px;
+    height: 50px;
+  }
+  .mobile-plant-name {
+    font-size: 12px;
+  }
+  .mobile-plant-room {
+    font-size: 9px;
   }
 }
