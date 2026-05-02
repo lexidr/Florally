@@ -795,3 +795,9 @@ button:hover {
     margin-left: 20px;
   }
 }
+
+@media (min-width: 431px) and (max-width: 810px) {
+  .mobile-plants-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

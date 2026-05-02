@@ -14,14 +14,14 @@ interface Comment {
   updated_at?: string;
 }
 
-const PlantImage: React.FC<{ 
-  src: string | null | undefined; 
-  alt: string; 
+const PlantImage: React.FC<{
+  src: string | null | undefined;
+  alt: string;
   style?: React.CSSProperties;
   plantId?: string | number;
 }> = ({ src, alt, style, plantId }) => {
   const [hasError, setHasError] = useState(false);
-  
+
   const getPlaceholderIndex = () => {
     if (plantId) {
       const key = `plant_placeholder_${plantId}`;
@@ -33,11 +33,11 @@ const PlantImage: React.FC<{
     }
     return Math.floor(Math.random() * 10) + 1;
   };
-  
+
   const [placeholderIndex] = useState(() => getPlaceholderIndex());
 
-  const imageSrc = (hasError || !src || src.trim() === "") 
-    ? `/plug-image-plant${placeholderIndex}.png` 
+  const imageSrc = (hasError || !src || src.trim() === "")
+    ? `/plug-image-plant${placeholderIndex}.png`
     : src;
 
   return (
@@ -154,14 +154,14 @@ function User() {
   const fetchFullUserProfile = async () => {
     const token = localStorage.getItem("access_token");
     if (!token) return null;
-    
+
     try {
       const response = await fetch(`${API}/auth/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
       if (response.ok) {
         const userData = await response.json();
         return userData;
@@ -177,18 +177,18 @@ function User() {
       try {
         const authData = checkAuth();
         setIsLoggedIn(authData.isAuthenticated);
-        
+
         if (authData.user) {
           setUser(authData.user);
-          
+
           const fullProfile = await fetchFullUserProfile();
           if (fullProfile) {
-            setUser((prev:any) => ({ ...prev, ...fullProfile }));
+            setUser((prev: any) => ({ ...prev, ...fullProfile }));
             if (fullProfile.created_at) {
               setRegistrationDate(fullProfile.created_at);
             }
           }
-          
+
           setFormData({
             username: authData.user.username || "",
             email: authData.user.email || "",
@@ -206,7 +206,7 @@ function User() {
       }
     };
     authCheck();
-  }, []); 
+  }, []);
 
   const handleLoginClick = () => navigate("/auth/signin");
   const handleViewMoreClick = () => navigate("/plants/my_plants");
@@ -368,11 +368,11 @@ function User() {
 
   const formatRegistrationDate = () => {
     const dateStr = registrationDate || user?.created_at;
-    
+
     if (!dateStr) {
       return "Дата неизвестна";
     }
-    
+
     try {
       const date = new Date(dateStr);
       if (isNaN(date.getTime())) {
@@ -435,8 +435,23 @@ function User() {
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}
       >
-        <div style={{ width: '196px', height: '148px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F5F5', borderRadius: '20px', marginTop: '8px', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', width: '196px', height: '148px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F5F5', borderRadius: '20px', marginTop: '8px', overflow: 'hidden' }}>
           <PlantImage src={plant.plant.photo} alt={plant.plant.name} plantId={plant.id} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          {plant.color && plant.color !== "#FFFFFF" && (
+            <div style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              backgroundColor: plant.color,
+              border: '2px solid white',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+              zIndex: 2,
+              pointerEvents: 'none'
+            }} />
+          )}
         </div>
         <p style={{ fontWeight: '500', margin: '8px 0 0 0', fontSize: '14px', textAlign: 'center' }}>{plant.plant.name}</p>
         <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0 0' }}>Комната: {roomName}</p>
@@ -494,12 +509,29 @@ function User() {
                             const roomName = rooms.find(r => r.userPlants.some(p => p.id === plant.id))?.name || "Без комнаты";
                             return (
                               <div key={plant.id} className="mobile-plant-square" onClick={() => openPlantModal(plant)}>
-                                <PlantImage
-                                  src={plant.plant.photo}
-                                  alt={plant.plant.name}
-                                  plantId={plant.id}
-                                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }}
-                                />
+                                <div style={{ position: 'relative', width: '100%', height: 'auto', aspectRatio: '1/1' }}>
+                                  <PlantImage
+                                    src={plant.plant.photo}
+                                    alt={plant.plant.name}
+                                    plantId={plant.id}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }}
+                                  />
+                                  {plant.color && plant.color !== "#FFFFFF" && (
+                                    <div style={{
+                                      position: 'absolute',
+                                      top: '8px',
+                                      right: '8px',
+                                      width: '18px',
+                                      height: '18px',
+                                      borderRadius: '50%',
+                                      backgroundColor: plant.color,
+                                      border: '2px solid white',
+                                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                                      zIndex: 2,
+                                      pointerEvents: 'none'
+                                    }} />
+                                  )}
+                                </div>
                                 <p className="mobile-plant-name">{plant.plant.name}</p>
                                 <p className="mobile-plant-room">Комната: {roomName}</p>
                               </div>
@@ -539,9 +571,9 @@ function User() {
         </div>
         {modalOpen && selectedPlant && (
           <div className="modal-overlay" onClick={closePlantModal}>
-            <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px', position: 'relative'}}>
-              <button 
-                className="modal-close-btn" 
+            <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px', position: 'relative' }}>
+              <button
+                className="modal-close-btn"
                 onClick={closePlantModal}
                 style={{
                   position: 'absolute',
@@ -563,18 +595,18 @@ function User() {
               >
                 ✕
               </button>
-              <div style={{display: "flex", gap: "16px", alignItems: "flex-start", flexWrap: "wrap"}}>
-                <div style={{width: '120px', height: '120px', backgroundColor: '#F5F5F5', borderRadius: '16px', overflow: 'hidden', flexShrink: 0}}>
+              <div style={{ display: "flex", gap: "16px", alignItems: "flex-start", flexWrap: "wrap" }}>
+                <div style={{ width: '120px', height: '120px', backgroundColor: '#F5F5F5', borderRadius: '16px', overflow: 'hidden', flexShrink: 0 }}>
                   <PlantImage
                     src={selectedPlant.plant.photo}
                     alt={selectedPlant.plant.name}
                     plantId={selectedPlant.id}
-                    style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 </div>
-                <div style={{flex: 1, minWidth: '150px'}}>
+                <div style={{ flex: 1, minWidth: '150px' }}>
                   <h2 style={{
-                    fontSize: '20px', 
+                    fontSize: '20px',
                     margin: '0 0 8px 0',
                     fontWeight: '600',
                     wordBreak: "break-word",
@@ -584,15 +616,15 @@ function User() {
                     {selectedPlant.plant.name}
                   </h2>
                   <p style={{
-                    fontSize: '14px', 
-                    color: '#666', 
+                    fontSize: '14px',
+                    color: '#666',
                     margin: '0 0 12px 0'
                   }}>
                     Комната: {selectedRoomName}
                   </p>
-                  <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
-                    <label style={{fontSize: "14px"}}>Цвет фона:</label>
-                    <div 
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <label style={{ fontSize: "14px" }}>Цвет фона:</label>
+                    <div
                       onClick={() => {
                         const input = document.getElementById(`color-picker-user-mobile-${selectedPlant.id}`);
                         if (input) input.click();
@@ -612,9 +644,9 @@ function User() {
                       onTouchStart={(e) => e.currentTarget.style.transform = "scale(0.95)"}
                       onTouchEnd={(e) => e.currentTarget.style.transform = "scale(1)"}
                     />
-                    <input 
+                    <input
                       id={`color-picker-user-mobile-${selectedPlant.id}`}
-                      type="color" 
+                      type="color"
                       value={selectedPlant.color || "#FFFFFF"}
                       onChange={(e) => handleUpdateColor(selectedPlant.id, e.target.value)}
                       style={{
@@ -628,133 +660,133 @@ function User() {
                   </div>
                 </div>
               </div>
-              
-              <h1 style={{fontSize:"28px", fontWeight:"500", color:"#2E2E2E", margin:"0", marginTop:"36px"}}>Уход за растением</h1>
-              <div style={{marginTop:"20px"}}>
+
+              <h1 style={{ fontSize: "28px", fontWeight: "500", color: "#2E2E2E", margin: "0", marginTop: "36px" }}>Уход за растением</h1>
+              <div style={{ marginTop: "20px" }}>
                 <div style={{
-                  width:"100%", 
-                  display:"flex", 
-                  alignItems:"center", 
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
                   marginBottom: "15px",
                   backgroundColor: "#ffffff",
                   borderRadius: "12px",
                   padding: "12px"
                 }}>
                   <div style={{
-                    width:"52px", 
-                    height:"52px", 
+                    width: "52px",
+                    height: "52px",
                     backgroundColor: (() => {
                       const color = selectedPlant.color;
                       return color && color !== "#FFFFFF" ? color : "#A8C686";
-                    })(), 
+                    })(),
                     borderRadius: "12px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center"
                   }}>
-                    <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
+                    <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt="" />
                   </div>
-                  <div style={{marginLeft:"14px"}}>
-                    <p style={{fontSize:"20px", fontWeight:"450"}}>Описание</p>
-                    <p style={{fontSize:"16px"}}>{selectedPlant.plant.description}</p>
+                  <div style={{ marginLeft: "14px" }}>
+                    <p style={{ fontSize: "20px", fontWeight: "450" }}>Описание</p>
+                    <p style={{ fontSize: "16px" }}>{selectedPlant.plant.description}</p>
                   </div>
                 </div>
-                <hr style={{width:"100%", marginBottom:"14px", opacity:"50%", borderColor:"#A8C686"}}/>
+                <hr style={{ width: "100%", marginBottom: "14px", opacity: "50%", borderColor: "#A8C686" }} />
                 <div style={{
-                  width:"100%", 
-                  display:"flex", 
-                  alignItems:"center", 
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
                   marginBottom: "15px",
                   backgroundColor: "#ffffff",
                   borderRadius: "12px",
                   padding: "12px"
                 }}>
                   <div style={{
-                    width:"52px", 
-                    height:"52px", 
+                    width: "52px",
+                    height: "52px",
                     backgroundColor: (() => {
                       const color = selectedPlant.color;
                       return color && color !== "#FFFFFF" ? color : "#A8C686";
-                    })(), 
+                    })(),
                     borderRadius: "12px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center"
                   }}>
-                    <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
+                    <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt="" />
                   </div>
-                  <div style={{marginLeft:"14px"}}>
-                    <p style={{fontSize:"20px", fontWeight:"450"}}>Сезон</p>
-                    <p style={{fontSize:"16px"}}>{selectedPlant.plant.season}</p>
+                  <div style={{ marginLeft: "14px" }}>
+                    <p style={{ fontSize: "20px", fontWeight: "450" }}>Сезон</p>
+                    <p style={{ fontSize: "16px" }}>{selectedPlant.plant.season}</p>
                   </div>
                 </div>
-                <hr style={{width:"100%", marginBottom:"14px", opacity:"50%", borderColor:"#A8C686"}}/>
+                <hr style={{ width: "100%", marginBottom: "14px", opacity: "50%", borderColor: "#A8C686" }} />
                 <div style={{
-                  width:"100%", 
-                  display:"flex", 
-                  alignItems:"center", 
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
                   marginBottom: "15px",
                   backgroundColor: "#ffffff",
                   borderRadius: "12px",
                   padding: "12px"
                 }}>
                   <div style={{
-                    width:"52px", 
-                    height:"52px", 
+                    width: "52px",
+                    height: "52px",
                     backgroundColor: (() => {
                       const color = selectedPlant.color;
                       return color && color !== "#FFFFFF" ? color : "#A8C686";
-                    })(), 
+                    })(),
                     borderRadius: "12px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center"
                   }}>
-                    <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
+                    <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt="" />
                   </div>
-                  <div style={{marginLeft:"14px"}}>
-                    <p style={{fontSize:"20px", fontWeight:"450"}}>Рекомендации</p>
-                    <p style={{fontSize:"16px"}}>{selectedPlant.plant.recommendations || "У этого растения пока нет рекомендаций, но скоро появятся"}</p>
+                  <div style={{ marginLeft: "14px" }}>
+                    <p style={{ fontSize: "20px", fontWeight: "450" }}>Рекомендации</p>
+                    <p style={{ fontSize: "16px" }}>{selectedPlant.plant.recommendations || "У этого растения пока нет рекомендаций, но скоро появятся"}</p>
                   </div>
                 </div>
-                <hr style={{width:"100%", marginBottom:"14px", opacity:"50%", borderColor:"#A8C686"}}/>
+                <hr style={{ width: "100%", marginBottom: "14px", opacity: "50%", borderColor: "#A8C686" }} />
               </div>
 
-              <h1 style={{fontSize:"24px", fontWeight:"500", color:"#2E2E2E", margin:"28px 0 16px 0"}}>
+              <h1 style={{ fontSize: "24px", fontWeight: "500", color: "#2E2E2E", margin: "28px 0 16px 0" }}>
                 Мои заметки
               </h1>
-              <div style={{marginBottom: "20px"}}>
+              <div style={{ marginBottom: "20px" }}>
                 {commentsLoading ? (
-                  <p style={{color:"#999", fontSize:"14px"}}>Загрузка заметок...</p>
+                  <p style={{ color: "#999", fontSize: "14px" }}>Загрузка заметок...</p>
                 ) : comments.length === 0 ? (
-                  <p style={{color:"#999", fontSize:"14px"}}>Заметок пока нет. Добавьте первую!</p>
+                  <p style={{ color: "#999", fontSize: "14px" }}>Заметок пока нет. Добавьте первую!</p>
                 ) : (
                   comments.map(comment => (
                     <div key={comment.id} style={{
                       position: "relative",
-                      display:"flex", 
-                      alignItems:"flex-start", 
-                      gap:"10px", 
-                      marginBottom:"12px",
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: "10px",
+                      marginBottom: "12px",
                       backgroundColor: "#ffffff",
                       borderRadius: "10px",
                       padding: "10px 12px"
                     }}>
                       <div style={{
-                        width:"40px", 
-                        height:"40px", 
+                        width: "40px",
+                        height: "40px",
                         backgroundColor: (() => {
                           const color = selectedPlant.color;
                           return color && color !== "#FFFFFF" ? color : "#A8C686";
-                        })(), 
+                        })(),
                         borderRadius: "10px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center"
                       }}>
-                        <img style={{width:"24px", height:"24px"}} src="/ph_plant-light.svg" alt=""/>
+                        <img style={{ width: "24px", height: "24px" }} src="/ph_plant-light.svg" alt="" />
                       </div>
-                      <div style={{flex:1, minWidth:0}}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
                         {editingCommentId === comment.id ? (
                           <div>
                             <textarea
@@ -806,7 +838,7 @@ function User() {
                             </div>
                           </div>
                         ) : (
-                          <p style={{fontSize:"14px", margin:0, lineHeight:"1.5", wordBreak:"break-word", border: "1px solid #A8C686", borderRadius: "5px", padding: "5px", paddingBottom: "20px", width: "95%"}}>{comment.text}</p>
+                          <p style={{ fontSize: "14px", margin: 0, lineHeight: "1.5", wordBreak: "break-word", border: "1px solid #A8C686", borderRadius: "5px", padding: "5px", paddingBottom: "20px", width: "95%" }}>{comment.text}</p>
                         )}
                       </div>
                       {!editingCommentId && (
@@ -833,7 +865,7 @@ function User() {
                               justifyContent: "center"
                             }}
                           >
-                            <img src="/edit_icon.svg" alt="" style={{width: "20px", height: "20px"}} />
+                            <img src="/edit_icon.svg" alt="" style={{ width: "20px", height: "20px" }} />
                           </button>
                           <button
                             onClick={() => handleDeleteComment(comment.id)}
@@ -850,29 +882,29 @@ function User() {
                               flexShrink: 0
                             }}
                           >
-                            <img src="/delete_icon.svg" alt="" style={{width: "20px", height: "20px"}} />
+                            <img src="/delete_icon.svg" alt="" style={{ width: "20px", height: "20px" }} />
                           </button>
                         </div>
                       )}
                     </div>
                   ))
                 )}
-                <hr style={{width:"100%", margin:"16px 0", opacity:"50%", borderColor:"#A8C686"}}/>
-                <div style={{display:"flex", gap:"8px", alignItems:"flex-end"}}>
+                <hr style={{ width: "100%", margin: "16px 0", opacity: "50%", borderColor: "#A8C686" }} />
+                <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
                   <textarea
                     value={newCommentText}
                     onChange={e => setNewCommentText(e.target.value)}
                     placeholder="Добавить заметку..."
                     rows={2}
                     style={{
-                      flex:1,
-                      resize:"vertical",
-                      padding:"8px 12px",
-                      borderRadius:"10px",
-                      border:"1px solid #ddd",
-                      fontSize:"14px",
-                      fontFamily:"inherit",
-                      outline:"none",
+                      flex: 1,
+                      resize: "vertical",
+                      padding: "8px 12px",
+                      borderRadius: "10px",
+                      border: "1px solid #ddd",
+                      fontSize: "14px",
+                      fontFamily: "inherit",
+                      outline: "none",
                     }}
                     onKeyDown={e => {
                       if (e.key === "Enter" && !e.shiftKey) {
@@ -886,14 +918,14 @@ function User() {
                     disabled={commentSubmitting || !newCommentText.trim()}
                     style={{
                       backgroundColor: newCommentText.trim() ? "#A8C686" : "#ddd",
-                      color:"white",
-                      border:"none",
-                      borderRadius:"10px",
-                      padding:"8px 14px",
-                      fontSize:"14px",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "10px",
+                      padding: "8px 14px",
+                      fontSize: "14px",
                       cursor: newCommentText.trim() ? "pointer" : "default",
-                      height:"44px",
-                      flexShrink:0,
+                      height: "44px",
+                      flexShrink: 0,
                       width: '40%'
                     }}
                   >
@@ -901,9 +933,9 @@ function User() {
                   </button>
                 </div>
               </div>
-              
-              <button 
-                style={{backgroundColor:"#DF7171", color:"white", width:"252px", height:"43px", fontSize:"16px", border: "none", borderRadius: "8px", cursor: "pointer"}}
+
+              <button
+                style={{ backgroundColor: "#DF7171", color: "white", width: "252px", height: "43px", fontSize: "16px", border: "none", borderRadius: "8px", cursor: "pointer" }}
                 onClick={() => handleDeleteUserPlant(selectedPlant.id)}
               >
                 Удалить растение
@@ -985,11 +1017,11 @@ function User() {
                       className="registration-button"
                       style={{ width: "100%", margin: "0 auto" }}
                       onClick={() => navigate("/auth/signup")}
-                      >
+                    >
                       Зарегистрироваться
                     </button>
                   </div>
-              
+
                   <div style={{ margin: "1vh 0", textAlign: "center" }}>
                     <span style={{ fontSize: "1.7vh" }} className="login-link">
                       Есть аккаунт?{" "}
@@ -997,7 +1029,7 @@ function User() {
                         to="/auth/signin"
                         style={{ color: "#74885d", textDecoration: "none" }}
                       >
-                      Войти
+                        Войти
                       </Link>
                     </span>
                   </div>
@@ -1010,9 +1042,9 @@ function User() {
       </main>
       {modalOpen && selectedPlant && (
         <div className="modal-overlay" onClick={closePlantModal}>
-          <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative'}}>
-            <button 
-              className="modal-close-btn" 
+          <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative' }}>
+            <button
+              className="modal-close-btn"
               onClick={closePlantModal}
               style={{
                 position: 'absolute',
@@ -1034,20 +1066,20 @@ function User() {
             >
               ✕
             </button>
-            <div style={{display: "flex", gap: "33px", alignItems: "flex-start", flexWrap: "wrap"}}>
-              <div style={{width: '220px', height: '220px', backgroundColor: '#F5F5F5', borderRadius: '20px', overflow: 'hidden', flexShrink: 0}}>
+            <div style={{ display: "flex", gap: "33px", alignItems: "flex-start", flexWrap: "wrap" }}>
+              <div style={{ width: '220px', height: '220px', backgroundColor: '#F5F5F5', borderRadius: '20px', overflow: 'hidden', flexShrink: 0 }}>
                 <PlantImage
                   src={selectedPlant.plant.photo}
                   alt={selectedPlant.plant.name}
                   plantId={selectedPlant.id}
-                  style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               </div>
-              <div style={{flex: 1, minWidth: '250px'}}>
+              <div style={{ flex: 1, minWidth: '250px' }}>
                 <h1 style={{
-                  fontSize: "36px", 
-                  fontWeight: "500", 
-                  color: "#2E2E2E", 
+                  fontSize: "36px",
+                  fontWeight: "500",
+                  color: "#2E2E2E",
                   margin: "0 0 12px 0",
                   wordBreak: "break-word",
                   overflowWrap: "break-word",
@@ -1056,16 +1088,16 @@ function User() {
                   {selectedPlant.plant.name}
                 </h1>
                 <p style={{
-                  fontSize: "18px", 
-                  color: "#666", 
+                  fontSize: "18px",
+                  color: "#666",
                   margin: "0 0 16px 0",
                   fontWeight: "450"
                 }}>
                   Комната: {selectedRoomName}
                 </p>
-                <div style={{display: "flex", alignItems: "center", gap: "12px", marginTop: "8px"}}>
-                  <label style={{fontSize: "16px", fontWeight: "500"}}>Цвет фона:</label>
-                  <div 
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "8px" }}>
+                  <label style={{ fontSize: "16px", fontWeight: "500" }}>Цвет фона:</label>
+                  <div
                     onClick={() => {
                       const input = document.getElementById(`color-picker-user-${selectedPlant.id}`);
                       if (input) input.click();
@@ -1083,9 +1115,9 @@ function User() {
                     onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
                     onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
                   />
-                  <input 
+                  <input
                     id={`color-picker-user-${selectedPlant.id}`}
-                    type="color" 
+                    type="color"
                     value={selectedPlant.color || "#FFFFFF"}
                     onChange={(e) => handleUpdateColor(selectedPlant.id, e.target.value)}
                     style={{
@@ -1099,145 +1131,145 @@ function User() {
                 </div>
               </div>
             </div>
-            
+
             <h1 style={{
-              fontSize: "32px", 
-              fontWeight: "500", 
-              color: "#2E2E2E", 
+              fontSize: "32px",
+              fontWeight: "500",
+              color: "#2E2E2E",
               margin: "40px 0 20px 0"
             }}>
               Уход за растением
             </h1>
-            
-            <div style={{marginTop: "0"}}>
+
+            <div style={{ marginTop: "0" }}>
               <div style={{
-                width:"100%", 
-                display:"flex", 
-                alignItems:"flex-start", 
+                width: "100%",
+                display: "flex",
+                alignItems: "flex-start",
                 marginBottom: "20px",
                 backgroundColor: "#ffffff",
                 borderRadius: "12px",
                 padding: "16px"
               }}>
                 <div style={{
-                  width:"52px", 
-                  height:"52px", 
+                  width: "52px",
+                  height: "52px",
                   backgroundColor: (() => {
                     const color = selectedPlant.color;
                     return color && color !== "#FFFFFF" ? color : "#A8C686";
-                  })(), 
+                  })(),
                   borderRadius: "12px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0
                 }}>
-                  <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
+                  <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt="" />
                 </div>
-                <div style={{marginLeft:"14px", flex: 1}}>
-                  <p style={{fontSize:"24px", fontWeight:"450", margin: "0 0 8px 0"}}>Описание</p>
-                  <p style={{fontSize:"20px", margin: 0, lineHeight: "1.5"}}>{selectedPlant.plant.description}</p>
+                <div style={{ marginLeft: "14px", flex: 1 }}>
+                  <p style={{ fontSize: "24px", fontWeight: "450", margin: "0 0 8px 0" }}>Описание</p>
+                  <p style={{ fontSize: "20px", margin: 0, lineHeight: "1.5" }}>{selectedPlant.plant.description}</p>
                 </div>
               </div>
-              <hr style={{width:"100%", margin:"20px 0", opacity:"50%", borderColor:"#A8C686"}}/>
+              <hr style={{ width: "100%", margin: "20px 0", opacity: "50%", borderColor: "#A8C686" }} />
               <div style={{
-                width:"100%", 
-                display:"flex", 
-                alignItems:"flex-start", 
+                width: "100%",
+                display: "flex",
+                alignItems: "flex-start",
                 marginBottom: "20px",
                 backgroundColor: "#ffffff",
                 borderRadius: "12px",
                 padding: "16px"
               }}>
                 <div style={{
-                  width:"52px", 
-                  height:"52px", 
+                  width: "52px",
+                  height: "52px",
                   backgroundColor: (() => {
                     const color = selectedPlant.color;
                     return color && color !== "#FFFFFF" ? color : "#A8C686";
-                  })(), 
+                  })(),
                   borderRadius: "12px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0
                 }}>
-                  <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
+                  <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt="" />
                 </div>
-                <div style={{marginLeft:"14px", flex: 1}}>
-                  <p style={{fontSize:"24px", fontWeight:"450", margin: "0 0 8px 0"}}>Сезон</p>
-                  <p style={{fontSize:"18px", margin: 0, lineHeight: "1.5"}}>{selectedPlant.plant.season}</p>
+                <div style={{ marginLeft: "14px", flex: 1 }}>
+                  <p style={{ fontSize: "24px", fontWeight: "450", margin: "0 0 8px 0" }}>Сезон</p>
+                  <p style={{ fontSize: "18px", margin: 0, lineHeight: "1.5" }}>{selectedPlant.plant.season}</p>
                 </div>
               </div>
-              <hr style={{width:"100%", margin:"20px 0", opacity:"50%", borderColor:"#A8C686"}}/>
+              <hr style={{ width: "100%", margin: "20px 0", opacity: "50%", borderColor: "#A8C686" }} />
               <div style={{
-                width:"100%", 
-                display:"flex", 
-                alignItems:"flex-start", 
+                width: "100%",
+                display: "flex",
+                alignItems: "flex-start",
                 marginBottom: "20px",
                 backgroundColor: "#ffffff",
                 borderRadius: "12px",
                 padding: "16px"
               }}>
                 <div style={{
-                  width:"52px", 
-                  height:"52px", 
+                  width: "52px",
+                  height: "52px",
                   backgroundColor: (() => {
                     const color = selectedPlant.color;
                     return color && color !== "#FFFFFF" ? color : "#A8C686";
-                  })(), 
+                  })(),
                   borderRadius: "12px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0
                 }}>
-                  <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
+                  <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt="" />
                 </div>
-                <div style={{marginLeft:"14px", flex: 1}}>
-                  <p style={{fontSize:"24px", fontWeight:"450", margin: "0 0 8px 0"}}>Рекомендации</p>
-                  <p style={{fontSize:"18px", margin: 0, lineHeight: "1.5"}}>{selectedPlant.plant.recommendations || "У этого растения пока нет рекомендаций, но скоро появятся"}</p>
+                <div style={{ marginLeft: "14px", flex: 1 }}>
+                  <p style={{ fontSize: "24px", fontWeight: "450", margin: "0 0 8px 0" }}>Рекомендации</p>
+                  <p style={{ fontSize: "18px", margin: 0, lineHeight: "1.5" }}>{selectedPlant.plant.recommendations || "У этого растения пока нет рекомендаций, но скоро появятся"}</p>
                 </div>
               </div>
-              <hr style={{width:"100%", margin:"20px 0", opacity:"50%", borderColor:"#A8C686"}}/>
+              <hr style={{ width: "100%", margin: "20px 0", opacity: "50%", borderColor: "#A8C686" }} />
             </div>
 
-            <h1 style={{fontSize:"32px", fontWeight:"500", color:"#2E2E2E", margin:"40px 0 20px 0"}}>
+            <h1 style={{ fontSize: "32px", fontWeight: "500", color: "#2E2E2E", margin: "40px 0 20px 0" }}>
               Мои заметки
             </h1>
-            <div style={{marginBottom: "20px"}}>
+            <div style={{ marginBottom: "20px" }}>
               {commentsLoading ? (
-                <p style={{color:"#999", fontSize:"16px"}}>Загрузка заметок...</p>
+                <p style={{ color: "#999", fontSize: "16px" }}>Загрузка заметок...</p>
               ) : comments.length === 0 ? (
-                <p style={{color:"#999", fontSize:"16px"}}>Заметок пока нет. Добавьте первую!</p>
+                <p style={{ color: "#999", fontSize: "16px" }}>Заметок пока нет. Добавьте первую!</p>
               ) : (
                 comments.map(comment => (
                   <div key={comment.id} style={{
                     position: "relative",
-                    display:"flex", 
-                    alignItems:"flex-start", 
-                    gap:"14px", 
-                    marginBottom:"16px",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "14px",
+                    marginBottom: "16px",
                     backgroundColor: "#ffffff",
                     borderRadius: "12px",
                     padding: "12px 16px"
                   }}>
                     <div style={{
-                      width:"52px", 
-                      height:"52px", 
+                      width: "52px",
+                      height: "52px",
                       backgroundColor: (() => {
                         const color = selectedPlant.color;
                         return color && color !== "#FFFFFF" ? color : "#A8C686";
-                      })(), 
+                      })(),
                       borderRadius: "12px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       flexShrink: 0
                     }}>
-                      <img style={{width:"32px", height:"32px"}} src="/ph_plant-light.svg" alt=""/>
+                      <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt="" />
                     </div>
-                    <div style={{flex:1, minWidth:0}}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                       {editingCommentId === comment.id ? (
                         <div>
                           <textarea
@@ -1289,7 +1321,7 @@ function User() {
                           </div>
                         </div>
                       ) : (
-                        <p style={{fontSize:"18px", margin:0, lineHeight:"1.5", wordBreak:"break-word", borderRadius: "8px", padding: "8px", paddingBottom: "20px", background: "#E1E9D9",width: "95%"}}>{comment.text}</p>
+                        <p style={{ fontSize: "18px", margin: 0, lineHeight: "1.5", wordBreak: "break-word", borderRadius: "8px", padding: "8px", paddingBottom: "20px", background: "#E1E9D9", width: "95%" }}>{comment.text}</p>
                       )}
                     </div>
                     {!editingCommentId && (
@@ -1316,7 +1348,7 @@ function User() {
                             justifyContent: "center"
                           }}
                         >
-                          <img src="/edit_icon.svg" alt="" style={{width: "26.5px", height: "26.5px"}} />
+                          <img src="/edit_icon.svg" alt="" style={{ width: "26.5px", height: "26.5px" }} />
                         </button>
                         <button
                           onClick={() => handleDeleteComment(comment.id)}
@@ -1333,29 +1365,29 @@ function User() {
                             flexShrink: 0
                           }}
                         >
-                          <img src="/delete_icon.svg" alt="" style={{width: "26.5px", height: "26.5px"}} />
+                          <img src="/delete_icon.svg" alt="" style={{ width: "26.5px", height: "26.5px" }} />
                         </button>
                       </div>
                     )}
                   </div>
                 ))
               )}
-              <hr style={{width:"100%", margin:"20px 0", opacity:"50%", borderColor:"#A8C686"}}/>
-              <div style={{display:"flex", gap:"10px", alignItems:"flex-end"}}>
+              <hr style={{ width: "100%", margin: "20px 0", opacity: "50%", borderColor: "#A8C686" }} />
+              <div style={{ display: "flex", gap: "10px", alignItems: "flex-end" }}>
                 <textarea
                   value={newCommentText}
                   onChange={e => setNewCommentText(e.target.value)}
                   placeholder="Добавить заметку..."
                   rows={2}
                   style={{
-                    flex:1,
-                    resize:"vertical",
-                    padding:"10px 14px",
-                    borderRadius:"12px",
-                    border:"1px solid #ddd",
-                    fontSize:"16px",
-                    fontFamily:"inherit",
-                    outline:"none",
+                    flex: 1,
+                    resize: "vertical",
+                    padding: "10px 14px",
+                    borderRadius: "12px",
+                    border: "1px solid #ddd",
+                    fontSize: "16px",
+                    fontFamily: "inherit",
+                    outline: "none",
                   }}
                   onKeyDown={e => {
                     if (e.key === "Enter" && !e.shiftKey) {
@@ -1369,33 +1401,33 @@ function User() {
                   disabled={commentSubmitting || !newCommentText.trim()}
                   style={{
                     backgroundColor: newCommentText.trim() ? "#A8C686" : "#ddd",
-                    color:"white",
-                    border:"none",
-                    borderRadius:"12px",
-                    padding:"10px 20px",
-                    fontSize:"16px",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "12px",
+                    padding: "10px 20px",
+                    fontSize: "16px",
                     cursor: newCommentText.trim() ? "pointer" : "default",
-                    height:"60px",
+                    height: "60px",
                     width: "20%",
-                    flexShrink:0,
-                    transition:"background-color 0.2s",
+                    flexShrink: 0,
+                    transition: "background-color 0.2s",
                   }}
                 >
                   {commentSubmitting ? "..." : "Добавить"}
                 </button>
               </div>
             </div>
-            
-            <footer className="modal_footer" style={{marginTop: "20px", display: "flex", gap: "12px", justifyContent: "flex-end"}}>
-              <button 
+
+            <footer className="modal_footer" style={{ marginTop: "20px", display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+              <button
                 style={{
-                  backgroundColor:"#DF7171", 
-                  color:"white", 
-                  width:"252px", 
-                  height:"48px", 
-                  fontSize:"16px", 
-                  border: "none", 
-                  borderRadius: "8px", 
+                  backgroundColor: "#DF7171",
+                  color: "white",
+                  width: "252px",
+                  height: "48px",
+                  fontSize: "16px",
+                  border: "none",
+                  borderRadius: "8px",
                   cursor: "pointer",
                   fontWeight: "500",
                   transition: "background-color 0.2s"
