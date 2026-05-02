@@ -525,8 +525,8 @@
 }
 
 .mobile-room-preview-image {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   background-color: #F5F5F5;
   border-radius: 12px;
   overflow: hidden;
@@ -735,8 +735,8 @@
   }
   .mobile-room-preview-image,
   .mobile-room-add-btn {
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
   }
   .mobile-plant-name {
     font-size: 12px;

@@ -794,7 +794,16 @@ function MyPlant() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                     <h2 style={{ margin: 0, fontSize: '24px' }}>{selectedRoom.name}</h2>
                   </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '12px',
+                    justifyContent: 'center',
+                    maxHeight: '60vh',
+                    overflowY: 'auto',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
+                  }} className="no-scrollbar">
                     {selectedRoom.userPlants.map((plant) => (
                       <div
                         key={plant.id}
@@ -803,7 +812,7 @@ function MyPlant() {
                           openPlantModal(plant);
                         }}
                         style={{
-                          width: '140px',
+                          width: '100%',
                           cursor: 'pointer',
                           textAlign: 'center',
                           backgroundColor: "#FFFFFF",
@@ -813,7 +822,7 @@ function MyPlant() {
                           position: 'relative'
                         }}
                       >
-                        <div style={{ width: '116px', height: '88px', margin: '0 auto', backgroundColor: '#F5F5F5', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
+                        <div style={{ width: '100%', aspectRatio: '4/3', margin: '0 auto', backgroundColor: '#F5F5F5', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
                           <PlantImage
                             src={plant.plant.photo}
                             alt={plant.plant.name}
@@ -837,7 +846,10 @@ function MyPlant() {
                             height: '24px',
                             color: 'white',
                             cursor: 'pointer',
-                            fontSize: '12px'
+                            fontSize: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'               
                           }}
                         >
                           ×
@@ -851,7 +863,7 @@ function MyPlant() {
                         setRoomModalOpen(false);
                       }}
                       style={{
-                        width: '140px',
+                        width: '100%',
                         cursor: 'pointer',
                         textAlign: 'center',
                         backgroundColor: '#F5F5F5',
@@ -883,7 +895,7 @@ function MyPlant() {
                       transition: 'background-color 0.2s',
                       textAlign: 'center',
                       right: '40px',
-                      bottom: '40px',
+                      bottom: '32px',
                       position: 'absolute'
                     }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c55a5a'}
@@ -949,7 +961,7 @@ function MyPlant() {
                         }}>
                           Комната: {selectedPlant.room}
                         </p>
-                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
                           <label style={{ fontSize: "14px" }}>Цвет фона:</label>
                           <div
                             onClick={() => {
@@ -1326,15 +1338,15 @@ function MyPlant() {
                       <select
                         value={selectedRoomForAdd}
                         onChange={(e) => setSelectedRoomForAdd(e.target.value)}
-                        style={{ marginLeft: '10px', padding: '5px', borderRadius: '5px' }}
+                        style={{ padding: '5px', borderRadius: '5px' }}
                       >
                         <option value="">Без комнаты</option>
                         {rooms.map(room => (
                           <option key={room.id} value={room.name}>{room.name}</option>
                         ))}
                       </select>
-                      <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                           <label style={{ fontSize: '14px', fontWeight: '500' }}>Цвет фона:</label>
                           <div
                             onClick={() => {
@@ -1368,7 +1380,7 @@ function MyPlant() {
                             }}
                           />
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', right: "34px", position: "absolute" }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#A8C686" />
                           </svg>
@@ -1478,8 +1490,8 @@ function MyPlant() {
                   )}
 
                   {selectedPlantToAdd && (
-                    <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                         <label style={{ fontSize: '14px', fontWeight: '500' }}>Цвет фона:</label>
                         <div
                           onClick={() => {
@@ -1513,7 +1525,7 @@ function MyPlant() {
                           }}
                         />
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', right: '30px', position: 'absolute' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#A8C686" />
                         </svg>
@@ -1552,6 +1564,7 @@ function MyPlant() {
                   <button
                     className="modal-close-btn"
                     onClick={() => setShowCreatePlantModal(false)}
+                    style={{top: "4px"}}
                   >
                     ✕
                   </button>
@@ -2585,7 +2598,7 @@ function MyPlant() {
                     <select
                       value={selectedRoomForAdd}
                       onChange={(e) => setSelectedRoomForAdd(e.target.value)}
-                      style={{ marginLeft: "10px", padding: "5px", borderRadius: "5px" }}
+                      style={{ padding: "5px", borderRadius: "5px" }}
                     >
                       <option value="">Без комнаты</option>
                       {rooms.map(room => (
