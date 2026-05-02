@@ -81,7 +81,6 @@ function EMailVerification() {
     navigate("/auth/signin");
   };
 
-  // Отображение загрузки
   if (confirmationStatus === 'loading') {
     return (
       <div className="app">
@@ -140,7 +139,6 @@ function EMailVerification() {
     );
   }
 
-  // Отображение ошибки
   if (confirmationStatus === 'error') {
     return (
       <div className="app">
@@ -210,7 +208,6 @@ function EMailVerification() {
     );
   }
 
-  // Успешное подтверждение
   return (
     <div className="app">
       <header className="header">

@@ -676,9 +676,6 @@
   transition: transform 0.2s;
 }
 
-/* Добавьте в конец файла MyPlant.css */
-
-/* Стили для загрузки (Coming Soon стиль) */
 .coming-soon-container {
   display: flex;
   flex-direction: column;

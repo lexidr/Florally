@@ -144,7 +144,7 @@ const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPassw
               <div className="modal-field">
                 <input
                   type="text"
-                  placeholder="000000"
+                  placeholder="2d3436"
                   value={code}
                   onChange={(e) => {
                     setCode(e.target.value);
