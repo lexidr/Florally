@@ -1429,7 +1429,7 @@ function MyPlant() {
 
             {addToRoomModalOpen && selectedRoomForPlant && (
               <div className="modal-overlay" onClick={() => setAddToRoomModalOpen(false)}>
-                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}>
+                <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '400px', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}>
                   <h2>Добавить растение в "{selectedRoomForPlant.name}"</h2>
                   <button
                     className="modal-close-btn"
@@ -1450,7 +1450,7 @@ function MyPlant() {
                       У вас пока нет растений. Добавьте их через раздел "Мои растения".
                     </div>
                   ) : (
-                    <div style={{ maxHeight: '400px', overflowY: 'auto', margin: '10px 0' }}>
+                    <div style={{ maxHeight: '500px', overflowY: 'auto', margin: '10px 0' }}>
                       {userPlants
                         .filter(up => up.plant.name.toLowerCase().includes(searchQuery.toLowerCase()))
                         .map((userPlant) => (
@@ -2645,7 +2645,7 @@ function MyPlant() {
                     У вас пока нет растений. Добавьте их через раздел "Мои растения".
                   </div>
                 ) : (
-                  <div style={{ maxHeight: "400px", overflowY: "auto", margin: "10px 0" }}>
+                  <div style={{ maxHeight: "500px", overflowY: "auto", margin: "10px 0" }}>
                     {userPlants
                       .filter(up => up.plant.name.toLowerCase().includes(searchQuery.toLowerCase()))
                       .map((userPlant) => (
