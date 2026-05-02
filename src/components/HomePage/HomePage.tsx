@@ -28,11 +28,6 @@ interface Task {
   color: string;
 }
 
-interface TaskColorInfo {
-  taskId: string;
-  color: string;
-}
-
 const PlantImage: React.FC<{
   src: string | null | undefined;
   alt: string;
@@ -95,6 +90,7 @@ const HomePage: React.FC = () => {
     customType: "",
     plantIds: [] as string[],
     selectAll: false,
+    recurrence: "none", // none, every2days, weekly, every2weeks, monthly
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRoomFilter, setSelectedRoomFilter] = useState<string>("all");
@@ -106,6 +102,13 @@ const HomePage: React.FC = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
 
   const taskTypes = ["Полив", "Пересадка", "Прополка", "Собрать урожай", "Другое"];
+  const recurrenceOptions = [
+    { value: "none", label: "Без повторения" },
+    { value: "every2days", label: "Раз в 2 дня" },
+    { value: "weekly", label: "Раз в неделю" },
+    { value: "every2weeks", label: "Раз в 2 недели" },
+    { value: "monthly", label: "Раз в месяц" },
+  ];
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -360,6 +363,7 @@ const HomePage: React.FC = () => {
       customType: "",
       plantIds: [],
       selectAll: false,
+      recurrence: "none",
     });
     setSearchQuery("");
     setSelectedRoomFilter("all");
@@ -459,16 +463,85 @@ const HomePage: React.FC = () => {
     }
 
     setIsSubmitting(true);
-    const newTaskObj: Task = {
-      id: Date.now().toString(),
-      title: autoTitle,
-      type: finalType,
-      plantIds: newTask.plantIds,
-      date: formatLocalDate(selectedDate),
-      completed: false,
-      color: taskColor,
-    };
-    const updatedTasks = [...tasks, newTaskObj];
+    const baseDate = selectedDate;
+    const tasksToAdd: Task[] = [];
+    let intervals: number[] = [];
+    let count = 0;
+
+    switch (newTask.recurrence) {
+      case "every2days":
+        for (let i = 0; i < 14; i++) {
+          const date = new Date(baseDate);
+          date.setDate(baseDate.getDate() + i * 2);
+          tasksToAdd.push({
+            id: `${Date.now()}-${i}`,
+            title: autoTitle,
+            type: finalType,
+            plantIds: newTask.plantIds,
+            date: formatLocalDate(date),
+            completed: false,
+            color: taskColor,
+          });
+        }
+        break;
+      case "weekly":
+        for (let i = 0; i < 4; i++) {
+          const date = new Date(baseDate);
+          date.setDate(baseDate.getDate() + i * 7);
+          tasksToAdd.push({
+            id: `${Date.now()}-${i}`,
+            title: autoTitle,
+            type: finalType,
+            plantIds: newTask.plantIds,
+            date: formatLocalDate(date),
+            completed: false,
+            color: taskColor,
+          });
+        }
+        break;
+      case "every2weeks":
+        for (let i = 0; i < 2; i++) {
+          const date = new Date(baseDate);
+          date.setDate(baseDate.getDate() + i * 14);
+          tasksToAdd.push({
+            id: `${Date.now()}-${i}`,
+            title: autoTitle,
+            type: finalType,
+            plantIds: newTask.plantIds,
+            date: formatLocalDate(date),
+            completed: false,
+            color: taskColor,
+          });
+        }
+        break;
+      case "monthly":
+        for (let i = 0; i < 6; i++) {
+          const date = new Date(baseDate);
+          date.setMonth(baseDate.getMonth() + i);
+          tasksToAdd.push({
+            id: `${Date.now()}-${i}`,
+            title: autoTitle,
+            type: finalType,
+            plantIds: newTask.plantIds,
+            date: formatLocalDate(date),
+            completed: false,
+            color: taskColor,
+          });
+        }
+        break;
+      default:
+        tasksToAdd.push({
+          id: `${Date.now()}-0`,
+          title: autoTitle,
+          type: finalType,
+          plantIds: newTask.plantIds,
+          date: formatLocalDate(baseDate),
+          completed: false,
+          color: taskColor,
+        });
+    }
+
+    const updatedTasks = [...tasks, ...tasksToAdd];
     saveTasks(updatedTasks);
     setIsSubmitting(false);
     closeTaskModal();
@@ -736,6 +809,18 @@ const HomePage: React.FC = () => {
                   )}
                 </div>
               </div>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Повторение</label>
+                <select
+                  value={newTask.recurrence}
+                  onChange={(e) => setNewTask(prev => ({ ...prev, recurrence: e.target.value }))}
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px' }}
+                >
+                  {recurrenceOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
               <footer style={{ marginTop: '20px' }}>
                 <button onClick={() => { handleAddTask(); }} disabled={isSubmitting} style={{ backgroundColor: '#A8C686', color: 'white', width: '100%', padding: '12px', fontSize: '16px', border: 'none', borderRadius: '8px', cursor: isSubmitting ? 'default' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}>{isSubmitting ? "Добавление..." : "Добавить задачу"}</button>
               </footer>
@@ -1000,6 +1085,18 @@ const HomePage: React.FC = () => {
                   ))
                 )}
               </div>
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Повторение</label>
+              <select
+                value={newTask.recurrence}
+                onChange={(e) => setNewTask(prev => ({ ...prev, recurrence: e.target.value }))}
+                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px' }}
+              >
+                {recurrenceOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
             </div>
             <footer style={{ marginTop: '24px' }}>
               <button onClick={() => { handleAddTask(); }} disabled={isSubmitting} style={{ backgroundColor: '#A8C686', color: 'white', width: '100%', padding: '14px', fontSize: '16px', border: 'none', borderRadius: '8px', cursor: isSubmitting ? 'default' : 'pointer', opacity: isSubmitting ? 0.7 : 1, fontWeight: '500' }}>{isSubmitting ? "Добавление..." : "Добавить задачу"}</button>
