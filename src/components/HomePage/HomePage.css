@@ -872,3 +872,108 @@ body {
   }
 }
 
+/* Десктоп: индикаторы задач под датой */
+.task-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 4px;
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 0;
+}
+
+.task-color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.task-color-dot.more {
+  background-color: #ccc;
+  font-size: 8px;
+  width: auto;
+  height: auto;
+  border-radius: 10px;
+  padding: 0 4px;
+  line-height: 12px;
+  color: #333;
+}
+
+.mobile-task-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  margin-top: 2px;
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+}
+
+.mobile-task-color-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.mobile-task-color-dot.more {
+  background-color: #ccc;
+  font-size: 6px;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  padding: 0 3px;
+  line-height: 10px;
+  color: #333;
+}
+
+.calendar-day {
+  position: relative;
+}
+
+.mobile-calendar-day {
+  position: relative;
+}
+
+.task-indicators, .mobile-task-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 4px;
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 0;
+}
+.calendar-day, .mobile-calendar-day {
+  position: relative;
+}
+.task-color-dot, .mobile-task-color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.mobile-task-color-dot {
+  width: 6px;
+  height: 6px;
+}
+.task-color-dot.more, .mobile-task-color-dot.more {
+  background-color: #ccc;
+  width: auto;
+  height: auto;
+  border-radius: 10px;
+  padding: 0 4px;
+  font-size: 8px;
+  line-height: 12px;
+  color: #333;
+}
+.mobile-task-color-dot.more {
+  font-size: 6px;
+  padding: 0 3px;
+  line-height: 10px;
+}

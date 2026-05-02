@@ -28,6 +28,51 @@ interface Task {
   color: string;
 }
 
+interface TaskColorInfo {
+  taskId: string;
+  color: string;
+}
+
+const PlantImage: React.FC<{
+  src: string | null | undefined;
+  alt: string;
+  className?: string;
+  style?: React.CSSProperties;
+  plantId?: string | number;
+}> = ({ src, alt, className, style, plantId }) => {
+  const [hasError, setHasError] = useState(false);
+
+  const getPlaceholderIndex = () => {
+    if (plantId) {
+      const key = `plant_placeholder_${plantId}`;
+      const saved = localStorage.getItem(key);
+      if (saved) return parseInt(saved, 10);
+      const newIndex = Math.floor(Math.random() * 10) + 1;
+      localStorage.setItem(key, newIndex.toString());
+      return newIndex;
+    }
+    return Math.floor(Math.random() * 10) + 1;
+  };
+
+  const [placeholderIndex] = useState(() => getPlaceholderIndex());
+
+  const imageSrc = (hasError || !src || src.trim() === "")
+    ? `/plug-image-plant${placeholderIndex}.png`
+    : src;
+
+  return (
+    <img
+      src={imageSrc}
+      alt={alt}
+      className={className}
+      style={{ ...style, objectFit: 'cover', display: 'block' }}
+      onError={() => {
+        if (!hasError) setHasError(true);
+      }}
+    />
+  );
+};
+
 const HomePage: React.FC = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -84,7 +129,7 @@ const HomePage: React.FC = () => {
     return task;
   };
 
-  const getPlantColorFromDB = (plantId: string): string => {
+  const getPlantColor = (plantId: string): string => {
     const userPlant = userPlants.find(p => p.id === plantId);
     if (userPlant && userPlant.color && userPlant.color !== "#FFFFFF") {
       return userPlant.color;
@@ -92,14 +137,22 @@ const HomePage: React.FC = () => {
     return "#A8C686";
   };
 
-  const getUniquePlantIdsForDate = (date: Date): string[] => {
+  const getUniqueTaskColorsForDate = (date: Date): string[] => {
     const dateStr = formatLocalDate(date);
     const tasksForDate = tasks.filter(task => task.date === dateStr && !task.completed);
-    const plantIds = new Set<string>();
+    const colors: string[] = [];
     tasksForDate.forEach(task => {
-      task.plantIds.forEach(pid => plantIds.add(pid));
+      let color = task.color;
+      if (!color || color === "#A8C686") {
+        if (task.plantIds.length > 0) {
+          color = getPlantColor(task.plantIds[0]);
+        } else {
+          color = "#A8C686";
+        }
+      }
+      colors.push(color);
     });
-    return Array.from(plantIds);
+    return colors;
   };
 
   const loadUserData = async () => {
@@ -112,8 +165,10 @@ const HomePage: React.FC = () => {
         room: plant.room || (plant.room_id ? roomsData.find(r => r.id === plant.room_id) : undefined)
       }));
       setUserPlants(plantsWithRooms);
+      return plantsWithRooms;
     } catch (error) {
       console.error("Ошибка загрузки данных:", error);
+      return [];
     }
   };
 
@@ -174,8 +229,11 @@ const HomePage: React.FC = () => {
         setUser(authData.user);
 
         if (authData.isAuthenticated) {
-          await loadUserData();
+          const plants = await loadUserData();
           loadTasks();
+          if (plants && plants.length > 0) {
+            enrichTasksWithColors(plants);
+          }
         }
       } catch (error) {
         console.error("Ошибка при проверке аутентификации:", error);
@@ -410,7 +468,8 @@ const HomePage: React.FC = () => {
       completed: false,
       color: taskColor,
     };
-    saveTasks([...tasks, newTaskObj]);
+    const updatedTasks = [...tasks, newTaskObj];
+    saveTasks(updatedTasks);
     setIsSubmitting(false);
     closeTaskModal();
   };
@@ -497,8 +556,8 @@ const HomePage: React.FC = () => {
                               const today = isToday(day);
                               const selected = isSelected(day);
                               const dayNum = typeof day === "string" ? (day ? parseInt(day, 10) : null) : day;
-                              const plantIdsForDay = dayNum !== null && day !== ""
-                                ? getUniquePlantIdsForDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum))
+                              const taskColors = dayNum !== null && day !== ""
+                                ? getUniqueTaskColorsForDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum))
                                 : [];
                               return (
                                 <div
@@ -511,17 +570,17 @@ const HomePage: React.FC = () => {
                                   onClick={() => handleDayClick(day)}
                                 >
                                   {day !== "" && <span className="mobile-day-number">{day}</span>}
-                                  {plantIdsForDay.length > 0 && (
+                                  {taskColors.length > 0 && (
                                     <div className="mobile-task-indicators">
-                                      {plantIdsForDay.slice(0, 3).map(pid => (
+                                      {taskColors.slice(0, 3).map((color, idx) => (
                                         <span
-                                          key={pid}
+                                          key={idx}
                                           className="mobile-task-color-dot"
-                                          style={{ backgroundColor: getPlantColorFromDB(pid) }}
+                                          style={{ backgroundColor: color }}
                                         />
                                       ))}
-                                      {plantIdsForDay.length > 3 && (
-                                        <span className="mobile-task-color-dot more">+{plantIdsForDay.length - 3}</span>
+                                      {taskColors.length > 3 && (
+                                        <span className="mobile-task-color-dot more">+{taskColors.length - 3}</span>
                                       )}
                                     </div>
                                   )}
@@ -533,44 +592,18 @@ const HomePage: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div style={{ position: 'relative', marginTop: '20px' }}>
-                    <h2 className="mobile-tasks-title">
-                      Задачи на {selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}
-                    </h2>
-                    {todayTasks.length > 0 && (
-                      <button
-                        className="add-task-button"
-                        onClick={() => { openTaskModal(); }}
-                        style={{
-                          position: 'absolute',
-                          right: '16px',
-                          top: '0',
-                          width: '40px',
-                          height: '60px',
-                          borderRadius: '50%',
-                          backgroundColor: '#A8C686',
-                          border: 'none',
-                          fontSize: '24px',
-                          color: 'white',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                        }}
-                      >+</button>
-                    )}
-                  </div>
+                  <h2 className="mobile-tasks-title">
+                    Задачи на {selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}
+                  </h2>
                   <div className="mobile-tasks-container">
                     <div className="mobile-tasks-list">
                       {todayTasks.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '20px', color: '#999', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '250px', width: '100%' }}>
-                          <p style={{ marginBottom: '16px', fontSize: '16px' }}>Пока нет задач</p>
-                          <button onClick={() => { openTaskModal(); }} style={{ backgroundColor: '#A8C686', border: 'none', borderRadius: '24px', padding: '10px 20px', color: 'white', fontSize: '14px', fontWeight: '500', cursor: 'pointer',width: "40%" }}>Добавить задачу</button>
+                        <div style={{ textAlign: 'center', padding: '40px 20px', color: '#999' }}>
+                          <p>Пока нет задач</p>
                         </div>
                       ) : (
                         todayTasks.map(task => {
-                          const taskColor = task.color || getPlantColorFromDB(task.plantIds[0] || "");
+                          const taskColor = task.color || getPlantColor(task.plantIds[0] || "");
                           return (
                             <div 
                               key={task.id} 
@@ -604,6 +637,27 @@ const HomePage: React.FC = () => {
                       )}
                     </div>
                   </div>
+                  <button
+                    onClick={() => openTaskModal()}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: '48px',
+                      height: '48px',
+                      borderRadius: '50%',
+                      backgroundColor: '#A8C686',
+                      border: 'none',
+                      fontSize: '28px',
+                      color: 'white',
+                      cursor: 'pointer',
+                      marginTop: '16px',
+                      marginLeft: 'auto',
+                      marginRight: '16px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                      transition: 'transform 0.2s'
+                    }}
+                  >+</button>
                 </div>
               )}
             </div>
@@ -658,8 +712,8 @@ const HomePage: React.FC = () => {
                   </div>
                 )}
                 <div style={{ marginBottom: '12px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input type="checkbox" checked={newTask.selectAll} onChange={() => handleSelectAllPlants()} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', padding: '4px' }}>
+                    <input type="checkbox" checked={newTask.selectAll} onChange={() => handleSelectAllPlants()} style={{ width: '18px', height: '18px', cursor: 'pointer', margin: '0px' }} />
                     <span>Выбрать все</span>
                   </label>
                 </div>
@@ -670,10 +724,13 @@ const HomePage: React.FC = () => {
                     getFilteredPlants().map(plant => (
                       <label key={plant.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', cursor: 'pointer', borderBottom: '1px solid #eee' }}>
                         <input type="checkbox" checked={newTask.plantIds.includes(plant.id)} onChange={() => handlePlantToggle(plant.id)} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
-                        <div style={{ width: '30px', height: '30px', backgroundColor: '#f0f0f0', borderRadius: '6px', overflow: 'hidden' }}>
-                          <img src={plant.plant.photo || `/plug-image-plant1.png`} alt={plant.plant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div style={{ width: '30px', height: '30px', backgroundColor: '#f0f0f0', borderRadius: '6px', overflow: 'hidden', flexShrink: 0 }}>
+                          <PlantImage src={plant.plant.photo} alt={plant.plant.name} plantId={plant.id} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
-                        <div><div style={{ fontWeight: '500' }}>{plant.plant.name}</div><div style={{ fontSize: '12px', color: '#666' }}>Комната: {plant.room?.name || "Без комнаты"}</div></div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: '500', fontSize: '14px' }}>{plant.plant.name}</div>
+                          <div style={{ fontSize: '12px', color: '#666' }}>Комната: {plant.room?.name || "Без комнаты"}</div>
+                        </div>
                       </label>
                     ))
                   )}
@@ -753,7 +810,7 @@ const HomePage: React.FC = () => {
                   </div>
                 ) : (
                   todayTasks.map(task => {
-                    const taskColor = task.color || getPlantColorFromDB(task.plantIds[0] || "");
+                    const taskColor = task.color || getPlantColor(task.plantIds[0] || "");
                     return (
                       <div 
                         key={task.id} 
@@ -838,8 +895,8 @@ const HomePage: React.FC = () => {
                       const today = isToday(day);
                       const selected = isSelected(day);
                       const dayNum = typeof day === "string" ? (day ? parseInt(day, 10) : null) : day;
-                      const plantIdsForDay = dayNum !== null && day !== ""
-                        ? getUniquePlantIdsForDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum))
+                      const taskColors = dayNum !== null && day !== ""
+                        ? getUniqueTaskColorsForDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum))
                         : [];
                       return (
                         <div
@@ -852,17 +909,17 @@ const HomePage: React.FC = () => {
                           {day !== "" && (
                             <>
                               <span className="day-number">{day}</span>
-                              {plantIdsForDay.length > 0 && (
+                              {taskColors.length > 0 && (
                                 <div className="task-indicators">
-                                  {plantIdsForDay.slice(0, 3).map(pid => (
+                                  {taskColors.slice(0, 3).map((color, idx) => (
                                     <span
-                                      key={pid}
+                                      key={idx}
                                       className="task-color-dot"
-                                      style={{ backgroundColor: getPlantColorFromDB(pid) }}
+                                      style={{ backgroundColor: color }}
                                     />
                                   ))}
-                                  {plantIdsForDay.length > 3 && (
-                                    <span className="task-color-dot more">+{plantIdsForDay.length - 3}</span>
+                                  {taskColors.length > 3 && (
+                                    <span className="task-color-dot more">+{taskColors.length - 3}</span>
                                   )}
                                 </div>
                               )}
@@ -932,10 +989,13 @@ const HomePage: React.FC = () => {
                   getFilteredPlants().map(plant => (
                     <label key={plant.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', cursor: 'pointer', borderBottom: '1px solid #eee' }}>
                       <input type="checkbox" checked={newTask.plantIds.includes(plant.id)} onChange={() => handlePlantToggle(plant.id)} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
-                      <div style={{ width: '40px', height: '40px', backgroundColor: '#f0f0f0', borderRadius: '8px', overflow: 'hidden' }}>
-                        <img src={plant.plant.photo || `/plug-image-plant1.png`} alt={plant.plant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <div style={{ width: '40px', height: '40px', backgroundColor: '#f0f0f0', borderRadius: '8px', overflow: 'hidden', flexShrink: 0 }}>
+                        <PlantImage src={plant.plant.photo} alt={plant.plant.name} plantId={plant.id} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
-                      <div><div style={{ fontWeight: '500' }}>{plant.plant.name}</div><div style={{ fontSize: '12px', color: '#666' }}>Комната: {plant.room?.name || "Без комнаты"}</div></div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: '500' }}>{plant.plant.name}</div>
+                        <div style={{ fontSize: '12px', color: '#666' }}>Комната: {plant.room?.name || "Без комнаты"}</div>
+                      </div>
                     </label>
                   ))
                 )}
