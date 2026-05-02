@@ -199,6 +199,7 @@ function MyPlant() {
   const [selectedRoomForPlant, setSelectedRoomForPlant] = useState<Room | null>(null);
   const [newRoomName, setNewRoomName] = useState("");
   const [selectedPlantToAdd, setSelectedPlantToAdd] = useState<Plant | null>(null);
+  const [selectedUserPlantToAdd, setSelectedUserPlantToAdd] = useState<UserPlant | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedColor, setSelectedColor] = useState("#FFFFFF");
   const [searchError, setSearchError] = useState<string>("");
@@ -316,17 +317,12 @@ function MyPlant() {
   };
 
   const handleAddPlantToRoom = async () => {
-    if (selectedPlantToAdd && selectedRoomForPlant) {
+    if (selectedUserPlantToAdd && selectedRoomForPlant) {
       try {
-        let userPlantId = userPlants.find(p => p.plant.id === selectedPlantToAdd.id)?.id;
-        if (!userPlantId) {
-          const newPlant = await addUserPlant(selectedPlantToAdd.id, selectedColor);
-          userPlantId = newPlant.id;
-        }
-        await addPlantToRoom(selectedRoomForPlant.id, userPlantId);
+        await addPlantToRoom(selectedRoomForPlant.id, selectedUserPlantToAdd.id);
         await loadData();
         setAddToRoomModalOpen(false);
-        setSelectedPlantToAdd(null);
+        setSelectedUserPlantToAdd(null);
         setSearchQuery("");
         setSearchResults([]);
         setSearchError("");
@@ -1460,10 +1456,10 @@ function MyPlant() {
                         .map((userPlant) => (
                           <div
                             key={userPlant.id}
-                            onClick={() => setSelectedPlantToAdd(userPlant.plant)}
+                            onClick={() => setSelectedUserPlantToAdd(userPlant)}
                             style={{
                               padding: '10px',
-                              border: selectedPlantToAdd?.id === userPlant.plant.id ? '2px solid #A8C686' : '1px solid #eee',
+                              border: selectedUserPlantToAdd?.id === userPlant.id ? '2px solid #A8C686' : '1px solid #eee',
                               borderRadius: '8px',
                               margin: '5px 0',
                               cursor: 'pointer',
@@ -1480,57 +1476,21 @@ function MyPlant() {
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                               />
                             </div>
-                            <div>
-                              <strong>{userPlant.plant.name}</strong>
-                              <p style={{ fontSize: '12px', margin: '0', color: '#666' }}>{userPlant.plant.season}</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <div style={{
+                                width: '16px',
+                                height: '16px',
+                                borderRadius: '50%',
+                                backgroundColor: userPlant.color && userPlant.color !== "#FFFFFF" ? userPlant.color : "#A8C686",
+                                border: '1px solid #ddd'
+                              }} />
+                              <div>
+                                <strong>{userPlant.plant.name}</strong>
+                                <p style={{ fontSize: '12px', margin: '0', color: '#666' }}>Комната: {userPlant.room?.name || "Без комнаты"}</p>
+                              </div>
                             </div>
                           </div>
                         ))}
-                    </div>
-                  )}
-
-                  {selectedPlantToAdd && (
-                    <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                        <label style={{ fontSize: '14px', fontWeight: '500' }}>Цвет фона:</label>
-                        <div
-                          onClick={() => {
-                            const input = document.getElementById('color-picker-add-to-room');
-                            if (input) input.click();
-                          }}
-                          style={{
-                            width: "40px",
-                            height: "40px",
-                            borderRadius: "6px",
-                            border: "2px solid #ddd",
-                            backgroundColor: selectedColor,
-                            cursor: "pointer",
-                            transition: "transform 0.1s ease",
-                            margin: "8px"
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                        />
-                        <input
-                          id="color-picker-add-to-room"
-                          type="color"
-                          value={selectedColor}
-                          onChange={(e) => setSelectedColor(e.target.value)}
-                          style={{
-                            position: "fixed",
-                            opacity: 0,
-                            pointerEvents: "none",
-                            width: 0,
-                            height: 0
-                          }}
-                        />
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#A8C686" />
-                        </svg>
-                        <span style={{ fontSize: '12px', color: '#666' }}>Цвет влияет на иконки в карточке растения</span>
-                      </div>
                     </div>
                   )}
 
@@ -1544,11 +1504,11 @@ function MyPlant() {
                         fontSize: '16px',
                         border: 'none',
                         borderRadius: '8px',
-                        cursor: selectedPlantToAdd ? 'pointer' : 'default',
-                        opacity: selectedPlantToAdd ? 1 : 0.5
+                        cursor: selectedUserPlantToAdd ? 'pointer' : 'default',
+                        opacity: selectedUserPlantToAdd ? 1 : 0.5
                       }}
                       onClick={handleAddPlantToRoom}
-                      disabled={!selectedPlantToAdd}
+                      disabled={!selectedUserPlantToAdd}
                     >
                       Добавить в комнату
                     </button>
@@ -2691,10 +2651,10 @@ function MyPlant() {
                       .map((userPlant) => (
                         <div
                           key={userPlant.id}
-                          onClick={() => setSelectedPlantToAdd(userPlant.plant)}
+                          onClick={() => setSelectedUserPlantToAdd(userPlant)}
                           style={{
                             padding: "10px",
-                            border: selectedPlantToAdd?.id === userPlant.plant.id ? "2px solid #A8C686" : "1px solid #eee",
+                            border: selectedUserPlantToAdd?.id === userPlant.id ? "2px solid #A8C686" : "1px solid #eee",
                             borderRadius: "8px",
                             margin: "5px 0",
                             cursor: "pointer",
@@ -2711,57 +2671,21 @@ function MyPlant() {
                               style={{ width: "100%", height: "100%", objectFit: "cover" }}
                             />
                           </div>
-                          <div>
-                            <strong>{userPlant.plant.name}</strong>
-                            <p style={{ fontSize: "12px", margin: "0", color: "#666" }}>{userPlant.plant.season}</p>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{
+                              width: '16px',
+                              height: '16px',
+                              borderRadius: '50%',
+                              backgroundColor: userPlant.color && userPlant.color !== "#FFFFFF" ? userPlant.color : "#A8C686",
+                              border: '1px solid #ddd'
+                            }} />
+                            <div>
+                              <strong>{userPlant.plant.name}</strong>
+                              <p style={{ fontSize: '12px', margin: '0', color: '#666' }}>Комната: {userPlant.room?.name || "Без комнаты"}</p>
+                            </div>
                           </div>
                         </div>
                       ))}
-                  </div>
-                )}
-
-                {selectedPlantToAdd && (
-                  <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                      <label style={{ fontSize: "14px", fontWeight: "500" }}>Цвет фона:</label>
-                      <div
-                        onClick={() => {
-                          const input = document.getElementById('color-picker-add-to-room-desktop');
-                          if (input) input.click();
-                        }}
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          borderRadius: "6px",
-                          border: "2px solid #ddd",
-                          backgroundColor: selectedColor,
-                          cursor: "pointer",
-                          transition: "transform 0.1s ease",
-                          margin: "8px"
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                      />
-                      <input
-                        id="color-picker-add-to-room-desktop"
-                        type="color"
-                        value={selectedColor}
-                        onChange={(e) => setSelectedColor(e.target.value)}
-                        style={{
-                          position: "fixed",
-                          opacity: 0,
-                          pointerEvents: "none",
-                          width: 0,
-                          height: 0
-                        }}
-                      />
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#A8C686" />
-                      </svg>
-                      <span style={{ fontSize: "12px", color: "#666" }}>Цвет влияет на иконки в карточке растения</span>
-                    </div>
                   </div>
                 )}
 
@@ -2775,11 +2699,11 @@ function MyPlant() {
                       fontSize: "16px",
                       border: "none",
                       borderRadius: "8px",
-                      cursor: selectedPlantToAdd ? "pointer" : "default",
-                      opacity: selectedPlantToAdd ? 1 : 0.5
+                      cursor: selectedUserPlantToAdd ? "pointer" : "default",
+                      opacity: selectedUserPlantToAdd ? 1 : 0.5
                     }}
                     onClick={handleAddPlantToRoom}
-                    disabled={!selectedPlantToAdd}
+                    disabled={!selectedUserPlantToAdd}
                   >
                     Добавить в комнату
                   </button>
