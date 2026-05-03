@@ -1723,6 +1723,13 @@ function MyPlant() {
             </Link>
           </nav>
           <div className="auth-section">
+            <div className="theme-switch-wrapper" style={{ marginRight: '15px', display: 'flex', alignItems: 'center' }}>
+              <label className="theme-switch" htmlFor="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <div className="slider round"></div>
+              </label>
+            </div>
+
             {isLoggedIn ? (
               <div className="user-info">
                 <button className="auth-section-button logout-button" onClick={handleLogoutClick}>
