@@ -503,3 +503,43 @@ body.dark-theme {
 .dark-theme .LogotypeStyle {
   filter: brightness(0) invert(1);
 }
+
+.dark-theme .modal-contentMP .dropdown-menu,
+.dark-theme .modal-contentMP [style*="position: absolute"][style*="background-color: white"],
+.dark-theme .modal-contentMP div[style*="background-color: white"][style*="border: 1px solid #ddd"],
+.dark-theme .modal-contentMP div[style*="position: absolute"][style*="background: white"] {
+  background-color: var(--card-dark) !important;
+  border-color: var(--border-light) !important;
+  color: var(--text-white) !important;
+}
+
+.dark-theme .modal-contentMP .dropdown-menu div,
+.dark-theme .modal-contentMP [style*="position: absolute"] div,
+.dark-theme .modal-contentMP div[style*="padding: 10px"][style*="cursor: pointer"] {
+  background-color: var(--card-dark) !important;
+  color: var(--text-white) !important;
+  border-bottom-color: var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP .dropdown-menu div:hover,
+.dark-theme .modal-contentMP [style*="position: absolute"] div:hover {
+  background-color: var(--input-bg) !important;
+}
+
+.dark-theme .modal-contentMP button[style*="background-color: #f0f0f0"],
+.dark-theme .modal-contentMP button[style*="background-color: #f9f9f9"] {
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+  border-color: var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP select,
+.dark-theme .modal-contentMP select option {
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+  border-color: var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP [style*="background-color: #f0f0f0"] {
+  background-color: var(--input-bg) !important;
+}

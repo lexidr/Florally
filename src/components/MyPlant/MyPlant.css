@@ -692,8 +692,8 @@
 }
 
 .plant-image-container {
-  width: 300px;
-  height: 400px;
+  width: 100px;
+  height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -737,6 +737,7 @@
   .mobile-room-add-btn {
     width: 70px;
     height: 70px;
+    margin: 0;
   }
   .mobile-plant-name {
     font-size: 12px;

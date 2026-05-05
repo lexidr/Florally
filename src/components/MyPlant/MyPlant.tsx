@@ -595,7 +595,7 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
         <main className="my-plants-content">
           <div className="coming-soon-container">
             <div className="plant-image-container">
-              <img src="/plug-image-plant.png" alt="plant" className="centered-plant" />
+              <img src="/back-plant2.svg" alt="plant" className="centered-plant" />
             </div>
             <div className="coming-soon-text">Загрузка...</div>
           </div>
