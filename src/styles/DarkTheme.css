@@ -1,0 +1,505 @@
+body.dark-theme {
+  --bg-dark: #202020;
+  --header-dark: #373737;
+  --card-dark: #373737;
+  --text-white: #ffffff;
+  --button-green: #EDFFD8;
+  --button-green-hover: #d4f5b0;
+  --border-light: #4a4a4a;
+  --input-bg: #2a2a2a;
+  --modal-bg: #202020;
+}
+
+body.dark-theme {
+  background-color: var(--bg-dark);
+  color: var(--text-white);
+}
+
+.dark-theme .app,
+.dark-theme .mobile-app,
+.dark-theme .main-content,
+.dark-theme .my-plants-content,
+.dark-theme .user-content,
+.dark-theme .entrance-container,
+.dark-theme .registration-container,
+.dark-theme .user-container,
+.dark-theme .form-section,
+.dark-theme .login-required-container,
+.dark-theme .email-confirmation-content {
+  background-color: var(--bg-dark);
+  color: var(--text-white);
+}
+
+.dark-theme .header,
+.dark-theme .mobile-header,
+.dark-theme .header-content {
+  background-color: var(--header-dark) !important;
+  color: var(--text-white) !important;
+}
+
+.dark-theme .header-content .logo,
+.dark-theme .mobile-logo {
+  filter: brightness(0) invert(1);
+}
+
+.dark-theme .nav-link,
+.dark-theme .mobile-menu-item {
+  color: var(--text-white) !important;
+}
+
+.dark-theme .nav-link:hover,
+.dark-theme .mobile-menu-item:hover {
+  color: var(--button-green) !important;
+}
+
+.dark-theme .entrance-card,
+.dark-theme .registration-card,
+.dark-theme .user-card,
+.dark-theme .mobile-plant-card,
+.dark-theme .mobile-room-card,
+.dark-theme .modal-contentMP,
+.dark-theme .modal-contentMail,
+.dark-theme .modal-content,
+.dark-theme .element,
+.dark-theme .info-card,
+.dark-theme .calendar-container,
+.dark-theme .scroll-container,
+.dark-theme .mobile-user-profile,
+.dark-theme .mobile-user-form,
+.dark-theme .mobile-user-plants,
+.dark-theme .user-plants .scroll-container {
+  background-color: var(--card-dark) !important;
+  color: var(--text-white) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark-theme .plants-container-wrapper {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.dark-theme .user-card .scroll-container {
+  background-color: var(--bg-dark) !important;
+}
+
+.dark-theme .user-card .element {
+  background-color: var(--card-dark) !important;
+}
+
+.dark-theme .modal-overlay .modal-contentMP,
+.dark-theme .modal-overlay .modal-contentMail,
+.dark-theme .modal-overlay .modal-content {
+  background-color: var(--modal-bg) !important;
+  color: var(--text-white) !important;
+}
+
+.dark-theme .modal-contentMP input,
+.dark-theme .modal-contentMail input,
+.dark-theme .modal-content input,
+.dark-theme .modal-contentMP textarea,
+.dark-theme .modal-contentMail textarea,
+.dark-theme .modal-content textarea,
+.dark-theme .modal-contentMP select,
+.dark-theme .modal-contentMail select,
+.dark-theme .modal-content select {
+  background-color: var(--card-dark) !important;
+  color: var(--text-white) !important;
+  border-color: var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP input::placeholder,
+.dark-theme .modal-contentMP textarea::placeholder {
+  color: #aaa;
+}
+
+.dark-theme .modal-title,
+.dark-theme .modal-note,
+.dark-theme .confirmation-title,
+.dark-theme .confirmation-text,
+.dark-theme .modal-contentMP h1,
+.dark-theme .modal-contentMP h2,
+.dark-theme .modal-contentMP p,
+.dark-theme .modal-contentMP label {
+  color: var(--text-white) !important;
+}
+
+.dark-theme .modal-close,
+.dark-theme .modal-close-btn,
+.dark-theme .modal-close-btnMail {
+  color: var(--button-green) !important;
+}
+
+.dark-theme .modal-close:hover,
+.dark-theme .modal-close-btn:hover,
+.dark-theme .modal-close-btnMail:hover {
+  color: var(--button-green-hover) !important;
+  background: none;
+}
+
+.dark-theme .calendar-day,
+.dark-theme .mobile-calendar-day {
+  background-color: var(--card-dark) !important;
+  color: var(--text-white) !important;
+  border-color: var(--border-light) !important;
+}
+
+.dark-theme .calendar-day.empty,
+.dark-theme .mobile-calendar-day.mobile-empty {
+  background-color: transparent !important;
+}
+
+.dark-theme .calendar-day.today,
+.dark-theme .mobile-calendar-day.mobile-today {
+  background-color: #4a5a3a !important;
+  border: 1px solid var(--button-green);
+}
+
+.dark-theme .calendar-day.selected,
+.dark-theme .mobile-calendar-day.mobile-selected {
+  background-color: #5a6e46 !important;
+  border: 2px solid var(--button-green);
+}
+
+.dark-theme .weekday,
+.dark-theme .mobile-weekdays li {
+  color: var(--text-white);
+}
+
+.dark-theme .tasks-list,
+.dark-theme .mobile-tasks-list {
+  background-color: transparent;
+}
+
+.dark-theme .tasks-list > div,
+.dark-theme .mobile-task-item {
+  background-color: var(--card-dark) !important;
+  color: var(--text-white);
+  border-bottom-color: var(--border-light);
+}
+
+.dark-theme .mobile-task-item.completed-task {
+  background-color: #2a2a2a !important;
+}
+
+.dark-theme .mobile-task-title {
+  color: var(--text-white);
+}
+
+.dark-theme .submit-button,
+.dark-theme .registration-button,
+.dark-theme .registration-buttom,
+.dark-theme .mobile-registration-button,
+.dark-theme .save-changes-btn,
+.dark-theme .mobile-save-changes-btn,
+.dark-theme .view-more-btn,
+.dark-theme .mobile-view-more-btn,
+.dark-theme .add-task-button,
+.dark-theme .button_add,
+.dark-theme .button_room,
+.dark-theme .modal-button,
+.dark-theme .confirmation-button,
+.dark-theme .auth-section-button.login-button,
+.dark-theme .auth-section-button.logout-button,
+.dark-theme button[class*="add"],
+.dark-theme button[class*="save"],
+.dark-theme .mobile-registration-link button,
+.dark-theme .mobile-login-link ~ button,
+.dark-theme .registration-form-section button,
+.dark-theme .not-authorized-container button,
+.dark-theme .user-actions button,
+.dark-theme .mobile-user-actions button,
+.dark-theme .calendar-nav-button,
+.dark-theme .mobile-calendar-nav-button {
+  background-color: var(--button-green) !important;
+  color: #2d2d2d !important;
+  border: none !important;
+}
+
+.dark-theme .submit-button:hover,
+.dark-theme .registration-button:hover,
+.dark-theme .registration-buttom:hover,
+.dark-theme .mobile-registration-button:hover,
+.dark-theme .save-changes-btn:hover,
+.dark-theme .mobile-save-changes-btn:hover,
+.dark-theme .view-more-btn:hover,
+.dark-theme .mobile-view-more-btn:hover,
+.dark-theme .add-task-button:hover,
+.dark-theme .button_add:hover,
+.dark-theme .button_room:hover,
+.dark-theme .modal-button:hover,
+.dark-theme .confirmation-button:hover,
+.dark-theme .auth-section-button.login-button:hover,
+.dark-theme .auth-section-button.logout-button:hover {
+  background-color: var(--button-green-hover) !important;
+  color: #1a1a1a !important;
+}
+
+.dark-theme button[style*="background-color: #DF7171"],
+.dark-theme button[style*="background:#DF7171"],
+.dark-theme .logout-bottom-btn,
+.dark-theme .mobile-logout-btn {
+  background-color: #DF7171 !important;
+  color: white !important;
+}
+
+.dark-theme button[style*="background-color: #DF7171"]:hover,
+.dark-theme .logout-bottom-btn:hover,
+.dark-theme .mobile-logout-btn:hover {
+  background-color: #c55a5a !important;
+}
+
+.dark-theme input,
+.dark-theme textarea,
+.dark-theme select,
+.dark-theme .mobile-input {
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+  border: 1px solid var(--border-light) !important;
+}
+
+.dark-theme input::placeholder,
+.dark-theme textarea::placeholder {
+  color: #aaa !important;
+}
+
+.dark-theme input:focus,
+.dark-theme textarea:focus,
+.dark-theme select:focus {
+  border-color: var(--button-green) !important;
+  outline: none;
+}
+
+.dark-theme a,
+.dark-theme .login-link a,
+.dark-theme .mobile-login-link {
+  color: var(--button-green) !important;
+}
+
+.dark-theme a:hover,
+.dark-theme .login-link a:hover,
+.dark-theme .mobile-login-link:hover {
+  color: var(--button-green-hover) !important;
+}
+
+.dark-theme .modal-field input {
+  background-color: var(--card-dark) !important;
+  border-color: var(--border-light) !important;
+  color: var(--text-white) !important;
+}
+
+.dark-theme .error-text {
+  color: #ff8888 !important;
+}
+
+.dark-theme .success-icon svg circle,
+.dark-theme .error-icon svg circle {
+  stroke: var(--button-green) !important;
+}
+
+.dark-theme .success-icon svg path,
+.dark-theme .error-icon svg path {
+  stroke: var(--button-green) !important;
+}
+
+.dark-theme .error-icon svg circle {
+  stroke: #DF7171 !important;
+}
+
+.dark-theme .error-icon svg path {
+  stroke: #DF7171 !important;
+}
+
+.dark-theme .slider {
+  background-color: #555;
+}
+
+.dark-theme .slider:before {
+  background-color: var(--button-green);
+}
+
+.dark-theme .theme-switch input:checked + .slider {
+  background-color: var(--button-green);
+}
+
+.dark-theme .theme-switch input:checked + .slider:before {
+  background-color: #2d2d2d;
+}
+
+.dark-theme .vertical_line {
+  background-color: var(--border-light);
+}
+
+.dark-theme hr {
+  border-color: var(--border-light);
+}
+
+.dark-theme .p_center,
+.dark-theme .card-title,
+.dark-theme .calendar-title,
+.dark-theme .mobile-calendar-title,
+.dark-theme .mobile-tasks-title,
+.dark-theme .mobile-section-title {
+  color: var(--text-white);
+}
+
+.dark-theme .mobile-calendar-container,
+.dark-theme .mobile-tasks-container {
+  background-color: var(--card-dark) !important;
+  color: var(--text-white);
+}
+
+.dark-theme .mobile-add-card {
+  background-color: #2a2a2a !important;
+}
+
+.dark-theme .mobile-add-card .mobile-add-button {
+  background-color: #EDFFD8;
+  color: var(--card-dark);
+}
+
+.dark-theme .mobile-add-card .mobile-add-text {
+  color: #ffffff;
+}
+
+.dark-theme .mobile-bottom-menu {
+  background-color: var(--header-dark) !important;
+}
+
+.dark-theme .mobile-bottom-menu .mobile-menu-icon {
+  filter: brightness(0) invert(1);
+}
+
+.dark-theme .mobile-form-container,
+.dark-theme .mobile-content-wrapper,
+.dark-theme .mobile-main-content {
+  background-color: var(--bg-dark) !important;
+}
+
+.dark-theme .mobile-task-item .mobile-task-title,
+.dark-theme .mobile-tasks-container p,
+.dark-theme .mobile-tasks-container div,
+.dark-theme .mobile-calendar-month,
+.dark-theme .mobile-day-number {
+  color: var(--text-white) !important;
+}
+
+.dark-theme .PlantImage img,
+.dark-theme .plant-image-container img {
+  filter: brightness(0.9);
+}
+
+.dark-theme .user-image-section {
+  background-color: transparent !important;
+}
+
+.dark-theme .user-background-image {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+.dark-theme .mobile-form-container,
+.dark-theme .mobile-form-container.full-height {
+  background-color: var(--bg-dark) !important;
+}
+
+.dark-theme .mobile-user-profile {
+  background-color: transparent !important;
+}
+
+.dark-theme .mobile-user-form,
+.dark-theme .mobile-user-plants,
+.dark-theme .mobile-user-header {
+  background-color: transparent !important;
+}
+
+.dark-theme .user-actions .logout-bottom-btn,
+.dark-theme .mobile-user-actions .mobile-logout-btn {
+  background-color: #DF7171 !important;
+  color: white !important;
+}
+
+.dark-theme .user-actions .logout-bottom-btn:hover,
+.dark-theme .mobile-user-actions .mobile-logout-btn:hover {
+  background-color: #c55a5a !important;
+}
+
+.dark-theme .mobile-myplants-content {
+  background-color: var(--bg-dark) !important;
+}
+
+.dark-theme .mobile-myplants-container {
+  background-color: transparent !important;
+}
+
+.dark-theme .not-authorized-message p,
+.dark-theme .not-authorized-container p,
+.dark-theme .not-authorized-container .login-link,
+.dark-theme .not-authorized-container .registration-button,
+.dark-theme .mobile-title,
+.dark-theme .mobile-login-text,
+.dark-theme .mobile-login-link {
+  color: var(--text-white) !important;
+}
+
+.dark-theme .not-authorized-container .registration-button,
+.dark-theme .mobile-registration-button {
+  background-color: var(--button-green) !important;
+  color: #2d2d2d !important;
+}
+
+.dark-theme .nav-link:hover {
+  color: #2d2d2d !important;
+  background-color: var(--button-green) !important;
+}
+
+.dark-theme .mobile-menu-item:hover .mobile-menu-icon {
+  filter: brightness(0) invert(1);
+}
+
+.dark-theme .entrance-container,
+.dark-theme .registration-container {
+  background-color: var(--bg-dark);
+}
+
+.dark-theme .image-section {
+  background-color: transparent !important;
+}
+
+.dark-theme .background-image {
+  filter: brightness(0.9);
+}
+
+.dark-theme .entrance-card,
+.dark-theme .registration-card {
+  background-color: var(--card-dark);
+  color: var(--text-white);
+}
+
+.dark-theme .entrance-card h2,
+.dark-theme .registration-card h2 {
+  color: var(--text-white);
+}
+
+.dark-theme .entrance-card input,
+.dark-theme .registration-card input {
+  background-color: var(--input-bg);
+  color: var(--text-white);
+  border-color: var(--border-light);
+}
+
+.dark-theme .entrance-card .forgot-password a,
+.dark-theme .entrance-card .login-link a,
+.dark-theme .registration-card .login-link a {
+  color: var(--button-green);
+}
+
+.dark-theme .entrance-card .forgot-password a:hover,
+.dark-theme .entrance-card .login-link a:hover,
+.dark-theme .registration-card .login-link a:hover {
+  color: var(--button-green-hover);
+}
+
+.dark-theme .logoStyle,
+.dark-theme .LogotypeStyle {
+  filter: brightness(0) invert(1);
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SectionRegistrationForm from './components/SectionRegistrationForm/SectionRegistrationForm';
 import SectionEntrance from './components/SectionEntrance/SectionEntrance';
@@ -10,27 +10,51 @@ import EMailVerification from './components/EMailVerification/EMailVerification'
 import './App.css';
 
 export default function App() {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark-theme');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-theme');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  const toggleTheme = () => {
+    setIsDarkMode(prev => !prev);
+  };
+
   return (
     <BrowserRouter>
-      <div className="App">
+      <div className={`App ${isDarkMode ? 'dark-theme' : ''}`}>
         <Routes>
-          {/* Главная страница (календарь) */}
-          <Route path="/" element={<HomePage />} />
+          <Route 
+            path="/" 
+            element={<HomePage isDarkMode={isDarkMode} toggleTheme={toggleTheme} />} 
+          />
           
-          {/* Страница "Мои растения" */}
-          <Route path="/plants/my_plants" element={<MyPlant />} />
+          <Route 
+            path="/plants/my_plants" 
+            element={<MyPlant isDarkMode={isDarkMode} toggleTheme={toggleTheme} />} 
+          />
           
-          {/* Страница "Профиль" */}
-          <Route path="/user" element={<User />} />
+          <Route 
+            path="/user" 
+            element={<User isDarkMode={isDarkMode} toggleTheme={toggleTheme} />} 
+          />
           
-          {/* Страницы аутентификации */}
           <Route path="/auth/signup" element={<SectionRegistrationForm />} />
           <Route path="/auth/signin" element={<SectionEntrance />} />
-
           <Route path="/auth/signup/confirmation/:confirmationToken" element={<EMailVerification />} />
           
-          {/* Резервный маршрут */}
-          <Route path="*" element={<HomePage />} />
+          <Route 
+            path="*" 
+            element={<HomePage isDarkMode={isDarkMode} toggleTheme={toggleTheme} />} 
+          />
         </Routes>
       </div>
     </BrowserRouter>

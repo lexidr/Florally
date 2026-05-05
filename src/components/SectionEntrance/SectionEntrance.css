@@ -200,8 +200,8 @@ button:hover {
 
 @media (max-width: 620px) {
   .logoStyle {
-    width: 88px;
-    height: 24px;
+    width: 138px;
+    height: 35px;
   }
 
   .login-link {
