@@ -790,3 +790,15 @@ input:checked + .slider:before {
   background-color: transparent;
   box-shadow: inset -8px -2px 0 0 #bdc3c7; 
 }
+
+@media (max-width: 430px) {
+  .mobile-plants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 160px);
+    justify-content: center;
+    gap: 12px;
+  }
+  .mobile-plant-card {
+    width: 170px;
+  }
+}

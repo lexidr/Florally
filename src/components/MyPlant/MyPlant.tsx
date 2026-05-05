@@ -675,7 +675,9 @@ function MyPlant() {
                           )}
                         </div>
                         <p className="mobile-plant-name">{plant.plant.name}</p>
-                        <p className="mobile-plant-room">Комната: {plant.room?.name || "Без комнаты"}</p>
+                        <p className="mobile-plant-room" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '70%' }}>
+                          Комната: {plant.room?.name || "Без комнаты"}
+                        </p>
                       </div>
                     ))
                   )}
@@ -719,7 +721,7 @@ function MyPlant() {
                         )}
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-                        <p className="mobile-room-name">{room.name}</p>
+                        <p className="mobile-room-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '140px' }}>{room.name}</p>
                       </div>
                     </div>
                   ))}
@@ -1831,7 +1833,9 @@ function MyPlant() {
                         )}
                       </div>
                       <p className="plant_name">{plant.plant.name}</p>
-                      <p className="place_of_plant">Комната: {plant.room?.name || "Без комнаты"}</p>
+                      <p className="place_of_plant" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
+                        Комната: {plant.room?.name || "Без комнаты"}
+                      </p>
                     </div>
                   ))
                 )}
