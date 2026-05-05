@@ -92,7 +92,7 @@ async function updateCommentOnServer(commentId: string, text: string): Promise<C
   return response.json();
 }
 
-function User() {
+function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: () => void }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -127,6 +127,18 @@ function User() {
   const isCalendarActive = location.pathname === "/";
   const isMyPlantsActive = location.pathname === "/plants/my_plants";
   const isUserActive = location.pathname === "/user";
+
+  const bgCard = isDarkMode ? '#373737' : '#FFFFFF';
+  const bgCardHover = isDarkMode ? '#2a2a2a' : '#f5f5f5';
+  const bgInput = isDarkMode ? '#2a2a2a' : '#FFFFFF';
+  const bgModal = isDarkMode ? '#202020' : '#FFFFFF';
+  const textColor = isDarkMode ? '#ffffff' : '#2E2E2E';
+  const textSecondary = isDarkMode ? '#cccccc' : '#666666';
+  const borderColor = isDarkMode ? '#4a4a4a' : '#dddddd';
+  const iconBg = isDarkMode ? '#2a2a2a' : '#F5F5F5';
+  const noteBg = isDarkMode ? '#2a2a2a' : '#e1e9d9';
+  const noteText = isDarkMode ? '#ffffff' : '#2E2E2E';
+  const scrollBg = isDarkMode ? '#202020' : '#f0f0f0';
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -172,7 +184,7 @@ function User() {
     return null;
   };
 
-  useEffect(() => {
+useEffect(() => {
     const authCheck = async () => {
       try {
         const authData = checkAuth();
@@ -188,25 +200,6 @@ function User() {
               setRegistrationDate(fullProfile.created_at);
             }
           }
-
-          setFormData({
-            username: authData.user.username || "",
-            email: authData.user.email || "",
-            password: "",
-            newPassword: "",
-          });
-          await loadData();
-        }
-      } catch (error) {
-        console.error("Ошибка при проверке аутентификации:", error);
-        setIsLoggedIn(false);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    authCheck();
-  }, []);
 
   const handleLoginClick = () => navigate("/auth/signin");
   const handleViewMoreClick = () => navigate("/plants/my_plants");
@@ -415,7 +408,7 @@ function User() {
           justifyContent: 'space-between',
           width: '212px',
           height: '212px',
-          backgroundColor: 'white',
+          backgroundColor: bgCard,
           borderRadius: '20px',
           padding: '8px',
           transition: 'background-color 0.3s ease',
@@ -424,7 +417,7 @@ function User() {
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}
       >
-        <div style={{ position: 'relative', width: '196px', height: '148px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F5F5', borderRadius: '20px', marginTop: '8px', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', width: '196px', height: '148px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: iconBg, borderRadius: '20px', marginTop: '8px', overflow: 'hidden' }}>
           <PlantImage src={plant.plant.photo} alt={plant.plant.name} plantId={plant.id} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           {plant.color && plant.color !== "#FFFFFF" && (
             <div style={{
@@ -442,8 +435,8 @@ function User() {
             }} />
           )}
         </div>
-        <p style={{ fontWeight: '500', margin: '8px 0 0 0', fontSize: '14px', textAlign: 'center' }}>{plant.plant.name}</p>
-        <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0 0' }}>Комната: {roomName}</p>
+        <p style={{ fontWeight: '500', margin: '8px 0 0 0', fontSize: '14px', textAlign: 'center', color: textColor }}>{plant.plant.name}</p>
+        <p style={{ fontSize: '12px', color: textSecondary, margin: '4px 0 0 0' }}>Комната: {roomName}</p>
       </div>
     );
   };
@@ -462,35 +455,35 @@ function User() {
               {isLoggedIn && user ? (
                 <div className="mobile-user-profile">
                   <div className="mobile-user-header">
-                    <h1 className="mobile-user-name">{getUserName()}</h1>
-                    <p className="mobile-registration-date">Зарегистрирован {formatRegistrationDate()}</p>
+                    <h1 className="mobile-user-name" style={{ color: textColor }}>{getUserName()}</h1>
+                    <p className="mobile-registration-date" style={{ color: textSecondary }}>Зарегистрирован {formatRegistrationDate()}</p>
                   </div>
                   <div className="mobile-user-form">
-                    <h2 className="mobile-section-title">Редактировать профиль</h2>
+                    <h2 className="mobile-section-title" style={{ color: textColor }}>Редактировать профиль</h2>
                     {error && <div className="error-message" style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '10px', borderRadius: '8px', marginBottom: '15px', fontSize: '14px' }}>{error}</div>}
                     {successMessage && <div className="success-message" style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '10px', borderRadius: '8px', marginBottom: '15px', fontSize: '14px' }}>{successMessage}</div>}
                     <div className="mobile-form-grid">
                       <div className="mobile-form-group">
-                        <label htmlFor="username">Имя</label>
-                        <input type="text" id="username" name="username" value={formData.username} onChange={handleFormChange} placeholder="Имя" className="mobile-input" />
+                        <label htmlFor="username" style={{ color: textSecondary }}>Имя</label>
+                        <input type="text" id="username" name="username" value={formData.username} onChange={handleFormChange} placeholder="Имя" className="mobile-input" style={{ backgroundColor: bgInput, color: textColor, borderColor: borderColor }} />
                       </div>
                       <div className="mobile-form-group">
-                        <label htmlFor="email">Почта</label>
-                        <input type="email" id="email" name="email" value={formData.email} onChange={handleFormChange} placeholder="Почта" className="mobile-input" />
+                        <label htmlFor="email" style={{ color: textSecondary }}>Почта</label>
+                        <input type="email" id="email" name="email" value={formData.email} onChange={handleFormChange} placeholder="Почта" className="mobile-input" style={{ backgroundColor: bgInput, color: textColor, borderColor: borderColor }} />
                       </div>
                       <div className="mobile-form-group">
-                        <label htmlFor="password">Текущий пароль</label>
-                        <input type="password" id="password" name="password" value={formData.password} onChange={handleFormChange} placeholder="Текущий пароль" className="mobile-input" autoComplete="current-password" />
+                        <label htmlFor="password" style={{ color: textSecondary }}>Текущий пароль</label>
+                        <input type="password" id="password" name="password" value={formData.password} onChange={handleFormChange} placeholder="Текущий пароль" className="mobile-input" style={{ backgroundColor: bgInput, color: textColor, borderColor: borderColor }} autoComplete="current-password" />
                       </div>
                       <div className="mobile-form-group">
-                        <label htmlFor="newPassword">Новый пароль</label>
-                        <input type="password" id="newPassword" name="newPassword" value={formData.newPassword} onChange={handleFormChange} placeholder="Новый пароль" className="mobile-input" autoComplete="new-password" />
+                        <label htmlFor="newPassword" style={{ color: textSecondary }}>Новый пароль</label>
+                        <input type="password" id="newPassword" name="newPassword" value={formData.newPassword} onChange={handleFormChange} placeholder="Новый пароль" className="mobile-input" style={{ backgroundColor: bgInput, color: textColor, borderColor: borderColor }} autoComplete="new-password" />
                       </div>
                     </div>
                     <button className="mobile-save-changes-btn" onClick={handleSaveChanges} disabled={isSaving} style={{ opacity: isSaving ? 0.7 : 1, cursor: isSaving ? 'not-allowed' : 'pointer' }}>{isSaving ? "Сохранение..." : "Сохранить изменения"}</button>
                   </div>
                   <div className="mobile-user-plants">
-                    <h2 className="mobile-section-title">Мои растения</h2>
+                    <h2 className="mobile-section-title" style={{ color: textColor }}>Мои растения</h2>
                     {plants && plants.length > 0 ? (
                       <>
                         <div style={{
@@ -506,7 +499,7 @@ function User() {
                                 key={plant.id}
                                 onClick={() => openPlantModal(plant)}
                                 style={{
-                                  backgroundColor: '#FFFFFF',
+                                  backgroundColor: bgCard,
                                   borderRadius: '16px',
                                   padding: '12px',
                                   cursor: 'pointer',
@@ -537,8 +530,8 @@ function User() {
                                     }} />
                                   )}
                                 </div>
-                                <p style={{ fontWeight: '500', margin: '8px 0 4px 0', fontSize: '14px', textAlign: 'center' }}>{plant.plant.name}</p>
-                                <p style={{ fontSize: '12px', color: '#666', margin: 0, textAlign: 'center' }}>Комната: {roomName}</p>
+                                <p style={{ fontWeight: '500', margin: '8px 0 4px 0', fontSize: '14px', textAlign: 'center', color: textColor }}>{plant.plant.name}</p>
+                                <p style={{ fontSize: '12px', color: textSecondary, margin: 0, textAlign: 'center' }}>Комната: {roomName}</p>
                               </div>
                             );
                           })}
@@ -555,14 +548,14 @@ function User() {
                 </div>
               ) : (
                 <>
-                  <h2 className="mobile-title">Зарегистрируйся,<br />чтобы знать больше<br />о своих растениях!</h2>
+                  <h2 className="mobile-title" style={{ color: textColor }}>Зарегистрируйся,<br />чтобы знать больше<br />о своих растениях!</h2>
                   <div className="mobile-button-container">
                     <Link to="/auth/signup" className="mobile-registration-link">
                       <button className="mobile-registration-button">Зарегистрироваться</button>
                     </Link>
                   </div>
                   <div className="mobile-login-container">
-                    <span className="mobile-login-text">Есть аккаунт? <Link to="/auth/signin" className="mobile-login-link">Войти</Link></span>
+                    <span className="mobile-login-text" style={{ color: textSecondary }}>Есть аккаунт? <Link to="/auth/signin" className="mobile-login-link">Войти</Link></span>
                   </div>
                 </>
               )}
@@ -577,7 +570,7 @@ function User() {
 
         {modalOpen && selectedPlant && (
           <div className="modal-overlay" onClick={closePlantModal}>
-            <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px', position: 'relative' }}>
+            <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px', position: 'relative', backgroundColor: bgModal, color: textColor }}>
               <button
                 className="modal-close-btn"
                 onClick={closePlantModal}
@@ -585,7 +578,7 @@ function User() {
                   position: 'absolute',
                   top: '12px',
                   right: '12px',
-                  background: '#FFFFFF',
+                  background: 'none',
                   border: 'none',
                   borderRadius: '50%',
                   width: '32px',
@@ -603,7 +596,7 @@ function User() {
               </button>
               <div style={{ marginTop: '40px' }}>
                 <div style={{ display: "flex", gap: "16px", alignItems: "flex-start", flexWrap: "nowrap" }}>
-                  <div style={{ width: '120px', height: '120px', backgroundColor: '#F5F5F5', borderRadius: '16px', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+                  <div style={{ width: '120px', height: '120px', backgroundColor: iconBg, borderRadius: '16px', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
                     <PlantImage
                       src={selectedPlant.plant.photo}
                       alt={selectedPlant.plant.name}
@@ -618,19 +611,20 @@ function User() {
                       fontWeight: '600',
                       wordBreak: "break-word",
                       overflowWrap: "break-word",
-                      lineHeight: "1.3"
+                      lineHeight: "1.3",
+                      color: textColor
                     }}>
                       {selectedPlant.plant.name}
                     </h2>
                     <p style={{
                       fontSize: '14px',
-                      color: '#666',
+                      color: textSecondary,
                       margin: '0 0 12px 0'
                     }}>
                       Комната: {selectedRoomName}
                     </p>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-                      <label style={{ fontSize: "14px" }}>Цвет фона:</label>
+                      <label style={{ fontSize: "14px", color: textColor }}>Цвет фона:</label>
                       <div
                         onClick={() => {
                           const input = document.getElementById(`color-picker-user-mobile-${selectedPlant.id}`);
@@ -669,48 +663,48 @@ function User() {
                 </div>
               </div>
 
-              <h1 style={{ fontSize: "28px", fontWeight: "500", color: "#2E2E2E", margin: "0", marginTop: "36px" }}>Уход за растением</h1>
+              <h1 style={{ fontSize: "28px", fontWeight: "500", color: textColor, margin: "0", marginTop: "36px" }}>Уход за растением</h1>
               <div style={{ marginTop: "20px" }}>
-                <div style={{ width: "100%", display: "flex", alignItems: "center", marginBottom: "15px", backgroundColor: "#ffffff", borderRadius: "12px", padding: "12px" }}>
+                <div style={{ width: "100%", display: "flex", alignItems: "center", marginBottom: "15px", backgroundColor: bgCard, borderRadius: "12px", padding: "12px" }}>
                   <div style={{ width: "52px", height: "52px", minWidth: "52px", minHeight: "52px", flexShrink: 0, backgroundColor: (() => { const color = selectedPlant.color; return color && color !== "#FFFFFF" ? color : "#A8C686"; })(), borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt=""/>
                   </div>
                   <div style={{ marginLeft: "14px" }}>
-                    <p style={{ fontSize: "20px", fontWeight: "450" }}>Описание</p>
-                    <p style={{ fontSize: "16px" }}>{selectedPlant.plant.description}</p>
+                    <p style={{ fontSize: "20px", fontWeight: "450", color: textColor }}>Описание</p>
+                    <p style={{ fontSize: "16px", color: textSecondary }}>{selectedPlant.plant.description}</p>
                   </div>
                 </div>
                 <hr style={{ width: "100%", marginBottom: "14px", opacity: "50%", borderColor: "#A8C686" }}/>
-                <div style={{ width: "100%", display: "flex", alignItems: "center", marginBottom: "15px", backgroundColor: "#ffffff", borderRadius: "12px", padding: "12px" }}>
+                <div style={{ width: "100%", display: "flex", alignItems: "center", marginBottom: "15px", backgroundColor: bgCard, borderRadius: "12px", padding: "12px" }}>
                   <div style={{ width: "52px", height: "52px", minWidth: "52px", minHeight: "52px", flexShrink: 0, backgroundColor: (() => { const color = selectedPlant.color; return color && color !== "#FFFFFF" ? color : "#A8C686"; })(), borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt=""/>
                   </div>
                   <div style={{ marginLeft: "14px" }}>
-                    <p style={{ fontSize: "20px", fontWeight: "450" }}>Сезон</p>
-                    <p style={{ fontSize: "16px" }}>{selectedPlant.plant.season}</p>
+                    <p style={{ fontSize: "20px", fontWeight: "450", color: textColor }}>Сезон</p>
+                    <p style={{ fontSize: "16px", color: textSecondary }}>{selectedPlant.plant.season}</p>
                   </div>
                 </div>
                 <hr style={{ width: "100%", marginBottom: "14px", opacity: "50%", borderColor: "#A8C686" }}/>
-                <div style={{ width: "100%", display: "flex", alignItems: "center", marginBottom: "15px", backgroundColor: "#ffffff", borderRadius: "12px", padding: "12px" }}>
+                <div style={{ width: "100%", display: "flex", alignItems: "center", marginBottom: "15px", backgroundColor: bgCard, borderRadius: "12px", padding: "12px" }}>
                   <div style={{ width: "52px", height: "52px", minWidth: "52px", minHeight: "52px", flexShrink: 0, backgroundColor: (() => { const color = selectedPlant.color; return color && color !== "#FFFFFF" ? color : "#A8C686"; })(), borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt=""/>
                   </div>
                   <div style={{ marginLeft: "14px" }}>
-                    <p style={{ fontSize: "20px", fontWeight: "450" }}>Рекомендации</p>
-                    <p style={{ fontSize: "16px" }}>{selectedPlant.plant.recommendations || "У этого растения пока нет рекомендаций, но скоро появятся"}</p>
+                    <p style={{ fontSize: "20px", fontWeight: "450", color: textColor }}>Рекомендации</p>
+                    <p style={{ fontSize: "16px", color: textSecondary }}>{selectedPlant.plant.recommendations || "У этого растения пока нет рекомендаций, но скоро появятся"}</p>
                   </div>
                 </div>
                 <hr style={{ width: "100%", marginBottom: "14px", opacity: "50%", borderColor: "#A8C686" }}/>
               </div>
 
-              <h1 style={{ fontSize: "24px", fontWeight: "500", color: "#2E2E2E", margin: "28px 0 16px 0" }}>
+              <h1 style={{ fontSize: "24px", fontWeight: "500", color: textColor, margin: "28px 0 16px 0" }}>
                 Мои заметки
               </h1>
               <div style={{ marginBottom: "20px" }}>
                 {commentsLoading ? (
-                  <p style={{ color: "#999", fontSize: "14px" }}>Загрузка заметок...</p>
+                  <p style={{ color: textSecondary, fontSize: "14px" }}>Загрузка заметок...</p>
                 ) : comments.length === 0 ? (
-                  <p style={{ color: "#999", fontSize: "14px" }}>Заметок пока нет. Добавьте первую!</p>
+                  <p style={{ color: textSecondary, fontSize: "14px" }}>Заметок пока нет. Добавьте первую!</p>
                 ) : (
                   comments.map(comment => (
                     <div key={comment.id} style={{
@@ -718,7 +712,7 @@ function User() {
                       alignItems: "center",
                       gap: "10px",
                       marginBottom: "12px",
-                      backgroundColor: "#ffffff",
+                      backgroundColor: bgCard,
                       borderRadius: "10px",
                       padding: "10px 12px"
                     }}>
@@ -751,7 +745,9 @@ function User() {
                                 border: '1px solid #A8C686',
                                 fontSize: '14px',
                                 fontFamily: 'inherit',
-                                resize: 'vertical'
+                                resize: 'vertical',
+                                backgroundColor: bgInput,
+                                color: textColor
                               }}
                               autoFocus
                             />
@@ -789,7 +785,7 @@ function User() {
                             </div>
                           </div>
                         ) : (
-                          <p style={{ fontSize: "14px", margin: 0, lineHeight: "1.5", wordBreak: "break-word", border: "none", background: "#e1e9d9", borderRadius: "5px", padding: "5px", paddingBottom: "20px", paddingRight: "70px" }}>{comment.text}</p>
+                          <p style={{ fontSize: "14px", margin: 0, lineHeight: "1.5", wordBreak: "break-word", border: "none", background: noteBg, borderRadius: "5px", padding: "5px", paddingBottom: "20px", paddingRight: "70px", color: noteText }}>{comment.text}</p>
                         )}
                       </div>
                       {!editingCommentId && (
@@ -845,11 +841,13 @@ function User() {
                       resize: "vertical",
                       padding: "8px 12px",
                       borderRadius: "10px",
-                      border: "1px solid #ddd",
+                      border: `1px solid ${borderColor}`,
                       fontSize: "14px",
                       fontFamily: "inherit",
                       outline: "none",
-                      height: "44px"
+                      height: "44px",
+                      backgroundColor: bgInput,
+                      color: textColor
                     }}
                     onKeyDown={e => {
                       if (e.key === "Enter" && !e.shiftKey) {
@@ -905,7 +903,7 @@ function User() {
           <div className="auth-section">
             <div className="theme-switch-wrapper" style={{ marginRight: '15px', display: 'flex', alignItems: 'center' }}>
               <label className="theme-switch" htmlFor="checkbox">
-                <input type="checkbox" id="checkbox" />
+                <input type="checkbox" id="checkbox" checked={isDarkMode} onChange={toggleTheme} />
                 <div className="slider round"></div>
               </label>
             </div>
@@ -916,30 +914,30 @@ function User() {
       </header>
       <main className="user-content">
         <section className="user-container">
-          <div className="user-card">
+          <div className="user-card" style={{ backgroundColor: bgCard, color: textColor }}>
             {isLoggedIn && user ? (
               <div className="user-profile">
                 <div className="user-header">
-                  <h1 className="user-name">{getUserName()}</h1>
-                  <p className="registration-date">Зарегистрирован {formatRegistrationDate()}</p>
+                  <h1 className="user-name" style={{ color: textColor }}>{getUserName()}</h1>
+                  <p className="registration-date" style={{ color: textSecondary }}>Зарегистрирован {formatRegistrationDate()}</p>
                 </div>
                 <div className="user-form">
-                  <h2>Редактировать профиль</h2>
+                  <h2 style={{ color: textColor }}>Редактировать профиль</h2>
                   {error && <div className="error-message" style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '12px', borderRadius: '8px', marginBottom: '20px' }}>{error}</div>}
                   {successMessage && <div className="success-message" style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '12px', borderRadius: '8px', marginBottom: '20px' }}>{successMessage}</div>}
                   <div className="form-grid">
-                    <div className="form-group"><label htmlFor="username">Имя</label><input type="text" id="username" name="username" value={formData.username} onChange={handleFormChange} placeholder="Имя" /></div>
-                    <div className="form-group"><label htmlFor="email">Почта</label><input type="email" id="email" name="email" value={formData.email} onChange={handleFormChange} placeholder="Почта" /></div>
-                    <div className="form-group"><label htmlFor="password">Текущий пароль</label><input type="password" id="password" name="password" value={formData.password} onChange={handleFormChange} placeholder="Текущий пароль" autoComplete="current-password" /></div>
-                    <div className="form-group"><label htmlFor="newPassword">Новый пароль</label><input type="password" id="newPassword" name="newPassword" value={formData.newPassword} onChange={handleFormChange} placeholder="Новый пароль" autoComplete="new-password" /></div>
+                    <div className="form-group"><label htmlFor="username" style={{ color: textSecondary }}>Имя</label><input type="text" id="username" name="username" value={formData.username} onChange={handleFormChange} placeholder="Имя" style={{ backgroundColor: bgInput, color: textColor, borderColor: borderColor }} /></div>
+                    <div className="form-group"><label htmlFor="email" style={{ color: textSecondary }}>Почта</label><input type="email" id="email" name="email" value={formData.email} onChange={handleFormChange} placeholder="Почта" style={{ backgroundColor: bgInput, color: textColor, borderColor: borderColor }} /></div>
+                    <div className="form-group"><label htmlFor="password" style={{ color: textSecondary }}>Текущий пароль</label><input type="password" id="password" name="password" value={formData.password} onChange={handleFormChange} placeholder="Текущий пароль" style={{ backgroundColor: bgInput, color: textColor, borderColor: borderColor }} autoComplete="current-password" /></div>
+                    <div className="form-group"><label htmlFor="newPassword" style={{ color: textSecondary }}>Новый пароль</label><input type="password" id="newPassword" name="newPassword" value={formData.newPassword} onChange={handleFormChange} placeholder="Новый пароль" style={{ backgroundColor: bgInput, color: textColor, borderColor: borderColor }} autoComplete="new-password" /></div>
                   </div>
                   <button className="save-changes-btn" onClick={handleSaveChanges} disabled={isSaving} style={{ opacity: isSaving ? 0.7 : 1, cursor: isSaving ? 'not-allowed' : 'pointer' }}>{isSaving ? "Сохранение..." : "Сохранить изменения"}</button>
                 </div>
                 <div className="user-plants">
-                  <h2>Мои растения</h2>
+                  <h2 style={{ color: textColor }}>Мои растения</h2>
                   {plants && plants.length > 0 ? (
                     <>
-                      <div className="scroll-container" style={{ backgroundColor: '#f0f0f0', borderRadius: '16px', padding: '16px' }}>
+                      <div className="scroll-container" style={{ backgroundColor: scrollBg, borderRadius: '16px', padding: '16px' }}>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'flex-start', alignItems: 'flex-start', width: 'max-content', maxHeight: '244px' }}>
                           {plants.slice(0, 3).map(plant => renderPlantCard(plant))}
                         </div>
@@ -955,7 +953,7 @@ function User() {
             ) : (
               <div className="not-authorized-container">
                 <div className="not-authorized-message">
-                  <p> Зарегистрируйся,
+                  <p style={{ color: textColor }}> Зарегистрируйся,
                     <br />
                     чтобы знать больше
                     <br />
@@ -975,7 +973,7 @@ function User() {
                   </div>
 
                   <div style={{ margin: "1vh 0", textAlign: "center" }}>
-                    <span style={{ fontSize: "1.7vh" }} className="login-link">
+                    <span style={{ fontSize: "1.7vh", color: textSecondary }} className="login-link">
                       Есть аккаунт?{" "}
                       <Link
                         to="/auth/signin"
@@ -994,7 +992,7 @@ function User() {
       </main>
       {modalOpen && selectedPlant && (
         <div className="modal-overlay" onClick={closePlantModal}>
-          <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative' }}>
+          <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative', backgroundColor: bgModal, color: textColor }}>
             <button
               className="modal-close-btn"
               onClick={closePlantModal}
@@ -1002,14 +1000,14 @@ function User() {
                 position: 'absolute',
                 top: '12px',
                 right: '12px',
-                background: '#FFFFFF',
-                border: '1px solid #ddd',
+                background: 'none',
+                border: 'none',
                 borderRadius: '50%',
                 width: '32px',
                 height: '32px',
                 fontSize: '20px',
                 cursor: 'pointer',
-                color: '#2d3436',
+                color: '#a8c686',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -1019,7 +1017,7 @@ function User() {
               ✕
             </button>
             <div style={{ display: "flex", gap: "33px", alignItems: "flex-start", flexWrap: "wrap" }}>
-              <div style={{ width: '220px', height: '220px', backgroundColor: '#F5F5F5', borderRadius: '20px', overflow: 'hidden', flexShrink: 0 }}>
+              <div style={{ width: '220px', height: '220px', backgroundColor: iconBg, borderRadius: '20px', overflow: 'hidden', flexShrink: 0 }}>
                 <PlantImage
                   src={selectedPlant.plant.photo}
                   alt={selectedPlant.plant.name}
@@ -1031,7 +1029,7 @@ function User() {
                 <h1 style={{
                   fontSize: "36px",
                   fontWeight: "500",
-                  color: "#2E2E2E",
+                  color: textColor,
                   margin: "0 0 12px 0",
                   wordBreak: "break-word",
                   overflowWrap: "break-word",
@@ -1041,14 +1039,14 @@ function User() {
                 </h1>
                 <p style={{
                   fontSize: "18px",
-                  color: "#666",
+                  color: textSecondary,
                   margin: "0 0 16px 0",
                   fontWeight: "450"
                 }}>
                   Комната: {selectedRoomName}
                 </p>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "8px" }}>
-                  <label style={{ fontSize: "16px", fontWeight: "500" }}>Цвет фона:</label>
+                  <label style={{ fontSize: "16px", fontWeight: "500", color: textColor }}>Цвет фона:</label>
                   <div
                     onClick={() => {
                       const input = document.getElementById(`color-picker-user-${selectedPlant.id}`);
@@ -1087,7 +1085,7 @@ function User() {
             <h1 style={{
               fontSize: "32px",
               fontWeight: "500",
-              color: "#2E2E2E",
+              color: textColor,
               margin: "40px 0 20px 0"
             }}>
               Уход за растением
@@ -1099,7 +1097,7 @@ function User() {
                 display: "flex",
                 alignItems: "flex-start",
                 marginBottom: "20px",
-                backgroundColor: "#ffffff",
+                backgroundColor: bgCard,
                 borderRadius: "12px",
                 padding: "16px"
               }}>
@@ -1119,8 +1117,8 @@ function User() {
                   <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt="" />
                 </div>
                 <div style={{ marginLeft: "14px", flex: 1 }}>
-                  <p style={{ fontSize: "24px", fontWeight: "450", margin: "0 0 8px 0" }}>Описание</p>
-                  <p style={{ fontSize: "20px", margin: 0, lineHeight: "1.5" }}>{selectedPlant.plant.description}</p>
+                  <p style={{ fontSize: "24px", fontWeight: "450", margin: "0 0 8px 0", color: textColor }}>Описание</p>
+                  <p style={{ fontSize: "20px", margin: 0, lineHeight: "1.5", color: textSecondary }}>{selectedPlant.plant.description}</p>
                 </div>
               </div>
               <hr style={{ width: "100%", margin: "20px 0", opacity: "50%", borderColor: "#A8C686" }} />
@@ -1129,7 +1127,7 @@ function User() {
                 display: "flex",
                 alignItems: "flex-start",
                 marginBottom: "20px",
-                backgroundColor: "#ffffff",
+                backgroundColor: bgCard,
                 borderRadius: "12px",
                 padding: "16px"
               }}>
@@ -1149,8 +1147,8 @@ function User() {
                   <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt="" />
                 </div>
                 <div style={{ marginLeft: "14px", flex: 1 }}>
-                  <p style={{ fontSize: "24px", fontWeight: "450", margin: "0 0 8px 0" }}>Сезон</p>
-                  <p style={{ fontSize: "18px", margin: 0, lineHeight: "1.5" }}>{selectedPlant.plant.season}</p>
+                  <p style={{ fontSize: "24px", fontWeight: "450", margin: "0 0 8px 0", color: textColor }}>Сезон</p>
+                  <p style={{ fontSize: "18px", margin: 0, lineHeight: "1.5", color: textSecondary }}>{selectedPlant.plant.season}</p>
                 </div>
               </div>
               <hr style={{ width: "100%", margin: "20px 0", opacity: "50%", borderColor: "#A8C686" }} />
@@ -1159,7 +1157,7 @@ function User() {
                 display: "flex",
                 alignItems: "flex-start",
                 marginBottom: "20px",
-                backgroundColor: "#ffffff",
+                backgroundColor: bgCard,
                 borderRadius: "12px",
                 padding: "16px"
               }}>
@@ -1179,21 +1177,21 @@ function User() {
                   <img style={{ width: "32px", height: "32px" }} src="/ph_plant-light.svg" alt="" />
                 </div>
                 <div style={{ marginLeft: "14px", flex: 1 }}>
-                  <p style={{ fontSize: "24px", fontWeight: "450", margin: "0 0 8px 0" }}>Рекомендации</p>
-                  <p style={{ fontSize: "18px", margin: 0, lineHeight: "1.5" }}>{selectedPlant.plant.recommendations || "У этого растения пока нет рекомендаций, но скоро появятся"}</p>
+                  <p style={{ fontSize: "24px", fontWeight: "450", margin: "0 0 8px 0", color: textColor }}>Рекомендации</p>
+                  <p style={{ fontSize: "18px", margin: 0, lineHeight: "1.5", color: textSecondary }}>{selectedPlant.plant.recommendations || "У этого растения пока нет рекомендаций, но скоро появятся"}</p>
                 </div>
               </div>
               <hr style={{ width: "100%", margin: "20px 0", opacity: "50%", borderColor: "#A8C686" }} />
             </div>
 
-            <h1 style={{ fontSize: "32px", fontWeight: "500", color: "#2E2E2E", margin: "40px 0 20px 0" }}>
+            <h1 style={{ fontSize: "32px", fontWeight: "500", color: textColor, margin: "40px 0 20px 0" }}>
               Мои заметки
             </h1>
             <div style={{ marginBottom: "20px" }}>
               {commentsLoading ? (
-                <p style={{ color: "#999", fontSize: "16px" }}>Загрузка заметок...</p>
+                <p style={{ color: textSecondary, fontSize: "16px" }}>Загрузка заметок...</p>
               ) : comments.length === 0 ? (
-                <p style={{ color: "#999", fontSize: "16px" }}>Заметок пока нет. Добавьте первую!</p>
+                <p style={{ color: textSecondary, fontSize: "16px" }}>Заметок пока нет. Добавьте первую!</p>
               ) : (
                 comments.map(comment => (
                   <div key={comment.id} style={{
@@ -1202,7 +1200,7 @@ function User() {
                     alignItems: "flex-start",
                     gap: "14px",
                     marginBottom: "16px",
-                    backgroundColor: "#ffffff",
+                    backgroundColor: bgCard,
                     borderRadius: "12px",
                     padding: "12px 16px"
                   }}>
@@ -1235,7 +1233,9 @@ function User() {
                               border: '1px solid #A8C686',
                               fontSize: '16px',
                               fontFamily: 'inherit',
-                              resize: 'vertical'
+                              resize: 'vertical',
+                              backgroundColor: bgInput,
+                              color: textColor
                             }}
                             autoFocus
                           />
@@ -1273,7 +1273,7 @@ function User() {
                           </div>
                         </div>
                       ) : (
-                        <p style={{ fontSize: "18px", margin: 0, lineHeight: "1.5", wordBreak: "break-word", borderRadius: "8px", padding: "8px", paddingBottom: "20px", background: "#E1E9D9", width: "95%" }}>{comment.text}</p>
+                        <p style={{ fontSize: "18px", margin: 0, lineHeight: "1.5", wordBreak: "break-word", borderRadius: "8px", padding: "8px", paddingBottom: "20px", background: noteBg, width: "95%", color: noteText }}>{comment.text}</p>
                       )}
                     </div>
                     {!editingCommentId && (
@@ -1336,10 +1336,12 @@ function User() {
                     resize: "vertical",
                     padding: "10px 14px",
                     borderRadius: "12px",
-                    border: "1px solid #ddd",
+                    border: `1px solid ${borderColor}`,
                     fontSize: "16px",
                     fontFamily: "inherit",
                     outline: "none",
+                    backgroundColor: bgInput,
+                    color: textColor
                   }}
                   onKeyDown={e => {
                     if (e.key === "Enter" && !e.shiftKey) {
