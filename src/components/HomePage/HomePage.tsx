@@ -652,9 +652,6 @@ const HomePage: React.FC = () => {
                                           style={{ backgroundColor: color }}
                                         />
                                       ))}
-                                      {taskColors.length > 3 && (
-                                        <span className="mobile-task-color-dot more">+{taskColors.length - 3}</span>
-                                      )}
                                     </div>
                                   )}
                                 </div>
@@ -1010,9 +1007,6 @@ const HomePage: React.FC = () => {
                                       style={{ backgroundColor: color }}
                                     />
                                   ))}
-                                  {taskColors.length > 3 && (
-                                    <span className="task-color-dot more">+{taskColors.length - 3}</span>
-                                  )}
                                 </div>
                               )}
                             </>
