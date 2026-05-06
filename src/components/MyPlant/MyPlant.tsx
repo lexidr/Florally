@@ -159,7 +159,7 @@ function useScreenSize() {
   useEffect(() => {
     const checkScreenSize = () => {
       const width = window.innerWidth;
-      if (width <= 810) {
+      if (width <= 841) {
         setScreenSize('mobile');
       } else {
         setScreenSize('desktop');
@@ -590,7 +590,7 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
 
   if (loading) {
     return (
-      <div className="app">
+      <div className="appMP">
         <header className="header"><div className="header-content"><Link to="/"><img src={"/logo.svg"} alt="Florally" className="logo" /></Link><div className="loading-auth">Загрузка...</div></div></header>
         <main className="my-plants-content">
           <div className="coming-soon-container">
@@ -606,7 +606,7 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
 
   if (isMobile) {
     return (
-      <div className="mobile-app">
+      <div className="mobile-appMP">
         <header className="mobile-header">
           <div className="mobile-header-content">
             <Link to="/"> <img src="/logo.svg" alt="Florally" className="mobile-logo" /> </Link>
@@ -1730,7 +1730,7 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
   }
 
   return (
-    <div className="app">
+    <div className="appMP">
       <header className="header">
         <div className="header-content">
           <Link to="/"><img src="/logo.svg" alt="Florally" className="logo" /></Link>

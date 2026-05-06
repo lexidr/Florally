@@ -389,7 +389,7 @@ button:hover {
   }
 }
 
-.mobile-app {
+.mobile-appUz {
   min-height: 100vh;
   background-color: #b9d19f;
   display: flex;
@@ -773,13 +773,13 @@ button:hover {
 }
 
 @media (max-width: 810px) {
-  .app {
+  .appUZ {
     display: none;
   }
 }
 
 @media (min-width: 811px) {
-  .mobile-app {
+  .mobile-appUz {
     display: none;
   }
 }
@@ -846,4 +846,10 @@ input:checked + .slider:before {
   transform: translateX(26px);
   background-color: transparent;
   box-shadow: inset -8px -2px 0 0 #bdc3c7; 
+}
+
+@media (width >= 968px) and (width <= 811) {
+  .appUZ {
+    display: block !important;
+  }
 }

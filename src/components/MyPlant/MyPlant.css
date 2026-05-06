@@ -9,7 +9,7 @@
   height: 6.4vh;
 }
 
-.mobile-app {
+.mobile-appMP {
   width: 100vw;
   height: 100vh;
   overflow-x: hidden;
@@ -131,7 +131,7 @@
 }
 
 .left_side_plants {
-  max-width: 699px;
+  max-width: 47%;
   margin: 37px 80px;
   max-height: calc(100vh - 74px);
   text-align: center;
@@ -802,5 +802,22 @@ input:checked + .slider:before {
   }
   .mobile-plant-card {
     width: 170px;
+  }
+}
+
+
+@media (max-width: 841px) {
+  .mobile-appMP {
+    display: block !important;
+  }
+  .appMP {
+    display: none !important;
+  }
+}
+
+@media (width < 1024px) {
+  .left_side_plants {
+    max-width: 35%;
+    margin: 37px 80px;
   }
 }

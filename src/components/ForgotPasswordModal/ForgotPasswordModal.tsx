@@ -213,7 +213,7 @@ const ForgotPasswordModal = ({ isOpen, onClose, initialEmail = "" }: ForgotPassw
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <div className="modal-contentPass" onClick={e => e.stopPropagation()}>
         <button className="modal-close" onClick={handleClose}>×</button>
         {renderStep()}
       </div>

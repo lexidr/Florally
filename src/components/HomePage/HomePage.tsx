@@ -242,7 +242,7 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
   useEffect(() => {
     const checkScreenSize = (): void => {
       const width = window.innerWidth;
-      setScreenSize(width <= 810 ? "mobile" : "desktop");
+      setScreenSize(width <= 968 ? "mobile" : "desktop");
     };
 
     checkScreenSize();
@@ -645,7 +645,7 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
 
   if (screenSize === "mobile") {
     return (
-      <div className="mobile-app">
+      <div className="mobile-appHP">
         <header className="mobile-header">
           <div className="mobile-header-content">
             <Link to="/"> <img src="/logo.svg" alt="Florally" className="mobile-logo" /> </Link>

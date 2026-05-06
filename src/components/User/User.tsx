@@ -163,7 +163,7 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
     const checkScreenSize = () => {
       const width = window.innerWidth;
       if (width <= 810) setScreenSize('mobile');
-      else if (width <= 1055) setScreenSize('tablet');
+      else if (width <= 1055) setScreenSize('desktop');
       else setScreenSize('desktop');
     };
     checkScreenSize();
@@ -441,7 +441,7 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
 
   if (loading) {
     return (
-      <div className="app">
+      <div className="appUZ">
         <header className="header">
           <div className="header-content">
             <Link to="/"><img src={"/logo.svg"} alt="Florally" className="logo" /></Link>
@@ -506,7 +506,7 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
 
   if (screenSize === 'mobile') {
     return (
-      <div className="mobile-app">
+      <div className="mobile-appUz">
         <header className="mobile-header">
           <div className="mobile-header-content">
             <Link to="/"> <img src="/logo.svg" alt="Florally" className="mobile-logo" /> </Link>
@@ -954,7 +954,7 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
   }
 
   return (
-    <div className="app">
+    <div className="appUZ">
       <header className="header">
         <div className="header-content">
           <Link to="/"><img src="/logo.svg" alt="Florally" className="logo" /></Link>
