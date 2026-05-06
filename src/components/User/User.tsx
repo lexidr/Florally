@@ -14,6 +14,19 @@ interface Comment {
   updated_at?: string;
 }
 
+async function generateTelegramLinkCode(): Promise<{ code: string; expiresInSeconds: number }> {
+  const token = localStorage.getItem("access_token");
+  const response = await fetch(`${API}/telegram/link-code`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
+  if (!response.ok) throw new Error("Не удалось сгенерировать код");
+  return response.json();
+}
+
 const PlantImage: React.FC<{
   src: string | null | undefined;
   alt: string;
@@ -123,6 +136,12 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editingCommentText, setEditingCommentText] = useState("");
   const [commentUpdating, setCommentUpdating] = useState(false);
+
+  const [isTelegramModalOpen, setIsTelegramModalOpen] = useState(false);
+  const [telegramCode, setTelegramCode] = useState("");
+  const [isTelegramLoading, setIsTelegramLoading] = useState(false);
+  const [codeCopied, setCodeCopied] = useState(false);
+  const [telegramError, setTelegramError] = useState("");
 
   const isCalendarActive = location.pathname === "/";
   const isMyPlantsActive = location.pathname === "/plants/my_plants";
@@ -277,6 +296,31 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
       setError(Array.isArray(message) ? message[0] : message);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleOpenTelegramModal = async () => {
+    setIsTelegramModalOpen(true);
+    setTelegramError("");
+    setTelegramCode("");
+    setIsTelegramLoading(true);
+    try {
+      const { code } = await generateTelegramLinkCode();
+      setTelegramCode(code);
+    } catch (err: any) {
+      setTelegramError(err.message || "Не удалось сгенерировать код");
+    } finally {
+      setIsTelegramLoading(false);
+    }
+  };
+
+  const handleCopyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(telegramCode);
+      setCodeCopied(true);
+      setTimeout(() => setCodeCopied(false), 2000);
+    } catch (err) {
+      console.error("Не удалось скопировать код");
     }
   };
 
@@ -466,12 +510,6 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
         <header className="mobile-header">
           <div className="mobile-header-content">
             <Link to="/"> <img src="/logo.svg" alt="Florally" className="mobile-logo" /> </Link>
-            <div className="theme-switch-wrapper" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-              <label className="theme-switch" htmlFor="mobile-checkbox-user">
-                <input type="checkbox" id="mobile-checkbox-user" checked={isDarkMode} onChange={toggleTheme} />
-                <div className="slider round"></div>
-              </label>
-            </div>
           </div>
         </header>
         <main className="mobile-main-content">
@@ -942,9 +980,14 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
           <div className="user-card" style={{ backgroundColor: bgCard, color: textColor }}>
             {isLoggedIn && user ? (
               <div className="user-profile">
-                <div className="user-header">
-                  <h1 className="user-name" style={{ color: textColor }}>{getUserName()}</h1>
-                  <p className="registration-date" style={{ color: textSecondary }}>Зарегистрирован {formatRegistrationDate()}</p>
+                <div className="user-header" style={{ display: 'flex', alignItems: 'center', gap: '12px',justifyContent: 'space-between' }}>
+                  <div>
+                    <h1 className="user-name" style={{ color: textColor }}>{getUserName()}</h1>
+                    <p className="registration-date" style={{ color: textSecondary }}>Зарегистрирован {formatRegistrationDate()}</p>
+                  </div>
+                  <a href="https://t.me/FlorallyBBot" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <img src="/Telegram.svg" alt="Telegram" style={{ width: '36px', height: '36px' }} />
+                  </a>
                 </div>
                 <div className="user-form">
                   <h2 style={{ color: textColor }}>Редактировать профиль</h2>
@@ -957,6 +1000,7 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
                     <div className="form-group"><label htmlFor="newPassword" style={{ color: textSecondary }}>Новый пароль</label><input type="password" id="newPassword" name="newPassword" value={formData.newPassword} onChange={handleFormChange} placeholder="Новый пароль" style={{ backgroundColor: bgInput, color: textColor, borderColor: borderColor }} autoComplete="new-password" /></div>
                   </div>
                   <button className="save-changes-btn" onClick={handleSaveChanges} disabled={isSaving} style={{ opacity: isSaving ? 0.7 : 1, cursor: isSaving ? 'not-allowed' : 'pointer' }}>{isSaving ? "Сохранение..." : "Сохранить изменения"}</button>
+                  <button className="save-changes-btn" onClick={handleOpenTelegramModal} style={{ marginTop: '12px', backgroundColor: '#68863F' }}>Подключить Telegram</button>
                 </div>
                 <div className="user-plants">
                   <h2 style={{ color: textColor }}>Мои растения</h2>
@@ -1419,6 +1463,44 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
               </button>
             </footer>
           </section>
+        </div>
+      )}
+
+      {isTelegramModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsTelegramModalOpen(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '450px', textAlign: 'center', backgroundColor: bgModal, color: textColor }}>
+            <button className="modal-close" onClick={() => setIsTelegramModalOpen(false)} style={{ color: '#a8c686' }}>×</button>
+            <h2 className="modal-title">Подключение Telegram</h2>
+            {isTelegramLoading ? (
+              <p>Генерация кода...</p>
+            ) : telegramError ? (
+              <>
+                <p style={{ color: '#DF7171' }}>{telegramError}</p>
+                <button className="modal-button" onClick={() => setIsTelegramModalOpen(false)}>Закрыть</button>
+              </>
+            ) : (
+              <>
+                <p>Скопируйте код и отправьте его боту <strong>@FlorallyBBot</strong> для привязки аккаунта</p>
+                <div style={{
+                  fontSize: '32px',
+                  fontWeight: 'bold',
+                  letterSpacing: '4px',
+                  background: isDarkMode ? '#2a2a2a' : '#f5f5f5',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  margin: '16px 0',
+                  fontFamily: 'monospace'
+                }}>{telegramCode}</div>
+                <button
+                  className="modal-button"
+                  onClick={handleCopyCode}
+                  style={{ backgroundColor: '#A8C686' }}
+                >
+                  {codeCopied ? 'Скопировано!' : 'Скопировать код'}
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>
