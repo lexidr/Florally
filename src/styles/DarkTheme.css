@@ -602,8 +602,7 @@ input:-moz-autofill {
 .dark-theme .modal-contentMP select *,
 .dark-theme .modal-contentMP input,
 .dark-theme .modal-contentMP input *,
-.dark-theme .modal-contentMP div[role="listbox"],
-.dark-theme .modal-contentMP [style*="cursor: pointer"] {
+.dark-theme .modal-contentMP div[role="listbox"] {
   background-color: var(--input-bg) !important;
   color: var(--text-white) !important;
   border-color: var(--border-light) !important;
