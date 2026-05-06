@@ -691,7 +691,7 @@ textarea,
 select {
   background-color: #ffffff !important;
   color: #2E2E2E !important;
-  transition: background-color 999999s ease 0s, color 999999s ease 0s !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
   -webkit-appearance: none !important;
   appearance: none !important;
 }
@@ -717,7 +717,7 @@ select:-webkit-autofill:focus,
 select:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
   -webkit-text-fill-color: #2E2E2E !important;
-  transition: background-color 999999s ease 0s, color 999999s ease 0s !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .dark-theme input:-webkit-autofill,
