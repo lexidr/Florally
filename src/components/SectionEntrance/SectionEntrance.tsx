@@ -9,9 +9,10 @@ interface LoginFormData {
   password: string;
 }
 
-const SectionEntrance = () => {
-  console.log("SectionEntrance: Компонент монтируется");
-
+const SectionEntrance: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
+  isDarkMode, 
+  toggleTheme 
+}) => {
   const navigate = useNavigate();
   const { signIn, isLoading, error, clearError, isAuthenticated } = useAuth();
 
@@ -23,47 +24,14 @@ const SectionEntrance = () => {
   const [formErrors, setFormErrors] = useState<Partial<LoginFormData>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log("SectionEntrance: Начальное состояние:", {
-    isLoading,
-    error,
-    isAuthenticated,
-    formData: {
-      email: formData.email,
-      password: "[СКРЫТО]",
-    },
-    formErrors,
-  });
-
   useEffect(() => {
-    console.log("SectionEntrance: useEffect запущен");
-    console.log(
-      "SectionEntrance: isAuthenticated изменился на:",
-      isAuthenticated
-    );
-
     if (isAuthenticated) {
-      console.log(
-        "SectionEntrance: Пользователь аутентифицирован, перенаправляем на главную"
-      );
       navigate("/");
     }
-
-    const token = localStorage.getItem("access_token");
-    const user = localStorage.getItem("user");
-    console.log("SectionEntrance: Проверка localStorage:", {
-      token: token ? "присутствует" : "отсутствует",
-      user: user ? "присутствует" : "отсутствует",
-    });
   }, [isAuthenticated, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-
-    console.log(
-      `SectionEntrance: Изменение поля ${id}: "${
-        id === "password" ? "[СКРЫТО]" : value
-      }"`
-    );
 
     setFormData((prev) => ({
       ...prev,
@@ -71,7 +39,6 @@ const SectionEntrance = () => {
     }));
 
     if (formErrors[id as keyof LoginFormData]) {
-      console.log(`SectionEntrance: Очистка ошибки для поля ${id}`);
       setFormErrors((prev) => ({
         ...prev,
         [id]: undefined,
@@ -79,45 +46,24 @@ const SectionEntrance = () => {
     }
 
     if (error) {
-      console.log("SectionEntrance: Очистка ошибки из useAuth");
       clearError();
     }
   };
 
   const validateForm = (): boolean => {
-    console.log("SectionEntrance: Начало валидации формы");
-    console.log("SectionEntrance: Данные для валидации:", {
-      email: formData.email,
-      passwordLength: formData.password.length,
-    });
-
     const errors: Partial<LoginFormData> = {};
 
     if (!formData.email.trim()) {
-      console.log("SectionEntrance: Валидация ошибка - email обязателен");
       errors.email = "Email обязателен";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      console.log(
-        `SectionEntrance: Валидация ошибка - некорректный email: ${formData.email}`
-      );
       errors.email = "Введите корректный email";
     }
 
     if (!formData.password) {
-      console.log("SectionEntrance: Валидация ошибка - пароль обязателен");
       errors.password = "Пароль обязателен";
     } else if (formData.password.length < 6) {
-      console.log(
-        `SectionEntrance: Валидация ошибка - пароль слишком короткий: ${formData.password.length} символов`
-      );
       errors.password = "Пароль должен содержать минимум 6 символов";
     }
-
-    console.log("SectionEntrance: Результат валидации:", {
-      isValid: Object.keys(errors).length === 0,
-      errorsCount: Object.keys(errors).length,
-      errors,
-    });
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -126,53 +72,22 @@ const SectionEntrance = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("SectionEntrance: Отправка формы");
-    console.log("SectionEntrance: Данные формы:", {
-      email: formData.email,
-      passwordLength: formData.password.length,
-    });
-
     if (!validateForm()) {
-      console.log("SectionEntrance: Валидация не пройдена, отправка отменена");
       return;
     }
 
-    console.log("SectionEntrance: Валидация пройдена, вызываю signIn");
-    console.log("SectionEntrance: Вызов signIn с данными:", {
-      email: formData.email,
-      password: "[СКРЫТО]",
-    });
-
     try {
-      const result = await signIn({
+      await signIn({
         email: formData.email,
         password: formData.password,
       });
-
-      console.log("SectionEntrance: signIn успешно выполнен:", result);
-      console.log(
-        "SectionEntrance: Проверка localStorage после входа:",
-        {
-          access_token: localStorage.getItem("access_token")
-            ? "присутствует"
-            : "отсутствует",
-          user: localStorage.getItem("user") ? "присутствует" : "отсутствует",
-        }
-      );
     } catch (err: any) {
-      console.error("SectionEntrance: Ошибка при входе:", err);
-      console.error("SectionEntrance: Детали ошибки:", {
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status,
-        config: err.config,
-      });
+      console.error("Ошибка при входе:", err);
     }
   };
 
   const handleForgotPassword = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log("SectionEntrance: Клик по 'Забыли пароль?' для email:", formData.email);
     setIsModalOpen(true);
   };
 
@@ -192,25 +107,15 @@ const SectionEntrance = () => {
     fontSize: "1.7vh",
   };
 
-  const logoStyle = {
-    position: "absolute" as const,
-    bottom: "20px",
-    left: "50%",
-    transform: "translateX(-50%)",
-  };
-
-  console.log("SectionEntrance: Рендер компонента с состоянием:", {
-    isLoading,
-    error,
-    formErrors,
-    formData: {
-      email: formData.email,
-      password: "[СКРЫТО]",
-    },
-  });
-
   return (
     <section className="entrance-container">
+      <div className="theme-switch-wrapper" style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 100 }}>
+        <label className="theme-switch" htmlFor="checkbox-entrance">
+          <input type="checkbox" id="checkbox-entrance" checked={isDarkMode} onChange={toggleTheme} />
+          <div className="slider round"></div>
+        </label>
+      </div>
+
       <div className="form-section">
         <div className="entrance-card">
           <h2>Вход</h2>

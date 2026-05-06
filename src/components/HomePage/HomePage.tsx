@@ -813,7 +813,7 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
         {isTaskModalOpen && (
           <div className="modal-overlay" onClick={() => closeTaskModal()}>
             <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px', position: 'relative', backgroundColor: 'white', borderRadius: '20px', minHeight: '0' }}>
-              <button onClick={() => closeTaskModal()} style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '20px', cursor: 'pointer', color: '#a8c686', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
+              <button onClick={() => closeTaskModal()} style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', width: '32px', height: '32px', fontSize: '20px', cursor: 'pointer', color: '#a8c686', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
               <h2 style={{ marginBottom: '20px', fontSize: '24px'  }}>Новая задача</h2>
               <div style={{ marginBottom: '16px', position: 'relative' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px' }}>
@@ -893,7 +893,7 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
         {isTaskInfoModalOpen && selectedTask && (
           <div className="modal-overlay" onClick={() => closeTaskInfoModal()}>
             <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '20px', position: 'relative', backgroundColor: 'white', borderRadius: '20px', minHeight: '0' }}>
-              <button onClick={() => closeTaskInfoModal()} style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: '1px solid #ddd', borderRadius: '50%', width: '32px', height: '32px', fontSize: '20px', cursor: 'pointer', color: '#a8c686', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
+              <button onClick={() => closeTaskInfoModal()} style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: '1px solid #ddd', width: '32px', height: '32px', fontSize: '20px', cursor: 'pointer', color: '#a8c686', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
               <h2 style={{ marginBottom: '20px', fontSize: '24px' }}>Детали задачи</h2>
               <div style={{ marginBottom: '16px' }}>
                 <p style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>{selectedTask.title}</p>
@@ -1094,7 +1094,7 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
       {isTaskModalOpen && (
         <div className="modal-overlay" onClick={() => closeTaskModal()}>
           <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px', maxHeight: '85vh', overflowY: 'auto', padding: '24px', position: 'relative', backgroundColor: 'white', borderRadius: '20px', minHeight: '0' }}>
-            <button onClick={() => closeTaskModal()} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', fontSize: '22px', cursor: 'pointer', color: '#a8c686', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
+            <button onClick={() => closeTaskModal()} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', width: '36px', height: '36px', fontSize: '22px', cursor: 'pointer', color: '#a8c686', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
             <h2 style={{ marginBottom: '24px', fontSize: '28px' }}>Новая задача</h2>
             <div style={{ marginBottom: '20px', position: 'relative' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
@@ -1174,7 +1174,7 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
       {isTaskInfoModalOpen && selectedTask && (
         <div className="modal-overlay" onClick={() => closeTaskInfoModal()}>
           <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto', padding: '24px', position: 'relative', backgroundColor: 'white', borderRadius: '20px', minHeight: '0' }}>
-            <button onClick={() => closeTaskInfoModal()} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: '1px solid #ddd', borderRadius: '50%', width: '36px', height: '36px', fontSize: '22px', cursor: 'pointer', color: '#a8c686', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
+            <button onClick={() => closeTaskInfoModal()} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: '1px solid #ddd', width: '36px', height: '36px', fontSize: '22px', cursor: 'pointer', color: '#a8c686', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>✕</button>
             <h2 style={{ marginBottom: '24px', fontSize: '28px' }}>Детали задачи</h2>
             <div style={{ marginBottom: '20px' }}>
               <p style={{ fontSize: '20px', fontWeight: '600', marginBottom: '16px' }}>{selectedTask.title}</p>

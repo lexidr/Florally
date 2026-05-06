@@ -9,9 +9,11 @@ interface RegistrationFormData {
   confirmPassword: string;
 }
 
-const RegistrationForm = () => {
+const RegistrationForm: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
+  isDarkMode, 
+  toggleTheme 
+}) => {
   const navigate = useNavigate();
-
 
   const isLoading = false;
   const error = null;
@@ -99,7 +101,6 @@ const RegistrationForm = () => {
 
   return (
     <>
-      {/* Стили из SectionRegistrationForm.css (потому что не импортировалось нормально)  */}
       <style>
         {`
           @keyframes modalSlideIn {
@@ -317,11 +318,95 @@ const RegistrationForm = () => {
               line-height: 1.0;
             }
           }
-        `}
 
+          .theme-switch-wrapper {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+          }
+
+          .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+          }
+
+          .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
+
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+          }
+
+          .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+            background: #f1c40f;
+          }
+
+          input:checked + .slider {
+            background-color: #A8C686;
+          }
+
+          input:checked + .slider:before {
+            transform: translateX(26px);
+          }
+
+          @media (max-width: 810px) {
+            .theme-switch-wrapper {
+              top: 16px;
+              right: 16px;
+            }
+            
+            .theme-switch {
+              width: 50px;
+              height: 28px;
+            }
+            
+            .slider:before {
+              height: 22px;
+              width: 22px;
+              left: 3px;
+              bottom: 3px;
+            }
+            
+            input:checked + .slider:before {
+              transform: translateX(22px);
+            }
+          }
+        `}
       </style>
 
       <section className="registration-container">
+        <div className="theme-switch-wrapper">
+          <label className="theme-switch" htmlFor="checkbox-registration">
+            <input type="checkbox" id="checkbox-registration" checked={isDarkMode} onChange={toggleTheme} />
+            <div className="slider round"></div>
+          </label>
+        </div>
+
         <div className="form-section">
           <div className="registration-card">
             <h2>Регистрация</h2>
