@@ -838,7 +838,7 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
                   <button onClick={() => setIsFilterOpen(!isFilterOpen)} style={{ width: '80px', height: '36px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',color:'#2d3436' }}>Фильтр</button>
                 </div>
                 {isFilterOpen && (
-                  <div style={{ marginBottom: '12px', padding: '10px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+                  <div style={{ marginBottom: '12px', padding: '4px',  borderRadius: '8px' }}>
                     <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500' }}>Фильтр по комнате</label>
                     <select value={selectedRoomFilter} onChange={e => setSelectedRoomFilter(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ddd' }}>
                       <option value="all">Все комнаты</option>
@@ -1119,7 +1119,7 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
                 <button onClick={() => setIsFilterOpen(!isFilterOpen)} style={{ width: '80px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', color:'#2d3436' }}>Фильтр</button>
               </div>
               {isFilterOpen && (
-                <div style={{ marginBottom: '12px', padding: '12px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+                <div style={{ marginBottom: '12px', padding: '4px', borderRadius: '8px' }}>
                   <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500' }}>Фильтр по комнате</label>
                   <select value={selectedRoomFilter} onChange={e => setSelectedRoomFilter(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ddd' }}>
                     <option value="all">Все комнаты</option>
