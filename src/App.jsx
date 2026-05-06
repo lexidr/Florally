@@ -47,8 +47,16 @@ export default function App() {
             element={<User isDarkMode={isDarkMode} toggleTheme={toggleTheme} />} 
           />
           
-          <Route path="/auth/signup" element={<SectionRegistrationForm />} />
-          <Route path="/auth/signin" element={<SectionEntrance />} />
+          <Route 
+            path="/auth/signup" 
+            element={<SectionRegistrationForm isDarkMode={isDarkMode} toggleTheme={toggleTheme} />} 
+          />
+          
+          <Route 
+            path="/auth/signin" 
+            element={<SectionEntrance isDarkMode={isDarkMode} toggleTheme={toggleTheme} />} 
+          />
+          
           <Route path="/auth/signup/confirmation/:confirmationToken" element={<EMailVerification />} />
           
           <Route 

@@ -1209,4 +1209,18 @@ body {
 
 .mobile-calendar-wrapper {
   width: 100%;
+input[type="checkbox"] {
+  appearance: auto !important;
+  -webkit-appearance: auto !important;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #A8C686;
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.dark-theme input[type="checkbox"] {
+  accent-color: #EDFFD8;
+  background-color: transparent !important;
 }

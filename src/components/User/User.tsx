@@ -510,6 +510,12 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
         <header className="mobile-header">
           <div className="mobile-header-content">
             <Link to="/"> <img src="/logo.svg" alt="Florally" className="mobile-logo" /> </Link>
+            <div className="theme-switch-wrapper" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+              <label className="theme-switch" htmlFor="mobile-checkbox-user">
+                <input type="checkbox" id="mobile-checkbox-user" checked={isDarkMode} onChange={toggleTheme} />
+                <div className="slider round"></div>
+              </label>
+            </div>
           </div>
         </header>
         <main className="mobile-main-content">
@@ -518,8 +524,20 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
               {isLoggedIn && user ? (
                 <div className="mobile-user-profile">
                   <div className="mobile-user-header">
-                    <h1 className="mobile-user-name" style={{ color: textColor }}>{getUserName()}</h1>
-                    <p className="mobile-registration-date" style={{ color: textSecondary }}>Зарегистрирован {formatRegistrationDate()}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',flexDirection:'column' }}>
+                      <div>
+                        <h1 className="mobile-user-name" style={{ color: textColor }}>{getUserName()}</h1>
+                        <p className="mobile-registration-date" style={{ color: textSecondary }}>Зарегистрирован {formatRegistrationDate()}</p>
+                      </div>
+                      <a 
+                        href="https://t.me/FlorallyBBot" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}
+                      >
+                        <img src="/Telegram.svg" alt="Telegram" style={{ width: '40px', height: '40px' }} />
+                      </a>
+                    </div>
                   </div>
                   <div className="mobile-user-form">
                     <h2 className="mobile-section-title" style={{ color: textColor }}>Редактировать профиль</h2>
@@ -544,6 +562,13 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
                       </div>
                     </div>
                     <button className="mobile-save-changes-btn" onClick={handleSaveChanges} disabled={isSaving} style={{ opacity: isSaving ? 0.7 : 1, cursor: isSaving ? 'not-allowed' : 'pointer' }}>{isSaving ? "Сохранение..." : "Сохранить изменения"}</button>
+                    <button 
+                      className="mobile-save-changes-btn" 
+                      onClick={handleOpenTelegramModal} 
+                      style={{ marginTop: '12px', backgroundColor: '#68863F' }}
+                    >
+                      Подключить Telegram
+                    </button>
                   </div>
                   <div className="mobile-user-plants">
                     <h2 className="mobile-section-title" style={{ color: textColor }}>Мои растения</h2>
@@ -947,6 +972,47 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
                 Удалить растение
               </button>
             </section>
+          </div>
+        )}
+
+        {isTelegramModalOpen && (
+          <div className="modal-overlay" onClick={() => setIsTelegramModalOpen(false)}>
+            <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', textAlign: 'center', backgroundColor: bgModal, color: textColor, margin: '20px', width: 'calc(100% - 40px)' }}>
+              <button className="modal-close" onClick={() => setIsTelegramModalOpen(false)} style={{ color: '#a8c686' }}>×</button>
+              <h2 className="modal-title" style={{ fontSize: '24px', marginBottom: '16px' }}>Подключение Telegram</h2>
+              {isTelegramLoading ? (
+                <p>Генерация кода...</p>
+              ) : telegramError ? (
+                <>
+                  <p style={{ color: '#DF7171' }}>{telegramError}</p>
+                  <button className="modal-button" onClick={() => setIsTelegramModalOpen(false)}>Закрыть</button>
+                </>
+              ) : (
+                <>
+                  <p style={{ fontSize: '14px', marginBottom: '12px' }}>
+                    Скопируйте код и отправьте его боту <strong>@FlorallyBBot</strong> для привязки аккаунта
+                  </p>
+                  <div style={{
+                    fontSize: '28px',
+                    fontWeight: 'bold',
+                    letterSpacing: '4px',
+                    background: isDarkMode ? '#2a2a2a' : '#f5f5f5',
+                    padding: '14px',
+                    borderRadius: '12px',
+                    margin: '16px 0',
+                    fontFamily: 'monospace',
+                    wordBreak: 'break-all'
+                  }}>{telegramCode}</div>
+                  <button
+                    className="modal-button"
+                    onClick={handleCopyCode}
+                    style={{ backgroundColor: '#A8C686', padding: '12px 20px', fontSize: '16px' }}
+                  >
+                    {codeCopied ? 'Скопировано!' : 'Скопировать код'}
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         )}
       </div>

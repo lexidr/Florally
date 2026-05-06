@@ -2135,7 +2135,8 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                       margin: "0 0 12px 0",
                       wordBreak: "break-word",
                       overflowWrap: "break-word",
-                      lineHeight: "1.2"
+                      lineHeight: "1.2",
+                      maxWidth: "400px",
                     }}>
                       {selectedPlant.name}
                     </h1>

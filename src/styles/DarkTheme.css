@@ -249,21 +249,20 @@ body.dark-theme {
   background-color: #c55a5a !important;
 }
 
-.dark-theme input,
+.dark-theme input:not([type="checkbox"]),
 .dark-theme textarea,
-.dark-theme select,
-.dark-theme .mobile-input {
+.dark-theme select {
   background-color: var(--input-bg) !important;
   color: var(--text-white) !important;
   border: 1px solid var(--border-light) !important;
 }
 
-.dark-theme input::placeholder,
+.dark-theme input:not([type="checkbox"])::placeholder,
 .dark-theme textarea::placeholder {
   color: #aaa !important;
 }
 
-.dark-theme input:focus,
+.dark-theme input:not([type="checkbox"]):focus,
 .dark-theme textarea:focus,
 .dark-theme select:focus {
   border-color: var(--button-green) !important;
@@ -543,4 +542,201 @@ body.dark-theme {
 
 .dark-theme .modal-contentMP [style*="background-color: #f0f0f0"] {
   background-color: var(--input-bg) !important;
+}
+
+.dark-theme a img[src*="Telegram.svg"],
+.dark-theme a img[alt*="Telegram"],
+.dark-theme img[src="/Telegram.svg"] {
+  filter: brightness(0) invert(1);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
+  -webkit-text-fill-color: #2E2E2E !important;
+  background-color: #ffffff !important;
+}
+
+.dark-theme input:-webkit-autofill,
+.dark-theme textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px var(--input-bg) inset !important;
+  -webkit-text-fill-color: var(--text-white) !important;
+  background-color: var(--input-bg) !important;
+}
+
+.entrance-card input:-webkit-autofill,
+.registration-card input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
+  -webkit-text-fill-color: #2E2E2E !important;
+}
+
+.dark-theme .entrance-card input:-webkit-autofill,
+.dark-theme .registration-card input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px var(--input-bg) inset !important;
+  -webkit-text-fill-color: var(--text-white) !important;
+}
+
+input:-moz-autofill {
+  box-shadow: 0 0 0 30px #ffffff inset !important;
+  background-color: #ffffff !important;
+  color: #2E2E2E !important;
+}
+
+.dark-theme input:-moz-autofill {
+  box-shadow: 0 0 0 30px var(--input-bg) inset !important;
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+}
+
+.dark-theme .modal-contentMP select,
+.dark-theme .modal-contentMP select *,
+.dark-theme .modal-contentMP input,
+.dark-theme .modal-contentMP input *,
+.dark-theme .modal-contentMP div[role="listbox"],
+.dark-theme .modal-contentMP [style*="cursor: pointer"] {
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+  border-color: var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP select {
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+  border: 1px solid var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP select option {
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+}
+
+.dark-theme .modal-contentMP input {
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+  border: 1px solid var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP input::placeholder {
+  color: #888 !important;
+}
+
+.dark-theme .modal-contentMP div[style*="border: 1px solid #ddd"],
+.dark-theme .modal-contentMP div[style*="border: 1px solid rgb(221, 221, 221)"],
+.dark-theme .modal-contentMP div[style*="border: 1px solid #eee"] {
+  border: 1px solid var(--border-light) !important;
+  background-color: var(--input-bg) !important;
+}
+
+.dark-theme .modal-contentMP div[style*="background-color: white"],
+.dark-theme .modal-contentMP div[style*="background-color: #f9f9f9"],
+.dark-theme .modal-contentMP div[style*="background-color: #f0f0f0"] {
+  background-color: var(--input-bg) !important;
+}
+
+.dark-theme .modal-contentMP button[style*="background-color: #f0f0f0"] {
+  background-color: #3a3a3a !important;
+  color: var(--text-white) !important;
+  border: 1px solid var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP span,
+.dark-theme .modal-contentMP label,
+.dark-theme .modal-contentMP h2,
+.dark-theme .modal-contentMP p {
+  color: var(--text-white) !important;
+}
+
+.dark-theme .modal-contentMP [style*="color: #666"],
+.dark-theme .modal-contentMP [style*="color: #999"] {
+  color: #aaa !important;
+}
+
+.dark-theme .modal-contentMP div[style*="position: absolute"] {
+  background-color: var(--input-bg) !important;
+  border-color: var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP div[style*="position: absolute"] div {
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+  border-bottom-color: var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP div[style*="position: absolute"] div:hover {
+  background-color: #3a3a3a !important;
+}
+
+.dark-theme .modal-contentMP input[type="checkbox"] {
+  background-color: transparent !important;
+  accent-color: var(--button-green);
+}
+
+body.dark-theme,
+body.dark-theme * {
+  color-scheme: dark !important;
+}
+
+input:not([type="checkbox"]),
+textarea,
+select {
+  background-color: #ffffff !important;
+  color: #2E2E2E !important;
+  transition: background-color 999999s ease 0s, color 999999s ease 0s !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+.dark-theme input:not([type="checkbox"]),
+.dark-theme textarea,
+.dark-theme select {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #2E2E2E !important;
+  transition: background-color 999999s ease 0s, color 999999s ease 0s !important;
+}
+
+.dark-theme input:-webkit-autofill,
+.dark-theme textarea:-webkit-autofill,
+.dark-theme select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #2a2a2a inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+input:-moz-autofill,
+textarea:-moz-autofill,
+select:-moz-autofill {
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  color: #2E2E2E !important;
+}
+
+.dark-theme input:-moz-autofill,
+.dark-theme textarea:-moz-autofill,
+.dark-theme select:-moz-autofill {
+  box-shadow: 0 0 0 1000px #2a2a2a inset !important;
+  color: #ffffff !important;
 }
