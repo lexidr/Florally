@@ -740,3 +740,176 @@ select:-moz-autofill {
   box-shadow: 0 0 0 1000px #2a2a2a inset !important;
   color: #ffffff !important;
 }
+
+.dark-theme .modal-contentPass {
+  background-color: var(--modal-bg) !important;
+  color: var(--text-white) !important;
+  box-shadow: 0 40px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark-theme .modal-contentPass .modal-title {
+  color: var(--text-white) !important;
+}
+
+.dark-theme .modal-contentPass .modal-note {
+  color: #aaa !important;
+}
+
+.dark-theme .modal-contentPass .modal-field input {
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+  border: 2px solid var(--border-light) !important;
+}
+
+.dark-theme .modal-contentPass .modal-field input:focus {
+  border-color: var(--button-green) !important;
+  outline: none;
+}
+
+.dark-theme .modal-contentPass .modal-field input::placeholder {
+  color: #888 !important;
+}
+
+.dark-theme .modal-contentPass .modal-close {
+  color: var(--button-green) !important;
+}
+
+.dark-theme .modal-contentPass .modal-close:hover {
+  color: var(--button-green-hover) !important;
+  background: none !important;
+}
+
+.dark-theme .modal-contentPass .modal-button {
+  background-color: var(--button-green) !important;
+  color: #2d2d2d !important;
+}
+
+.dark-theme .modal-contentPass .modal-button:hover {
+  background-color: var(--button-green-hover) !important;
+  color: #1a1a1a !important;
+}
+
+.dark-theme .modal-contentPass .error-text {
+  color: #ff8888 !important;
+}
+
+.dark-theme .email-confirmation-content {
+  background-color: var(--bg-dark) !important;
+}
+
+.dark-theme .confirmation-title {
+  color: var(--text-white) !important;
+}
+
+.dark-theme .confirmation-text {
+  color: #aaa !important;
+}
+
+.dark-theme .confirmation-button {
+  background-color: var(--button-green) !important;
+  color: #2d2d2d !important;
+  border: 2.5px solid var(--button-green) !important;
+}
+
+.dark-theme .confirmation-button:hover {
+  background-color: var(--button-green-hover) !important;
+  border-color: var(--button-green-hover) !important;
+}
+
+.dark-theme .modal-overlay {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.dark-theme .modal-contentMP {
+  background-color: var(--modal-bg) !important;
+  color: var(--text-white) !important;
+}
+
+.dark-theme .modal-contentMP h2,
+.dark-theme .modal-contentMP h3,
+.dark-theme .modal-contentMP p,
+.dark-theme .modal-contentMP label,
+.dark-theme .modal-contentMP span {
+  color: var(--text-white) !important;
+}
+
+.dark-theme .modal-contentMP input:not([type="checkbox"]),
+.dark-theme .modal-contentMP textarea,
+.dark-theme .modal-contentMP select {
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+  border: 1px solid var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP input:not([type="checkbox"]):focus,
+.dark-theme .modal-contentMP textarea:focus,
+.dark-theme .modal-contentMP select:focus {
+  border-color: var(--button-green) !important;
+  outline: none;
+}
+
+.dark-theme .modal-contentMP input::placeholder,
+.dark-theme .modal-contentMP textarea::placeholder {
+  color: #888 !important;
+}
+
+.dark-theme .modal-contentMP button:not(.modal-close):not(.modal-close-btn) {
+  background-color: var(--button-green) !important;
+  color: #2d2d2d !important;
+}
+
+.dark-theme .modal-contentMP button:not(.modal-close):not(.modal-close-btn):hover {
+  background-color: var(--button-green-hover) !important;
+}
+
+.dark-theme .modal-contentMP .modal-close,
+.dark-theme .modal-contentMP .modal-close-btn {
+  color: var(--button-green) !important;
+  background: none !important;
+}
+
+.dark-theme .modal-contentMP .modal-close:hover,
+.dark-theme .modal-contentMP .modal-close-btn:hover {
+  color: var(--button-green-hover) !important;
+  background: none !important;
+}
+
+/* Стили для выпадающих списков в модалках */
+.dark-theme .modal-contentMP select option {
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+}
+
+.dark-theme .modal-contentMP div[style*="position: absolute"],
+.dark-theme .modal-contentMP .dropdown-menu {
+  background-color: var(--input-bg) !important;
+  border-color: var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP div[style*="position: absolute"] div,
+.dark-theme .modal-contentMP .dropdown-menu div {
+  background-color: var(--input-bg) !important;
+  color: var(--text-white) !important;
+  border-bottom-color: var(--border-light) !important;
+}
+
+.dark-theme .modal-contentMP div[style*="position: absolute"] div:hover,
+.dark-theme .modal-contentMP .dropdown-menu div:hover {
+  background-color: #3a3a3a !important;
+}
+
+.dark-theme .modal-contentMP input[type="checkbox"] {
+  accent-color: var(--button-green) !important;
+  background-color: transparent !important;
+}
+
+.dark-theme .modal-contentMP button[style*="background-color: #DF7171"],
+.dark-theme .modal-contentMP button[style*="background:#DF7171"] {
+  background-color: #DF7171 !important;
+  color: white !important;
+}
+
+.dark-theme .modal-contentMP button[style*="background-color: #DF7171"]:hover,
+.dark-theme .modal-contentMP button[style*="background:#DF7171"]:hover {
+  background-color: #c55a5a !important;
+}
