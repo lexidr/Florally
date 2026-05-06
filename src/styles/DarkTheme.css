@@ -544,3 +544,9 @@ body.dark-theme {
 .dark-theme .modal-contentMP [style*="background-color: #f0f0f0"] {
   background-color: var(--input-bg) !important;
 }
+
+.dark-theme a img[src*="Telegram.svg"],
+.dark-theme a img[alt*="Telegram"],
+.dark-theme img[src="/Telegram.svg"] {
+  filter: brightness(0) invert(1);
+}
