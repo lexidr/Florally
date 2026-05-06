@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { checkAuth, SignOut } from "../../api/authApi";
 import { getUserPlants, type UserPlant } from "../../api/plantsApi";
 import { getUserRooms, type Room } from "../../api/roomsApi";
+import { createEvent, getEvents, deleteEvent, updateEvent } from "../../api/eventsApi";
 import "./HomePage.css";
 
 interface User {
@@ -26,6 +27,7 @@ interface Task {
   date: string;
   completed: boolean;
   color: string;
+  serverEventId?: string;
 }
 
 const PlantImage: React.FC<{
@@ -159,7 +161,7 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
   };
 
   const loadUserData = async () => {
-    if (!isLoggedIn) return;
+    if (!isLoggedIn) return [];
     try {
       const [plants, roomsData] = await Promise.all([getUserPlants(), getUserRooms()]);
       setRooms(roomsData || []);
@@ -195,6 +197,30 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
       return true;
     }
     return false;
+  };
+
+  const loadServerEvents = async () => {
+    try {
+      const serverEvents = await getEvents();
+      const mapped = serverEvents.map((e: any) => ({
+        id: e.id,
+        title: e.name,
+        type: e.description?.replace("Тип: ", "") || "Задача",
+        plantIds: [e.user_plants_id],
+        date: formatLocalDate(new Date(e.data)),
+        completed: e.completed,
+        color: e.color || "#A8C686",
+        serverEventId: e.id,
+      }));
+      const savedTasks = localStorage.getItem("user_tasks");
+      const localTasks = savedTasks ? JSON.parse(savedTasks) : [];
+      const localWithoutServer = localTasks.filter((t: Task) => !t.serverEventId);
+      const merged = [...mapped, ...localWithoutServer];
+      localStorage.setItem("user_tasks", JSON.stringify(merged));
+      setTasks(merged.map(normalizeTaskDate));
+    } catch (error) {
+      console.error("Ошибка загрузки событий с сервера:", error);
+    }
   };
 
   const loadTasks = () => {
@@ -233,7 +259,7 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
 
         if (authData.isAuthenticated) {
           const plants = await loadUserData();
-          loadTasks();
+          await loadServerEvents();
           if (plants && plants.length > 0) {
             enrichTasksWithColors(plants);
           }
@@ -325,12 +351,32 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
     return [...tasksForDate.filter(t => !t.completed), ...tasksForDate.filter(t => t.completed)];
   };
 
-  const toggleTaskComplete = (taskId: string) => {
-    const updatedTasks = tasks.map(task => task.id === taskId ? { ...task, completed: !task.completed } : task);
+  const toggleTaskComplete = async (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    const newCompleted = !task.completed;
+    const updatedTasks = tasks.map(t => t.id === taskId ? { ...t, completed: newCompleted } : t);
     saveTasks(updatedTasks);
+    
+    if (task.serverEventId) {
+      try {
+        await updateEvent(task.serverEventId, { completed: newCompleted });
+      } catch (error) {
+        console.error("Ошибка обновления события на сервере:", error);
+      }
+    }
   };
 
-  const deleteTask = (taskId: string) => {
+  const deleteTask = async (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task?.serverEventId) {
+      try {
+        await deleteEvent(task.serverEventId);
+      } catch (error) {
+        console.error("Ошибка удаления события с сервера:", error);
+      }
+    }
     saveTasks(tasks.filter(task => task.id !== taskId));
   };
 
@@ -465,9 +511,7 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
     setIsSubmitting(true);
     const baseDate = selectedDate;
     const tasksToAdd: Task[] = [];
-    let intervals: number[] = [];
-    let count = 0;
-
+    
     switch (newTask.recurrence) {
       case "every2days":
         for (let i = 0; i < 14; i++) {
@@ -539,6 +583,21 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
           completed: false,
           color: taskColor,
         });
+    }
+
+    for (const task of tasksToAdd) {
+      try {
+        const serverEvent = await createEvent({
+          name: task.title,
+          date: task.date,
+          user_plant_id: task.plantIds[0],
+          color: task.color,
+          description: `Тип: ${task.type}`,
+        });
+        task.serverEventId = serverEvent.id;
+      } catch (error) {
+        console.error("Ошибка сохранения на сервер:", error);
+      }
     }
 
     const updatedTasks = [...tasks, ...tasksToAdd];
