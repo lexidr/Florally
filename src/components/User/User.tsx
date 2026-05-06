@@ -184,7 +184,7 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
     return null;
   };
 
-useEffect(() => {
+  useEffect(() => {
     const authCheck = async () => {
       try {
         const authData = checkAuth();
@@ -200,6 +200,25 @@ useEffect(() => {
               setRegistrationDate(fullProfile.created_at);
             }
           }
+
+          setFormData({
+            username: authData.user.username || "",
+            email: authData.user.email || "",
+            password: "",
+            newPassword: "",
+          });
+          await loadData();
+        }
+      } catch (error) {
+        console.error("Ошибка при проверке аутентификации:", error);
+        setIsLoggedIn(false);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    authCheck();
+  }, []);
 
   const handleLoginClick = () => navigate("/auth/signin");
   const handleViewMoreClick = () => navigate("/plants/my_plants");

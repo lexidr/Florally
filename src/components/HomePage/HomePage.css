@@ -1090,6 +1090,7 @@ body {
 }
 
 .slider:before {
+  background-color: #f1c40f;
   bottom: 4px;
   content: "";
   height: 26px;
