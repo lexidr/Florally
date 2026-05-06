@@ -8,6 +8,7 @@ body.dark-theme {
   --border-light: #4a4a4a;
   --input-bg: #2a2a2a;
   --modal-bg: #202020;
+  --button-dark: #2d2d2d;
 }
 
 body.dark-theme {
@@ -318,7 +319,7 @@ body.dark-theme {
 }
 
 .dark-theme .theme-switch input:checked + .slider {
-  background-color: var(--button-green);
+  background-color: var(--button-dark);
 }
 
 .dark-theme .theme-switch input:checked + .slider:before {

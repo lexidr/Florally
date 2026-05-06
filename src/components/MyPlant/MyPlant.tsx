@@ -610,6 +610,12 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
         <header className="mobile-header">
           <div className="mobile-header-content">
             <Link to="/"> <img src="/logo.svg" alt="Florally" className="mobile-logo" /> </Link>
+            <div className="theme-switch-wrapper" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+              <label className="theme-switch" htmlFor="mobile-checkbox-user">
+                <input type="checkbox" id="mobile-checkbox-user" checked={isDarkMode} onChange={toggleTheme} />
+                <div className="slider round"></div>
+              </label>
+            </div>
           </div>
         </header>
 
