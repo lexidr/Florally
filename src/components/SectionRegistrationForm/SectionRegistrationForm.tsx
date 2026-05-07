@@ -1,6 +1,7 @@
 import "./SectionRegistrationForm.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { SignUp } from "../../api/authApi";
 
 interface RegistrationFormData {
   username: string;
@@ -15,8 +16,8 @@ const RegistrationForm: React.FC<{ isDarkMode: boolean; toggleTheme: () => void 
 }) => {
   const navigate = useNavigate();
 
-  const isLoading = false;
-  const error = null;
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<RegistrationFormData>({
     username: "",
@@ -44,6 +45,10 @@ const RegistrationForm: React.FC<{ isDarkMode: boolean; toggleTheme: () => void 
         [id]: undefined,
       }));
     }
+
+    if (error) {
+      setError(null);
+    }
   };
 
   const validateForm = (): boolean => {
@@ -54,11 +59,17 @@ const RegistrationForm: React.FC<{ isDarkMode: boolean; toggleTheme: () => void 
     }
     if (!formData.email.trim()) {
       errors.email = "Email обязателен";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Введите корректный email";
     }
     if (!formData.password) {
       errors.password = "Пароль обязателен";
+    } else if (formData.password.length < 6) {
+      errors.password = "Пароль должен содержать минимум 6 символов";
     }
-    if (formData.password !== formData.confirmPassword) {
+    if (!formData.confirmPassword) {
+      errors.confirmPassword = "Подтверждение пароля обязательно";
+    } else if (formData.password !== formData.confirmPassword) {
       errors.confirmPassword = "Пароли не совпадают";
     }
     
@@ -84,11 +95,29 @@ const RegistrationForm: React.FC<{ isDarkMode: boolean; toggleTheme: () => void 
       return;
     }
 
-    setRegisteredUser({
-      username: formData.username,
-      email: formData.email,
-    });
-    setShowModal(true);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await SignUp({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      setRegisteredUser({
+        username: formData.username,
+        email: formData.email,
+      });
+      setShowModal(true);
+      
+    } catch (err: any) {
+      console.error("RegistrationForm: Ошибка при регистрации:", err);
+      const errorMessage = err.message || "Ошибка при регистрации";
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const linkContainerStyle = {
@@ -121,7 +150,7 @@ const RegistrationForm: React.FC<{ isDarkMode: boolean; toggleTheme: () => void 
             right: 0;
             bottom: 0;
             backdrop-filter: blur(3px);
-            background:none;
+            background: rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -536,8 +565,8 @@ const RegistrationForm: React.FC<{ isDarkMode: boolean; toggleTheme: () => void 
           <div className="modal-overlay">
             <div className="modal-contentMail">
               <button className="modal-close-btnMail" onClick={closeModal}>✕</button>
-              <div className="text_1"><span className="text_1">На почту выслано письмо для подтверждения</span></div>
-              <div className="text_2"><span className="text_2">*при неверно введенных данных никнейм будет доступен через 15 минут</span></div>
+              <div className="text_1"><span>На почту выслано письмо для подтверждения</span></div>
+              <div className="text_2"><span>*при неверно введенных данных никнейм будет доступен через 15 минут</span></div>
             </div>
           </div>
         )}
