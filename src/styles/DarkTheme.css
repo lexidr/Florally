@@ -16,6 +16,8 @@ body.dark-theme {
   color: var(--text-white);
 }
 
+.dark-theme .mobile-app-ev,
+.dark-theme .appEv,
 .dark-theme .app,
 .dark-theme .mobile-app,
 .dark-theme .main-content,

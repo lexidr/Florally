@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { checkAuth, SignOut, confirmEmail } from "../../api/authApi";
 import "./EMailVerification.css";
 
-function EMailVerification() {
+function EMailVerification({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: () => void }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { confirmationToken } = useParams();
@@ -146,34 +146,29 @@ function EMailVerification() {
     return (
       <div className="appEv">
         <header className="header">
-          <div className="header-content">
-            <Link to="/">
-              <img src="/logo.svg" alt="Florally" className="logo" />
-            </Link>
-            <nav className="navigation">
-              <Link to="/plants/my_plants" className={`nav-link ${isMyPlantsActive ? "calendar-active" : ""}`}>
-                Мои растения
-              </Link>
-              <Link to="/" className={`nav-link ${isCalendarActive ? "calendar-active" : ""}`}>
-                Календарь
-              </Link>
-              <Link to="/user" className={`nav-link ${isUserActive ? "calendar-active" : ""}`}>
-                Профиль
-              </Link>
-            </nav>
-            <div className="auth-section">
-              {isLoggedIn ? (
-                <button className="auth-button logout-button" onClick={handleLogoutClick}>
-                  Выйти
-                </button>
-              ) : (
-                <button className="auth-button login-button" onClick={handleLoginClick}>
-                  Войти
-                </button>
-              )}
-            </div>
-          </div>
-        </header>
+                <div className="header-content">
+                  <Link to="/"><img src="/logo.svg" alt="Florally" className="logo" /></Link>
+                  <nav className="navigation">
+                    <Link to="/plants/my_plants" className={`nav-link ${isMyPlantsActive ? "calendar-active" : ""}`}>Мои растения</Link>
+                    <Link to="/" className={`nav-link ${isCalendarActive ? "calendar-active" : ""}`}>Календарь</Link>
+                    <Link to="/user" className={`nav-link ${isUserActive ? "calendar-active" : ""}`}>Профиль</Link>
+                  </nav>
+                  <div className="auth-section">
+                    <div className="theme-switch-wrapper" style={{ marginRight: '15px', display: 'flex', alignItems: 'center' }}>
+                      <label className="theme-switch" htmlFor="checkbox">
+                        <input type="checkbox" id="checkbox" checked={isDarkMode} onChange={toggleTheme} />
+                        <div className="slider round"></div>
+                      </label>
+                    </div>
+        
+                    {isLoggedIn ? (
+                      <button className="auth-section-button logout-button" onClick={() => { handleLogoutClick(); }}>Выйти</button>
+                    ) : (
+                      <button className="auth-section-button login-button" onClick={() => handleLoginClick()}>Войти</button>
+                    )}
+                  </div>
+                </div>
+              </header>
         <main className="email-confirmation-content">{renderContent()}</main>
       </div>
     );
@@ -181,13 +176,17 @@ function EMailVerification() {
 
   return (
     <div className="mobile-app-ev">
-      <header className="mobile-header-ev">
-        <div className="mobile-header-content-ev">
-          <Link to="/">
-            <img src="/logo.svg" alt="Florally" className="mobile-logo-ev" />
-          </Link>
-        </div>
-      </header>
+       <header className="mobile-header">
+          <div className="mobile-header-content">
+            <Link to="/"> <img src="/logo.svg" alt="Florally" className="mobile-logo" /> </Link>
+            <div className="theme-switch-wrapper" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+              <label className="theme-switch" htmlFor="mobile-checkbox-user">
+                <input type="checkbox" id="mobile-checkbox-user" checked={isDarkMode} onChange={toggleTheme} />
+                <div className="slider round"></div>
+              </label>
+            </div>
+          </div>
+        </header>
       <main className="mobile-email-confirmation-content">{renderContent()}</main>
       <div className="mobile-bottom-menu-ev">
         <Link to="/plants/my_plants" className="mobile-menu-item-ev">
