@@ -980,42 +980,37 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                         </p>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
                           <label style={{ fontSize: "14px", color: textColor }}>Цвет фона:</label>
-                          <div
-                            onClick={() => {
-                              const input = document.getElementById(`color-picker-mobile-${selectedPlant?.id}`);
-                              if (input) input.click();
-                            }}
-                            style={{
+                          {/* Исправленный выбор цвета: прозрачный инпут поверх квадрата */}
+                          <div style={{ position: "relative", display: "inline-block" }}>
+                            <div style={{
                               width: "40px",
                               height: "40px",
                               borderRadius: "6px",
                               border: "2px solid #ddd",
                               backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF",
-                              cursor: "pointer",
-                              transition: "transform 0.1s ease",
-                              margin: '4px'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                            onTouchStart={(e) => e.currentTarget.style.transform = "scale(0.95)"}
-                            onTouchEnd={(e) => e.currentTarget.style.transform = "scale(1)"}
-                          />
-                          <input
-                            id={`color-picker-mobile-${selectedPlant?.id}`}
-                            type="color"
-                            value={userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF"}
-                            onChange={(e) => {
-                              const plant = userPlants.find(p => p.id === selectedPlant.id);
-                              if (plant) handleUpdateColor(plant.id, e.target.value);
-                            }}
-                            style={{
-                              position: "fixed",
-                              opacity: 0,
-                              pointerEvents: "none",
-                              width: 0,
-                              height: 0
-                            }}
-                          />
+                              cursor: "pointer"
+                            }} />
+                            <input
+                              type="color"
+                              value={userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF"}
+                              onChange={(e) => {
+                                const plant = userPlants.find(p => p.id === selectedPlant.id);
+                                if (plant) handleUpdateColor(plant.id, e.target.value);
+                              }}
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                opacity: 0,
+                                cursor: "pointer",
+                                margin: 0,
+                                padding: 0,
+                                border: "none",
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1250,7 +1245,6 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
             {addPlantModalOpen && (
               <div className="modal-overlay" onClick={() => setAddPlantModalOpen(false)}>
                 <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto', position: 'relative', backgroundColor: bgModal, color: textColor }}>
-                  <h2 style={{ color: textColor }}>Добавить растение</h2>
                   <button
                     className="modal-close-btn"
                     onClick={() => setAddPlantModalOpen(false)}
@@ -1258,6 +1252,7 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                   >
                     ✕
                   </button>
+                  <h2 style={{ color: textColor }}>Добавить растение</h2>
                   <input
                     type="text"
                     placeholder="Поиск растения..."
@@ -1371,37 +1366,33 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                       <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                           <label style={{ fontSize: '14px', fontWeight: '500', color: textColor }}>Цвет фона:</label>
-                          <div
-                            onClick={() => {
-                              const input = document.getElementById('color-picker-add');
-                              if (input) input.click();
-                            }}
-                            style={{
+                          <div style={{ position: "relative", display: "inline-block" }}>
+                            <div style={{
                               width: "40px",
                               height: "40px",
                               borderRadius: "6px",
                               border: "2px solid #ddd",
                               backgroundColor: selectedColor,
-                              cursor: "pointer",
-                              transition: "transform 0.1s ease",
-                              margin: "8px"
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                          />
-                          <input
-                            id="color-picker-add"
-                            type="color"
-                            value={selectedColor}
-                            onChange={(e) => setSelectedColor(e.target.value)}
-                            style={{
-                              position: "fixed",
-                              opacity: 0,
-                              pointerEvents: "none",
-                              width: 0,
-                              height: 0
-                            }}
-                          />
+                              cursor: "pointer"
+                            }} />
+                            <input
+                              type="color"
+                              value={selectedColor}
+                              onChange={(e) => setSelectedColor(e.target.value)}
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                opacity: 0,
+                                cursor: "pointer",
+                                margin: 0,
+                                padding: 0,
+                                border: "none",
+                              }}
+                            />
+                          </div>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1428,7 +1419,6 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
             {addRoomModalOpen && (
               <div className="modal-overlay" onClick={() => setAddRoomModalOpen(false)}>
                 <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '500px', minHeight: '50vh', overflowY: 'auto', position: 'relative', backgroundColor: bgModal, color: textColor }}>
-                  <h2 style={{ color: textColor }}>Добавить комнату</h2>
                   <button
                     className="modal-close-btn"
                     onClick={() => setAddRoomModalOpen(false)}
@@ -1436,6 +1426,7 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                   >
                     ✕
                   </button>
+                  <h2 style={{ color: textColor }}>Добавить комнату</h2>
                   <input
                     type="text"
                     placeholder="Название комнаты..."
@@ -1458,7 +1449,6 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
             {addToRoomModalOpen && selectedRoomForPlant && (
               <div className="modal-overlay" onClick={() => setAddToRoomModalOpen(false)}>
                 <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: '400px', maxHeight: '80vh', overflowY: 'auto', position: 'relative', backgroundColor: bgModal, color: textColor }}>
-                  <h2 style={{ color: textColor }}>Добавить растение в "{selectedRoomForPlant.name}"</h2>
                   <button
                     className="modal-close-btn"
                     onClick={() => setAddToRoomModalOpen(false)}
@@ -1466,6 +1456,7 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                   >
                     ✕
                   </button>
+                  <h2 style={{ color: textColor }}>Добавить растение в "{selectedRoomForPlant.name}"</h2>
                   <input
                     type="text"
                     placeholder="Поиск растения..."
@@ -1550,7 +1541,6 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
             {showCreatePlantModal && (
               <div className="modal-overlay" onClick={() => setShowCreatePlantModal(false)}>
                 <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative', backgroundColor: bgModal, color: textColor }}>
-                  <h2 style={{ color: textColor }}>Новое растение</h2>
                   <button
                     className="modal-close-btn"
                     onClick={() => setShowCreatePlantModal(false)}
@@ -1558,6 +1548,7 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                   >
                     ✕
                   </button>
+                  <h2 style={{ color: textColor }}>Новое растение</h2>
                   <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '24px' }}>
                     <div
                       onClick={() => setShowImageGrid(true)}
@@ -1669,36 +1660,33 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                   <div style={{ marginBottom: '24px' }}>
                     <label style={{ color: textColor }}>Цвет фона для карточки</label>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
-                      <div
-                        onClick={() => {
-                          const input = document.getElementById('color-picker-create-plant');
-                          if (input) input.click();
-                        }}
-                        style={{
+                      <div style={{ position: "relative", display: "inline-block" }}>
+                        <div style={{
                           width: "50px",
                           height: "50px",
                           borderRadius: "8px",
                           border: "2px solid #ddd",
                           backgroundColor: newPlantColor,
-                          cursor: "pointer",
-                          transition: "transform 0.1s ease"
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                      />
-                      <input
-                        id="color-picker-create-plant"
-                        type="color"
-                        value={newPlantColor}
-                        onChange={(e) => setNewPlantColor(e.target.value)}
-                        style={{
-                          position: "fixed",
-                          opacity: 0,
-                          pointerEvents: "none",
-                          width: 0,
-                          height: 0
-                        }}
-                      />
+                          cursor: "pointer"
+                        }} />
+                        <input
+                          type="color"
+                          value={newPlantColor}
+                          onChange={(e) => setNewPlantColor(e.target.value)}
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                            opacity: 0,
+                            cursor: "pointer",
+                            margin: 0,
+                            padding: 0,
+                            border: "none",
+                          }}
+                        />
+                      </div>
                       <span style={{ fontSize: '12px', color: textSecondary }}>Цвет будет использован для иконок в карточке растения</span>
                     </div>
                   </div>
@@ -2150,40 +2138,36 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                     </p>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "8px" }}>
                       <label style={{ fontSize: "16px", fontWeight: "500", color: textColor }}>Цвет фона:</label>
-                      <div
-                        onClick={() => {
-                          const input = document.getElementById(`color-picker-${selectedPlant?.id}`);
-                          if (input) input.click();
-                        }}
-                        style={{
+                      <div style={{ position: "relative", display: "inline-block" }}>
+                        <div style={{
                           width: "50px",
                           height: "50px",
                           borderRadius: "8px",
                           border: "2px solid #ddd",
                           backgroundColor: userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF",
-                          cursor: "pointer",
-                          transition: "transform 0.1s ease",
-                          margin: "8px"
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                      />
-                      <input
-                        id={`color-picker-${selectedPlant?.id}`}
-                        type="color"
-                        value={userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF"}
-                        onChange={(e) => {
-                          const plant = userPlants.find(p => p.id === selectedPlant.id);
-                          if (plant) handleUpdateColor(plant.id, e.target.value);
-                        }}
-                        style={{
-                          position: "fixed",
-                          opacity: 0,
-                          pointerEvents: "none",
-                          width: 0,
-                          height: 0
-                        }}
-                      />
+                          cursor: "pointer"
+                        }} />
+                        <input
+                          type="color"
+                          value={userPlants.find(p => p.id === selectedPlant.id)?.color || "#FFFFFF"}
+                          onChange={(e) => {
+                            const plant = userPlants.find(p => p.id === selectedPlant.id);
+                            if (plant) handleUpdateColor(plant.id, e.target.value);
+                          }}
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                            opacity: 0,
+                            cursor: "pointer",
+                            margin: 0,
+                            padding: 0,
+                            border: "none",
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2507,7 +2491,6 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
           {addPlantModalOpen && (
             <div className="modal-overlay" onClick={() => setAddPlantModalOpen(false)}>
               <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxHeight: '80vh', overflowY: 'auto', position: 'relative', width: "60%", backgroundColor: bgModal, color: textColor }}>
-                <h2 style={{ color: textColor }}>Добавить растение</h2>
                 <button
                   className="modal-close-btn"
                   onClick={() => setAddPlantModalOpen(false)}
@@ -2515,6 +2498,7 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                 >
                   ✕
                 </button>
+                <h2 style={{ color: textColor }}>Добавить растение</h2>
                 <input
                   type="text"
                   placeholder="Поиск растения..."
@@ -2628,37 +2612,33 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                     <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                         <label style={{ fontSize: "14px", fontWeight: "500", color: textColor }}>Цвет фона:</label>
-                        <div
-                          onClick={() => {
-                            const input = document.getElementById('color-picker-add-desktop');
-                            if (input) input.click();
-                          }}
-                          style={{
+                        <div style={{ position: "relative", display: "inline-block" }}>
+                          <div style={{
                             width: "40px",
                             height: "40px",
                             borderRadius: "6px",
                             border: "2px solid #ddd",
                             backgroundColor: selectedColor,
-                            cursor: "pointer",
-                            transition: "transform 0.1s ease",
-                            margin: "8px"
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                        />
-                        <input
-                          id="color-picker-add-desktop"
-                          type="color"
-                          value={selectedColor}
-                          onChange={(e) => setSelectedColor(e.target.value)}
-                          style={{
-                            position: "fixed",
-                            opacity: 0,
-                            pointerEvents: "none",
-                            width: 0,
-                            height: 0
-                          }}
-                        />
+                            cursor: "pointer"
+                          }} />
+                          <input
+                            type="color"
+                            value={selectedColor}
+                            onChange={(e) => setSelectedColor(e.target.value)}
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              opacity: 0,
+                              cursor: "pointer",
+                              margin: 0,
+                              padding: 0,
+                              border: "none",
+                            }}
+                          />
+                        </div>
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2685,7 +2665,6 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
           {addToRoomModalOpen && selectedRoomForPlant && (
             <div className="modal-overlay" onClick={() => setAddToRoomModalOpen(false)}>
               <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxHeight: '80vh', overflowY: 'auto', position: 'relative', width: "60%", backgroundColor: bgModal, color: textColor }}>
-                <h2 style={{ color: textColor }}>Добавить растение в "{selectedRoomForPlant.name}"</h2>
                 <button
                   className="modal-close-btn"
                   onClick={() => setAddToRoomModalOpen(false)}
@@ -2693,6 +2672,7 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                 >
                   ✕
                 </button>
+                <h2 style={{ color: textColor }}>Добавить растение в "{selectedRoomForPlant.name}"</h2>
                 <input
                   type="text"
                   placeholder="Поиск растения..."
@@ -2777,7 +2757,6 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
           {addRoomModalOpen && (
             <div className="modal-overlay" onClick={() => setAddRoomModalOpen(false)}>
               <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxHeight: '80vh', overflowY: 'auto', position: 'relative', backgroundColor: bgModal, color: textColor }}>
-                <h2 style={{ color: textColor }}>Добавить комнату</h2>
                 <button
                   className="modal-close-btn"
                   onClick={() => setAddRoomModalOpen(false)}
@@ -2785,6 +2764,7 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                 >
                   ✕
                 </button>
+                <h2 style={{ color: textColor }}>Добавить комнату</h2>
                 <input
                   type="text"
                   placeholder="Название комнаты..."
@@ -2807,7 +2787,6 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
           {showCreatePlantModal && (
             <div className="modal-overlay" onClick={() => setShowCreatePlantModal(false)}>
               <section className="modal-contentMP" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative', backgroundColor: bgModal, color: textColor }}>
-                <h2 style={{ color: textColor }}>Новое растение</h2>
                 <button
                   className="modal-close-btn"
                   onClick={() => setShowCreatePlantModal(false)}
@@ -2815,6 +2794,7 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                 >
                   ✕
                 </button>
+                <h2 style={{ color: textColor }}>Новое растение</h2>
                 <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '24px' }}>
                   <div onClick={() => setShowImageGrid(true)} style={{ width: '200px', height: '200px', backgroundColor: iconBg, borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <img
@@ -2848,36 +2828,33 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
                 <div style={{ marginBottom: '24px' }}>
                   <label style={{ color: textColor }}>Цвет фона для карточки</label>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
-                    <div
-                      onClick={() => {
-                        const input = document.getElementById('color-picker-create-plant-desktop');
-                        if (input) input.click();
-                      }}
-                      style={{
+                    <div style={{ position: "relative", display: "inline-block" }}>
+                      <div style={{
                         width: "50px",
                         height: "50px",
                         borderRadius: "8px",
                         border: "2px solid #ddd",
                         backgroundColor: newPlantColor,
-                        cursor: "pointer",
-                        transition: "transform 0.1s ease"
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                      onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                    />
-                    <input
-                      id="color-picker-create-plant-desktop"
-                      type="color"
-                      value={newPlantColor}
-                      onChange={(e) => setNewPlantColor(e.target.value)}
-                      style={{
-                        position: "fixed",
-                        opacity: 0,
-                        pointerEvents: "none",
-                        width: 0,
-                        height: 0
-                      }}
-                    />
+                        cursor: "pointer"
+                      }} />
+                      <input
+                        type="color"
+                        value={newPlantColor}
+                        onChange={(e) => setNewPlantColor(e.target.value)}
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          opacity: 0,
+                          cursor: "pointer",
+                          margin: 0,
+                          padding: 0,
+                          border: "none",
+                        }}
+                      />
+                    </div>
                     <span style={{ fontSize: '12px', color: textSecondary }}>Цвет будет использован для иконок в карточке растения</span>
                   </div>
                 </div>
