@@ -914,3 +914,50 @@ select:-moz-autofill {
 .dark-theme .modal-contentMP button[style*="background:#DF7171"]:hover {
   background-color: #c55a5a !important;
 }
+
+.dark-theme .mobile-email-confirmation-content {
+  background-color: var(--bg-dark) !important;
+}
+
+.dark-theme .mobile-confirmation-title,
+.dark-theme .mobile-confirmation-text {
+  color: var(--text-white) !important;
+}
+
+.dark-theme .mobile-confirmation-text {
+  color: #aaa !important;
+}
+
+.dark-theme .mobile-confirmation-button {
+  background-color: var(--button-green) !important;
+  color: #2d2d2d !important;
+  border: none !important;
+}
+
+.dark-theme .mobile-confirmation-button:hover {
+  background-color: var(--button-green-hover) !important;
+  color: #1a1a1a !important;
+}
+
+.dark-theme .mobile-bottom-menu-ev {
+  background-color: var(--header-dark) !important;
+  border-top-color: var(--border-light) !important;
+}
+
+.dark-theme .mobile-menu-icon-ev {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+}
+
+.dark-theme .mobile-menu-icon-ev.active-icon-ev {
+  opacity: 1;
+  filter: brightness(0) saturate(100%) invert(66%) sepia(21%) saturate(590%) hue-rotate(42deg) brightness(92%) contrast(87%);
+}
+
+.dark-theme .mobile-header {
+  background-color: var(--header-dark) !important;
+}
+
+.dark-theme .mobile-logo {
+  filter: brightness(0) invert(1);
+}

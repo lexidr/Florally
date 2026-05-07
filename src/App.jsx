@@ -57,7 +57,10 @@ export default function App() {
             element={<SectionEntrance isDarkMode={isDarkMode} toggleTheme={toggleTheme} />} 
           />
           
-          <Route path="/auth/signup/confirmation/:confirmationToken" element={<EMailVerification />} />
+          <Route 
+            path="/auth/signup/confirmation/:confirmationToken" 
+            element={<EMailVerification isDarkMode={isDarkMode} toggleTheme={toggleTheme} />} 
+          />
           
           <Route 
             path="*" 
