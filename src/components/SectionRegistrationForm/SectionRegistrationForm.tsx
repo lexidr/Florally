@@ -470,7 +470,7 @@ const RegistrationForm: React.FC<{ isDarkMode: boolean; toggleTheme: () => void 
                   className={formErrors.username ? "input-error" : ""}
                 />
                 {formErrors.username && (
-                  <div className="error-text">{formErrors.username}</div>
+                  <div className="error-text1">{formErrors.username}</div>
                 )}
               </div>
 
@@ -489,7 +489,7 @@ const RegistrationForm: React.FC<{ isDarkMode: boolean; toggleTheme: () => void 
                   className={formErrors.email ? "input-error" : ""}
                 />
                 {formErrors.email && (
-                  <div className="error-text">{formErrors.email}</div>
+                  <div className="error-text1">{formErrors.email}</div>
                 )}
               </div>
 
@@ -508,7 +508,7 @@ const RegistrationForm: React.FC<{ isDarkMode: boolean; toggleTheme: () => void 
                   className={formErrors.password ? "input-error" : ""}
                 />
                 {formErrors.password && (
-                  <div className="error-text">{formErrors.password}</div>
+                  <div className="error-text1">{formErrors.password}</div>
                 )}
               </div>
 
@@ -527,7 +527,7 @@ const RegistrationForm: React.FC<{ isDarkMode: boolean; toggleTheme: () => void 
                   className={formErrors.confirmPassword ? "input-error" : ""}
                 />
                 {formErrors.confirmPassword && (
-                  <div className="error-text">{formErrors.confirmPassword}</div>
+                  <div className="error-text1">{formErrors.confirmPassword}</div>
                 )}
               </div>
 

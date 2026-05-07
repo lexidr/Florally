@@ -283,6 +283,12 @@ button:hover {
   height: 35px;
 }
 
+.error-text1 {
+  color: #df7171;
+  font-size: 16px;
+  text-align: center;
+}
+
 @media (max-width: 620px) {
   .LogotypeStyle {
     position: relative;

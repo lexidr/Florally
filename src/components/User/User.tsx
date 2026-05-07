@@ -977,7 +977,7 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
 
         {isTelegramModalOpen && (
           <div className="modal-overlay" onClick={() => setIsTelegramModalOpen(false)}>
-            <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', textAlign: 'center', backgroundColor: bgModal, color: textColor, margin: '20px', width: 'calc(100% - 40px)' }}>
+            <div className="modal-contentTg" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', textAlign: 'center', backgroundColor: bgModal, color: textColor, margin: '20px', width: 'calc(100% - 40px)' }}>
               <button className="modal-close" onClick={() => setIsTelegramModalOpen(false)} style={{ color: '#a8c686' }}>×</button>
               <h2 className="modal-title" style={{ fontSize: '24px', marginBottom: '16px' }}>Подключение Telegram</h2>
               {isTelegramLoading ? (
@@ -1534,7 +1534,7 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
 
       {isTelegramModalOpen && (
         <div className="modal-overlay" onClick={() => setIsTelegramModalOpen(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '450px', textAlign: 'center', backgroundColor: bgModal, color: textColor }}>
+          <div className="modal-contentTg" onClick={e => e.stopPropagation()} style={{ maxWidth: '450px', textAlign: 'center', backgroundColor: bgModal, color: textColor }}>
             <button className="modal-close" onClick={() => setIsTelegramModalOpen(false)} style={{ color: '#a8c686' }}>×</button>
             <h2 className="modal-title">Подключение Telegram</h2>
             {isTelegramLoading ? (
