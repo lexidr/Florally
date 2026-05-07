@@ -144,7 +144,7 @@ function EMailVerification({ isDarkMode, toggleTheme }: { isDarkMode: boolean; t
 
   if (screenSize === "desktop") {
     return (
-      <div className="appEv">
+      <div className={`appEv ${isDarkMode ? 'dark-theme' : ''}`}>
         <header className="header">
                 <div className="header-content">
                   <Link to="/"><img src="/logo.svg" alt="Florally" className="logo" /></Link>
@@ -175,7 +175,7 @@ function EMailVerification({ isDarkMode, toggleTheme }: { isDarkMode: boolean; t
   }
 
   return (
-    <div className="mobile-app-ev">
+    <div className={`mobile-app-ev ${isDarkMode ? 'dark-theme' : ''}`}>
        <header className="mobile-header">
           <div className="mobile-header-content">
             <Link to="/"> <img src="/logo.svg" alt="Florally" className="mobile-logo" /> </Link>
