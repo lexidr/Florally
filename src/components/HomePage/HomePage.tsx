@@ -65,6 +65,21 @@ const MOON_PHASE_EMOJI: Record<string, string> = {
   "Last Quarter": "🌗",
 };
 
+const MOON_RECOMMENDATIONS: Record<string, { text: string; color: string }> = {
+  "Новолуние": { text: "Неблагоприятный день для любых работ", color: "#DF7171" },
+  "Молодая луна": { text: "Хорошее время для посадки и пересадки", color: "#A8C686" },
+  "Первая четверть": { text: "Благоприятно для полива и подкормки", color: "#A8C686" },
+  "Прибывающая луна": { text: "Идеально для пересадки и обрезки", color: "#A8C686" },
+  "Полнолуние": { text: "Не рекомендуется пересадка и обрезка", color: "#DF7171" },
+  "Убывающая луна": { text: "Хорошо для борьбы с вредителями и прополки", color: "#A8C686" },
+  "Последняя четверть": { text: "Время для корневой подкормки", color: "#A8C686" },
+  "Старая луна": { text: "Лучше дать растениям отдохнуть", color: "#999" },
+  "New Moon": { text: "Неблагоприятный день для работ", color: "#DF7171" },
+  "Full Moon": { text: "Не рекомендуется пересадка", color: "#DF7171" },
+  "First Quarter": { text: "Благоприятно для полива", color: "#A8C686" },
+  "Last Quarter": { text: "Время для корневой подкормки", color: "#A8C686" },
+};
+
 function getMoonPhaseFromEvents(date: Date, events: MoonPhaseEvent[]): { phase: string; emoji: string } | null {
   if (!events.length) return null;
 
@@ -849,9 +864,27 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
                       </div>
                     </div>
                   </div>
-                  <h2 className="mobile-tasks-title">
-                    Задачи на {selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}
-                  </h2>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '20px', padding: '0 16px' }}>
+                    <h2 className="mobile-tasks-title" style={{ margin: 0 }}>
+                      Задачи на {selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}
+                    </h2>
+                    {isLoggedIn && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+                        {(() => {
+                          const moon = getMoonPhaseFromEvents(selectedDate, moonEvents) || getLocalMoonPhase(selectedDate);
+                          const rec = MOON_RECOMMENDATIONS[moon.phase] || { text: "", color: "#666" };
+                          return (
+                            <>
+                              <span>{moon.emoji}</span>
+                              <span style={{ color: rec.color, fontWeight: '500' }}>{rec.text}</span>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </div>
+
                   <div className="mobile-tasks-container">
                     <div className="mobile-tasks-list">
                       {todayTasks.length === 0 ? (
@@ -1066,7 +1099,27 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
       </header>
       <main className="main-content">
         <section className="info-card" style={{ position: 'relative' }}>
-          <h2 className="card-title">Задачи на {selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</h2>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+            <h2 className="card-title" style={{ margin: 0 }}>
+              Задачи на {selectedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}
+            </h2>
+            {isLoggedIn && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', backgroundColor: 'rgba(168, 198, 134, 0.1)', padding: '6px 12px', borderRadius: '20px' }}>
+                {(() => {
+                  const moon = getMoonPhaseFromEvents(selectedDate, moonEvents) || getLocalMoonPhase(selectedDate);
+                  const rec = MOON_RECOMMENDATIONS[moon.phase] || { text: "", color: "#666" };
+                  return (
+                    <>
+                      <span style={{ fontSize: '18px' }}>{moon.emoji}</span>
+                      <span style={{ color: rec.color, fontWeight: '500' }}>{rec.text}</span>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+
           {!isLoggedIn && (
             <div className="not-authorized-container">
               <div className="not-authorized-message"><p>Зарегистрируйся,<br />чтобы знать больше<br />о своих растениях!</p></div>
