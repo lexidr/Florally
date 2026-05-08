@@ -566,7 +566,13 @@ const RegistrationForm: React.FC<{ isDarkMode: boolean; toggleTheme: () => void 
             <div className="modal-contentMail">
               <button className="modal-close-btnMail" onClick={closeModal}>✕</button>
               <div className="text_1"><span>На почту выслано письмо для подтверждения</span></div>
-              <div className="text_2"><span>*при неверно введенных данных никнейм будет доступен через 15 минут</span></div>
+              <div className="text_2">
+                <span>
+                  *при неверно введенных данных никнейм будет доступен через 15 минут
+                  <br />
+                  **Нет письма? Не страшно! Скорее всего оно спряталось в спаме
+                </span>
+              </div>
             </div>
           </div>
         )}

@@ -590,12 +590,23 @@ function MyPlant({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme
 
   if (loading) {
     return (
-      <div className="appMP">
-        <header className="header"><div className="header-content"><Link to="/"><img src={"/logo.svg"} alt="Florally" className="logo" /></Link><div className="loading-auth">Загрузка...</div></div></header>
-        <main className="my-plants-content">
+      <div className={`appMP ${isDarkMode ? 'dark-mode' : ''}`}>
+        <header className="header">
+          <div className="header-content">
+            <Link to="/">
+              <img src={"/logo.svg"} alt="Florally" className="logo" />
+            </Link>
+            <div className="loading-auth">Загрузка...</div>
+          </div>
+        </header>
+        <main className="my-plants-content loading">
           <div className="coming-soon-container">
             <div className="plant-image-container">
-              <img src="/back-plant2.svg" alt="plant" className="centered-plant" />
+              <img 
+                src="/back-plant2.svg" 
+                alt="plant" 
+                className="centered-plant" 
+              />
             </div>
             <div className="coming-soon-text">Загрузка...</div>
           </div>

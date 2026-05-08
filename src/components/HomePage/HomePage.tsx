@@ -30,6 +30,102 @@ interface Task {
   serverEventId?: string;
 }
 
+interface MoonPhaseEvent {
+  Phase: string;
+  Date: string;
+}
+
+const moonCache = new Map<string, MoonPhaseEvent[]>();
+
+async function fetchMoonPhases(year: number, month: number): Promise<MoonPhaseEvent[]> {
+  const cacheKey = `${year}-${month}`;
+  if (moonCache.has(cacheKey)) return moonCache.get(cacheKey)!;
+
+  const firstDay = new Date(Date.UTC(year, month - 1, 1)).toISOString().slice(0, 7);
+  const lastDay = new Date(Date.UTC(year, month, 0)).toISOString().slice(0, 10);
+  const url = `https://api.farmsense.net/v1/moonphases/?d=${firstDay}-01&e=${lastDay}`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Network error');
+    const data: MoonPhaseEvent[] = await response.json();
+    data.sort((a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime());
+    moonCache.set(cacheKey, data);
+    return data;
+  } catch (error) {
+    console.warn('Moon phases fetch failed, using local fallback', error);
+    return [];
+  }
+}
+
+const MOON_PHASE_EMOJI: Record<string, string> = {
+  "New Moon": "🌑",
+  "First Quarter": "🌓",
+  "Full Moon": "🌕",
+  "Last Quarter": "🌗",
+};
+
+function getMoonPhaseFromEvents(date: Date, events: MoonPhaseEvent[]): { phase: string; emoji: string } | null {
+  if (!events.length) return null;
+
+  const time = date.getTime();
+  let lastEvent: MoonPhaseEvent | null = null;
+  for (const event of events) {
+    const eventTime = new Date(event.Date).getTime();
+    if (eventTime <= time) {
+      lastEvent = event;
+    } else {
+      break;
+    }
+  }
+  if (!lastEvent) lastEvent = events[0];
+
+  const phase = lastEvent.Phase;
+  const emoji = MOON_PHASE_EMOJI[phase] || "🌑";
+  return { phase, emoji };
+}
+
+function getLocalMoonPhase(date: Date): { phase: string; emoji: string } {
+  const y = date.getFullYear();
+  const m = date.getMonth() + 1;
+  const d = date.getDate();
+
+  let Y = y, M = m;
+  if (M <= 2) { Y -= 1; M += 12; }
+  const A = Math.floor(Y / 100);
+  const B = 2 - A + Math.floor(A / 4);
+  const JD = Math.floor(365.25 * (Y + 4716)) + Math.floor(30.6001 * (M + 1)) + d + B - 1524.5;
+
+  const daysSinceNew = JD - 2451549.5;
+  const newMoons = daysSinceNew / 29.53058867;
+  let age = (newMoons - Math.floor(newMoons)) * 29.53058867;
+  if (age < 0) age += 29.53058867;
+
+  let phase: string;
+  let emoji: string;
+  if (age < 1.84566) {
+    phase = 'Новолуние'; emoji = '🌑';
+  } else if (age < 5.53699) {
+    phase = 'Молодая луна'; emoji = '🌒';
+  } else if (age < 9.22831) {
+    phase = 'Первая четверть'; emoji = '🌓';
+  } else if (age < 12.91963) {
+    phase = 'Прибывающая луна'; emoji = '🌔';
+  } else if (age < 16.61096) {
+    phase = 'Полнолуние'; emoji = '🌕';
+  } else if (age < 20.30228) {
+    phase = 'Убывающая луна'; emoji = '🌖';
+  } else if (age < 23.99361) {
+    phase = 'Последняя четверть'; emoji = '🌗';
+  } else if (age < 27.68493) {
+    phase = 'Старая луна'; emoji = '🌘';
+  } else {
+    phase = 'Новолуние'; emoji = '🌑';
+  }
+
+  return { phase, emoji };
+}
+
 const PlantImage: React.FC<{
   src: string | null | undefined;
   alt: string;
@@ -102,6 +198,8 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
   
   const [userPlants, setUserPlants] = useState<UserPlant[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
+
+  const [moonEvents, setMoonEvents] = useState<MoonPhaseEvent[]>([]);
 
   const taskTypes = ["Полив", "Пересадка", "Прополка", "Собрать урожай", "Другое"];
   const recurrenceOptions = [
@@ -244,7 +342,6 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
       const width = window.innerWidth;
       setScreenSize(width <= 968 ? "mobile" : "desktop");
     };
-
     checkScreenSize();
     window.addEventListener("resize", checkScreenSize);
     return () => window.removeEventListener("resize", checkScreenSize);
@@ -256,7 +353,6 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
         const authData: AuthData = checkAuth();
         setIsLoggedIn(authData.isAuthenticated);
         setUser(authData.user);
-
         if (authData.isAuthenticated) {
           const plants = await loadUserData();
           await loadServerEvents();
@@ -272,7 +368,6 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
         setLoading(false);
       }
     };
-
     authCheck();
   }, []);
 
@@ -282,6 +377,13 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
       if (enriched) colorsEnrichedRef.current = true;
     }
   }, [userPlants]);
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+    fetchMoonPhases(year, month).then(events => setMoonEvents(events)).catch(() => setMoonEvents([]));
+  }, [currentDate, isLoggedIn]);
 
   const getDaysInMonth = (date: Date): CalendarDay[][] => {
     const year = date.getFullYear();
@@ -354,11 +456,9 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
   const toggleTaskComplete = async (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
-    
     const newCompleted = !task.completed;
     const updatedTasks = tasks.map(t => t.id === taskId ? { ...t, completed: newCompleted } : t);
     saveTasks(updatedTasks);
-    
     if (task.serverEventId) {
       try {
         await updateEvent(task.serverEventId, { completed: newCompleted });
@@ -626,17 +726,25 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
 
   if (loading) {
     return (
-      <div className="app">
+      <div className={`app ${isDarkMode ? 'dark-mode' : ''}`}>
         <header className="header">
           <div className="header-content">
-            <Link to="/"><img src="/logo.svg" alt="Florally" className="logo" /></Link>
+            <Link to="/">
+              <img src={"/logo.svg"} alt="Florally" className="logo" />
+            </Link>
             <div className="loading-auth">Загрузка...</div>
           </div>
         </header>
-        <main className="main-content">
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Проверка аутентификации...</p>
+        <main className="my-plants-content loading">
+          <div className="coming-soon-container">
+            <div className="plant-image-container">
+              <img 
+                src="/back-plant2.svg" 
+                alt="plant" 
+                className="centered-plant" 
+              />
+            </div>
+            <div className="coming-soon-text">Загрузка...</div>
           </div>
         </main>
       </div>
@@ -697,6 +805,13 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
                               const taskColors = dayNum !== null && day !== ""
                                 ? getUniqueTaskColorsForDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum))
                                 : [];
+                              let moonEmoji = "";
+                              if (day !== "") {
+                                const dateForMoon = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum!);
+                                const moonInfo = getMoonPhaseFromEvents(dateForMoon, moonEvents);
+                                const fallbackMoon = moonInfo ? null : getLocalMoonPhase(dateForMoon);
+                                moonEmoji = moonInfo?.emoji || fallbackMoon?.emoji || "";
+                              }
                               return (
                                 <div
                                   key={`${weekIndex}-${dayIndex}`}
@@ -707,17 +822,24 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
                                   }`}
                                   onClick={() => handleDayClick(day)}
                                 >
-                                  {day !== "" && <span className="mobile-day-number">{day}</span>}
-                                  {taskColors.length > 0 && (
-                                    <div className="mobile-task-indicators">
-                                      {taskColors.slice(0, 3).map((color, idx) => (
-                                        <span
-                                          key={idx}
-                                          className="mobile-task-color-dot"
-                                          style={{ backgroundColor: color }}
-                                        />
-                                      ))}
-                                    </div>
+                                  {day !== "" && (
+                                    <>
+                                      <span className="mobile-day-number">
+                                        {day}
+                                        {moonEmoji && <span title={getMoonPhaseFromEvents(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum!), moonEvents)?.phase || getLocalMoonPhase(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum!)).phase} style={{ fontSize: '0.7em', marginLeft: '2px' }}>{moonEmoji}</span>}
+                                      </span>
+                                      {taskColors.length > 0 && (
+                                        <div className="mobile-task-indicators">
+                                          {taskColors.slice(0, 3).map((color, idx) => (
+                                            <span
+                                              key={idx}
+                                              className="mobile-task-color-dot"
+                                              style={{ backgroundColor: color }}
+                                            />
+                                          ))}
+                                        </div>
+                                      )}
+                                    </>
                                   )}
                                 </div>
                               );
@@ -1052,6 +1174,15 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
                       const taskColors = dayNum !== null && day !== ""
                         ? getUniqueTaskColorsForDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum))
                         : [];
+                      let moonEmoji = "";
+                      let moonTitle = "";
+                      if (day !== "" && dayNum !== null) {
+                        const dateForMoon = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum);
+                        const moonInfo = getMoonPhaseFromEvents(dateForMoon, moonEvents);
+                        const fallbackMoon = moonInfo ? null : getLocalMoonPhase(dateForMoon);
+                        moonEmoji = moonInfo?.emoji || fallbackMoon?.emoji || "";
+                        moonTitle = moonInfo?.phase || fallbackMoon?.phase || "";
+                      }
                       return (
                         <div
                           key={`${weekIndex}-${dayIndex}`}
@@ -1062,7 +1193,14 @@ const HomePage: React.FC<{ isDarkMode: boolean; toggleTheme: () => void }> = ({ 
                         >
                           {day !== "" && (
                             <>
-                              <span className="day-number">{day}</span>
+                              <span className="day-number">
+                                {day}
+                                {moonEmoji && (
+                                  <span title={moonTitle} style={{ fontSize: '0.7em', marginLeft: '2px' }}>
+                                    {moonEmoji}
+                                  </span>
+                                )}
+                              </span>
                               {taskColors.length > 0 && (
                                 <div className="task-indicators">
                                   {taskColors.slice(0, 3).map((color, idx) => (

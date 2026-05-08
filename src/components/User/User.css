@@ -442,7 +442,7 @@ button:hover {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: 130px;
+  margin-bottom: 30px;
 }
 
 .mobile-form-container {

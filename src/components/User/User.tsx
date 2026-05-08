@@ -315,12 +315,55 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
   };
 
   const handleCopyCode = async () => {
+    if (!telegramCode) {
+      setTelegramError("Код не сгенерирован. Попробуйте ещё раз.");
+      return;
+    }
+
+    const copyToClipboard = (text: string): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text)
+            .then(() => resolve())
+            .catch(err => reject(err));
+          return;
+        }
+        
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        textarea.style.left = '-9999px';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        textarea.setSelectionRange(0, text.length); 
+        
+        let success = false;
+        try {
+          success = document.execCommand('copy');
+        } catch (err) {
+          console.error('execCommand error:', err);
+        }
+        document.body.removeChild(textarea);
+        
+        if (success) {
+          resolve();
+        } else {
+          reject(new Error('Не удалось скопировать код автоматически. Скопируйте его вручную.'));
+        }
+      });
+    };
+
     try {
-      await navigator.clipboard.writeText(telegramCode);
+      await copyToClipboard(telegramCode);
       setCodeCopied(true);
+      setTelegramError("");
       setTimeout(() => setCodeCopied(false), 2000);
     } catch (err) {
-      console.error("Не удалось скопировать код");
+      console.error("Ошибка копирования:", err);
+      setTelegramError("Не удалось скопировать автоматически. Выделите код вручную и нажмите Ctrl+C / Cmd+C");
+      setTimeout(() => setTelegramError(""), 4000);
     }
   };
 
@@ -438,20 +481,28 @@ function User({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: (
     if (!user) return "";
     return user.username || user.email?.split("@")[0] || "Пользователь";
   };
-
+  
   if (loading) {
     return (
-      <div className="appUZ">
+      <div className={`appUZ ${isDarkMode ? 'dark-mode' : ''}`}>
         <header className="header">
           <div className="header-content">
-            <Link to="/"><img src={"/logo.svg"} alt="Florally" className="logo" /></Link>
+            <Link to="/">
+              <img src={"/logo.svg"} alt="Florally" className="logo" />
+            </Link>
             <div className="loading-auth">Загрузка...</div>
           </div>
         </header>
-        <main className="user-content">
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Проверка аутентификации...</p>
+        <main className="my-plants-content loading">
+          <div className="coming-soon-container">
+            <div className="plant-image-container">
+              <img 
+                src="/back-plant2.svg" 
+                alt="plant" 
+                className="centered-plant" 
+              />
+            </div>
+            <div className="coming-soon-text">Загрузка...</div>
           </div>
         </main>
       </div>
